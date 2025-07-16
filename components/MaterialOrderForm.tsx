@@ -5,7 +5,6 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
-  Material,
   MaterialOrderItem,
   OrderDocument,
   materialsByCategory,
@@ -35,7 +34,6 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     handleSubmit,
     watch,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm<OrderFormData>({
     resolver: zodResolver(orderFormSchema),
@@ -79,7 +77,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     });
 
     return { items, totalWeight: total };
-  }, [watchAllFields]);
+  }, [watchAllFields, materials]);
 
   const handleQuantityChange = (materialId: string, delta: number) => {
     const currentValue = materials[materialId] || 0;
