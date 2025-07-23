@@ -1,8 +1,30 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { NextResponse, type NextRequest } from 'next/server'
+
+const SESSION_NAME = 'auth-session'
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request)
+  const { pathname } = request.nextUrl
+  
+  // 認証不要なパス
+  const publicPaths = ['/', '/api/auth/login', '/api/auth/logout']
+  const isPublicPath = publicPaths.includes(pathname)
+  
+  // セッションチェック
+  const hasSession = request.cookies.has(SESSION_NAME)
+  
+  // 未認証でプライベートページにアクセスした場合
+  if (!hasSession && !isPublicPath) {
+    const loginUrl = new URL('/', request.url)
+    return NextResponse.redirect(loginUrl)
+  }
+  
+  // 認証済みでホームページにアクセスした場合は資材発注ページへリダイレクト
+  if (hasSession && pathname === '/') {
+    const materialOrderUrl = new URL('/material-order', request.url)
+    return NextResponse.redirect(materialOrderUrl)
+  }
+  
+  return NextResponse.next()
 }
 
 export const config = {
