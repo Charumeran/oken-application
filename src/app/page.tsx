@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+// import Image from 'next/image'
 
 export default function Home() {
   const [username, setUsername] = useState('')
@@ -39,15 +40,27 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <div className="text-center">
+          {/* <div className="flex justify-center mb-6">
+            <Image
+              src="/icons/icon.jpeg"
+              alt="Logo"
+              width={80}
+              height={80}
+              className="rounded-2xl shadow-lg"
+            />
+          </div> */}
+          <h2 className="text-3xl font-bold text-slate-800">
             資材発注管理システム
           </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            ログインしてください
+          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="rounded-md shadow-sm -space-y-px">
+        <form className="mt-8 space-y-6 bg-white p-8 rounded-2xl shadow-xl" onSubmit={handleLogin}>
+          <div className="space-y-4">
             <div>
               <label htmlFor="username" className="sr-only">
                 ユーザーID
@@ -57,7 +70,7 @@ export default function Home() {
                 name="username"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-4 py-3 border border-slate-200 placeholder-slate-400 text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-300"
                 placeholder="ユーザーID"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -72,7 +85,7 @@ export default function Home() {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-4 py-3 border border-slate-200 placeholder-slate-400 text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-300"
                 placeholder="パスワード"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -81,8 +94,8 @@ export default function Home() {
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-800">{error}</div>
+            <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+              <div className="text-sm text-red-600 font-medium">{error}</div>
             </div>
           )}
 
@@ -90,7 +103,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               {loading ? 'ログイン中...' : 'ログイン'}
             </button>

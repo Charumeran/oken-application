@@ -98,72 +98,73 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">資材発注書作成</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-slate-800">資材発注書作成</h1>
 
-      <div className="space-y-4 mb-8">
-        <div>
-          <label className="block text-xl font-medium mb-2">
-            発注者名 <span className="text-red-500">*</span>
-          </label>
-          <input
-            {...register("ordererName")}
-            type="text"
-            className="w-full p-3 text-xl border rounded-lg"
-            placeholder="山田太郎"
-          />
-          {errors.ordererName && (
-            <p className="text-red-500 mt-1">{errors.ordererName.message}</p>
-          )}
+        <div className="space-y-4 mb-8 bg-white p-6 rounded-2xl shadow-xl">
+          <div>
+            <label className="block text-lg font-semibold mb-2 text-slate-700">
+              発注者名 <span className="text-red-500">*</span>
+            </label>
+            <input
+              {...register("ordererName")}
+              type="text"
+              className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 placeholder:text-slate-400"
+              placeholder="山田太郎"
+            />
+            {errors.ordererName && (
+              <p className="text-red-500 mt-1 text-sm">{errors.ordererName.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-lg font-semibold mb-2 text-slate-700">現場名</label>
+            <input
+              {...register("siteName")}
+              type="text"
+              className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 placeholder:text-slate-400"
+              placeholder="〇〇ビル新築工事"
+            />
+          </div>
+
+          <div>
+            <label className="block text-lg font-semibold mb-2 text-slate-700">備考</label>
+            <textarea
+              {...register("note")}
+              className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 placeholder:text-slate-400"
+              rows={3}
+              placeholder="特記事項があれば入力"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-xl font-medium mb-2">現場名</label>
-          <input
-            {...register("siteName")}
-            type="text"
-            className="w-full p-3 text-xl border rounded-lg"
-            placeholder="〇〇ビル新築工事"
-          />
+        <div className="mb-6 bg-white p-6 rounded-2xl shadow-xl">
+          <label className="block text-lg font-semibold mb-2 text-slate-700">資材カテゴリー</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 bg-white"
+          >
+            {Object.keys(materialsByCategory).map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div>
-          <label className="block text-xl font-medium mb-2">備考</label>
-          <textarea
-            {...register("note")}
-            className="w-full p-3 text-xl border rounded-lg"
-            rows={3}
-            placeholder="特記事項があれば入力"
-          />
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <label className="block text-xl font-medium mb-2">資材カテゴリー</label>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="w-full p-3 text-xl border rounded-lg"
-        >
-          {Object.keys(materialsByCategory).map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="space-y-4 mb-8">
-        <h2 className="text-2xl font-bold">資材選択</h2>
+        <div className="space-y-4 mb-8">
+          <h2 className="text-2xl font-bold text-slate-800">資材選択</h2>
         {currentMaterials.map((material) => (
           <div
             key={material.id}
-            className="border rounded-lg p-4 bg-gray-50"
+            className="rounded-xl p-5 bg-white shadow-md hover:shadow-lg transition-shadow duration-200"
           >
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">{material.name}</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-slate-800">{material.name}</h3>
+                <p className="text-slate-600">
                   単位: {material.unit} / 重量: {material.weightPerUnit}kg
                 </p>
               </div>
@@ -172,7 +173,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
               <button
                 type="button"
                 onClick={() => handleQuantityChange(material.id, -1)}
-                className="w-12 h-12 bg-red-500 text-white rounded-lg text-2xl font-bold hover:bg-red-600"
+                className="w-12 h-12 bg-red-500 text-white rounded-lg text-2xl font-bold hover:bg-red-600 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
               >
                 −
               </button>
@@ -189,18 +190,18 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
                       const value = parseInt(e.target.value) || 0;
                       field.onChange(Math.max(0, value));
                     }}
-                    className="w-24 text-center text-2xl border rounded-lg p-2 font-semibold text-gray-900"
+                    className="w-24 text-center text-2xl border border-slate-200 rounded-lg p-2 font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                 )}
               />
               <button
                 type="button"
                 onClick={() => handleQuantityChange(material.id, 1)}
-                className="w-12 h-12 bg-blue-500 text-white rounded-lg text-2xl font-bold hover:bg-blue-600"
+                className="w-12 h-12 bg-indigo-600 text-white rounded-lg text-2xl font-bold hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
               >
                 +
               </button>
-              <span className="text-xl min-w-[100px] text-right font-semibold text-gray-900">
+              <span className="text-xl min-w-[100px] text-right font-semibold text-slate-800">
                 {((materials[material.id] || 0) * material.weightPerUnit).toFixed(1)}kg
               </span>
             </div>
@@ -208,23 +209,24 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         ))}
       </div>
 
-      <div className="border-t pt-4 mb-6">
-        <div className="flex justify-between items-center text-2xl font-bold">
-          <span>合計重量:</span>
-          <span className="text-blue-600">{orderItems.totalWeight.toFixed(1)}kg</span>
+        <div className="bg-white rounded-2xl p-6 shadow-xl mb-6">
+          <div className="flex justify-between items-center text-2xl font-bold">
+            <span className="text-slate-800">合計重量:</span>
+            <span className="text-indigo-600">{orderItems.totalWeight.toFixed(1)}kg</span>
+          </div>
+          <div className="text-slate-600 mt-2">
+            選択資材数: {orderItems.items.length}点
+          </div>
         </div>
-        <div className="text-gray-600 mt-2">
-          選択資材数: {orderItems.items.length}点
-        </div>
-      </div>
 
-      <button
-        type="submit"
-        disabled={orderItems.items.length === 0}
-        className="w-full py-4 bg-blue-600 text-white text-2xl font-bold rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        発注書を作成
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={orderItems.items.length === 0}
+          className="w-full py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-xl font-bold rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 active:scale-[0.98]"
+        >
+          発注書を作成
+        </button>
+      </form>
+    </div>
   );
 }

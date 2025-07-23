@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 export default function Header() {
   const router = useRouter()
@@ -18,7 +19,7 @@ export default function Header() {
     <header className="bg-white shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-6">
-          <h1 className="text-xl font-bold text-gray-900">資材発注管理システム</h1>
+          <Image src="/icons/icon.jpeg" alt="Logo" width={240} height={240} />
           <button
             onClick={handleLogout}
             className="text-sm text-gray-700 hover:text-gray-900 font-medium"
