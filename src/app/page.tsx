@@ -40,7 +40,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex items-start justify-center bg-gradient-to-br from-slate-50 to-slate-100 pt-20">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           {/* <div className="flex justify-center mb-6">
