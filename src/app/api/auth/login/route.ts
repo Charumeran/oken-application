@@ -27,7 +27,7 @@ export async function POST(request: Request) {
         { status: 401 }
       )
     }
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'サーバーエラーが発生しました' },
       { status: 500 }

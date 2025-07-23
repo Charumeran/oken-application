@@ -1,14 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function Home() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,7 +31,7 @@ export default function Home() {
 
       // ログイン成功時は window.location でリダイレクト
       window.location.href = '/material-order'
-    } catch (err) {
+    } catch {
       setError('予期しないエラーが発生しました')
     } finally {
       setLoading(false)

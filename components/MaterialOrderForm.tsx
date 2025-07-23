@@ -77,7 +77,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     });
 
     return { items, totalWeight: total };
-  }, [watchAllFields]);
+  }, [watchAllFields, materials]);
 
   const handleQuantityChange = (materialId: string, delta: number) => {
     const currentValue = materials[materialId] || 0;
