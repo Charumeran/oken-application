@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx prisma/seed.ts",
-    "db:seed:production": "tsx prisma/seed-production.ts",
+    "db:seed:production": "node prisma/seed-production.js",
     "db:migrate": "prisma migrate deploy",
     "db:generate": "prisma generate"
   },
@@ -27,6 +27,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.58.1",
     "resend": "^4.6.0",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.5",
     "zod": "^3.25.67"
   },
