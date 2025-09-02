@@ -209,7 +209,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-slate-100 p-6">
       <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold mb-4 text-slate-800">
+          <h1 className="text-3xl font-bold mb-4 text-slate-800">
             資材発注書作成
           </h1>
           <div className="h-1 w-24 mx-auto bg-slate-300 rounded-full"></div>
@@ -287,7 +287,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
               <button
                 type="button"
                 onClick={() => setShowAddMaterialForm(true)}
-                className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 flex items-center space-x-2"
+                className="px-6 py-3 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 flex items-center space-x-2"
               >
                 <span>材料を追加</span>
               </button>
