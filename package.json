@@ -27,6 +27,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.58.1",
     "resend": "^4.6.0",
+    "tsx": "^4.20.5",
     "zod": "^3.25.67"
   },
   "devDependencies": {
@@ -38,7 +39,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "tailwindcss": "^4",
-    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }
