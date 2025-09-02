@@ -1,4 +1,5 @@
 import { OrderDocument } from '@/types/material-order';
+import { formatWeight, formatTotalWeight } from '@/lib/utils/format';
 
 export const printToPDF = (data: OrderDocument): void => {
   // 新しいウィンドウを開いてPDF印刷用のHTMLを表示
@@ -136,9 +137,23 @@ export const printToPDF = (data: OrderDocument): void => {
         @media print {
           .print-button { display: none; }
         }
+        .watermark {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(-45deg);
+          font-size: 120px;
+          font-weight: bold;
+          color: rgba(0, 0, 0, 0.05);
+          z-index: -1;
+          pointer-events: none;
+          user-select: none;
+          white-space: nowrap;
+        }
       </style>
     </head>
     <body>
+      <div class="watermark">株式会社　櫻建</div>
       <button class="print-button" onclick="window.print()">印刷 / PDFに保存</button>
       
       <div class="title">
@@ -166,21 +181,19 @@ export const printToPDF = (data: OrderDocument): void => {
         <table>
           <thead>
             <tr>
-              <th style="width: 40%; text-align: left;">資材名</th>
-              <th style="width: 12%; text-align: center;">単位</th>
-              <th style="width: 12%; text-align: right;">数量</th>
-              <th style="width: 16%; text-align: right;">単位重量(kg)</th>
-              <th style="width: 20%; text-align: right;">合計重量(kg)</th>
+              <th style="width: 50%; text-align: left;">資材名</th>
+              <th style="width: 16%; text-align: right;">数量</th>
+              <th style="width: 17%; text-align: right;">単位重量(kg)</th>
+              <th style="width: 17%; text-align: right;">合計重量(kg)</th>
             </tr>
           </thead>
           <tbody>
             ${data.items.map((item, index) => `
             <tr ${index % 2 === 1 ? 'class="row-alternate"' : ''}>
               <td style="font-weight: bold;">${item.name}</td>
-              <td style="text-align: center;">${item.unit}</td>
               <td style="text-align: right; font-weight: bold;">${item.quantity}</td>
-              <td style="text-align: right;">${item.weightPerUnit.toFixed(1)}</td>
-              <td style="text-align: right; font-weight: bold;">${item.totalWeight.toFixed(1)}</td>
+              <td style="text-align: right;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
+              <td style="text-align: right; font-weight: bold;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -188,7 +201,7 @@ export const printToPDF = (data: OrderDocument): void => {
       
       <div class="total-section">
         <span class="total-label">合計重量:</span>
-        <span class="total-value">${data.totalWeight.toFixed(1)} kg</span>
+        <span class="total-value">${formatTotalWeight(data.totalWeight)}</span>
       </div>
       
       ${data.note ? `

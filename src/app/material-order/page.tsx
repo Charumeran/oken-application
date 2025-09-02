@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import MaterialOrderForm from "@/components/MaterialOrderForm";
 import { OrderDocument } from "@/types/material-order";
+import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
 
 export default function MaterialOrderPage() {
   const [orderData, setOrderData] = useState<OrderDocument | null>(null);
@@ -73,7 +74,6 @@ export default function MaterialOrderPage() {
                 <thead>
                   <tr className="bg-gradient-to-r from-indigo-600 to-indigo-700">
                     <th className="p-4 text-left text-white font-semibold">資材名</th>
-                    <th className="p-4 text-center text-white font-semibold">単位</th>
                     <th className="p-4 text-right text-white font-semibold">数量</th>
                     <th className="p-4 text-right text-white font-semibold">単位重量(kg)</th>
                     <th className="p-4 text-right text-white font-semibold">合計重量(kg)</th>
@@ -83,17 +83,16 @@ export default function MaterialOrderPage() {
                 {orderData.items.map((item) => (
                     <tr key={item.id} className="bg-white hover:bg-slate-50 border-b border-slate-200 transition-colors duration-150">
                       <td className="p-4 text-slate-800 font-medium">{item.name}</td>
-                      <td className="p-4 text-center text-slate-700">{item.unit}</td>
                       <td className="p-4 text-right text-slate-800 font-semibold">{item.quantity}</td>
-                      <td className="p-4 text-right text-slate-700">{item.weightPerUnit.toFixed(1)}</td>
-                      <td className="p-4 text-right text-slate-800 font-semibold">{item.totalWeight.toFixed(1)}</td>
+                      <td className="p-4 text-right text-slate-700">{formatWeight(item.weightPerUnit).replace('kg', '')}</td>
+                      <td className="p-4 text-right text-slate-800 font-semibold">{formatWeight(item.totalWeight).replace('kg', '')}</td>
                     </tr>
                 ))}
               </tbody>
               <tfoot>
                   <tr className="bg-gradient-to-r from-indigo-50 to-indigo-100">
-                    <td colSpan={4} className="p-4 text-right font-bold text-slate-800">合計重量:</td>
-                    <td className="p-4 text-right font-bold text-indigo-700 text-lg">{orderData.totalWeight.toFixed(1)} kg</td>
+                    <td colSpan={3} className="p-4 text-right font-bold text-slate-800">合計重量:</td>
+                    <td className="p-4 text-right font-bold text-indigo-700 text-lg">{formatTotalWeight(orderData.totalWeight)}</td>
                   </tr>
               </tfoot>
             </table>

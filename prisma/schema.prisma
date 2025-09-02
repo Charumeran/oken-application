@@ -29,7 +29,6 @@ model Material {
   size         String?
   type         String    @default("標準")
   weightKg     Float     @map("weight_kg")
-  unit         String    @default("個")
   isActive     Boolean   @default(true) @map("is_active")
   notes        String?   @db.Text
   

@@ -5,24 +5,30 @@
  */
 export const formatWeight = (weight: number): string => {
   if (weight === 0) {
-    // 0の場合は特別扱い
     return '0kg'
-  } else if (weight < 0.01) {
-    // 0.01kg未満は小数点以下4桁まで表示
-    return weight.toFixed(4) + 'kg'
-  } else if (weight < 0.1) {
-    // 0.1kg未満は小数点以下3桁まで表示
-    return weight.toFixed(3) + 'kg'
-  } else if (weight < 1) {
-    // 1kg未満は小数点以下2桁まで表示
-    return weight.toFixed(2) + 'kg'
-  } else if (weight < 10) {
-    // 10kg未満は小数点以下1桁まで表示
-    return weight.toFixed(1) + 'kg'
-  } else {
-    // 10kg以上は整数表示（必要に応じて小数点以下1桁）
-    return weight % 1 === 0 ? weight.toFixed(0) + 'kg' : weight.toFixed(1) + 'kg'
   }
+  
+  // 浮動小数点演算の精度問題を回避してから表示
+  const rounded = Math.round(weight * 10000) / 10000
+  
+  // 科学記法を避けるため、適切な桁数で固定してから不要な0を除去
+  const formatted = rounded.toFixed(4).replace(/\.?0+$/, '')
+  return formatted + 'kg'
+}
+
+/**
+ * 合計重量を最小単位重量に基づいて桁数を決定してフォーマットする関数
+ * @param totalWeight 合計重量（kg）
+ * @param unitWeights 使用されている単位重量の配列（kg）
+ * @returns フォーマットされた合計重量文字列
+ */
+export const formatTotalWeight = (totalWeight: number): string => {
+  if (totalWeight === 0) return '0kg'
+  
+  // 浮動小数点演算の精度問題を回避してから表示
+  const rounded = Math.round(totalWeight * 10000) / 10000
+  const formatted = rounded.toFixed(4).replace(/\.?0+$/, '')
+  return formatted + 'kg'
 }
 
 /**
@@ -32,17 +38,11 @@ export const formatWeight = (weight: number): string => {
  */
 export const formatWeightNumber = (weight: number): string => {
   if (weight === 0) {
-    // 0の場合は特別扱い
     return '0'
-  } else if (weight < 0.01) {
-    return weight.toFixed(4)
-  } else if (weight < 0.1) {
-    return weight.toFixed(3)
-  } else if (weight < 1) {
-    return weight.toFixed(2)
-  } else if (weight < 10) {
-    return weight.toFixed(1)
-  } else {
-    return weight % 1 === 0 ? weight.toFixed(0) : weight.toFixed(1)
   }
+  
+  // 浮動小数点演算の精度問題を回避してから表示
+  const rounded = Math.round(weight * 10000) / 10000
+  const formatted = rounded.toFixed(4).replace(/\.?0+$/, '')
+  return formatted
 }

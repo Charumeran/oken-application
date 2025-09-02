@@ -8,7 +8,8 @@ import {
   MaterialOrderItem,
   OrderDocument,
 } from "@/types/material-order";
-import { formatWeight } from "@/lib/utils/format";
+import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
+import AddMaterialForm from "./AddMaterialForm";
 
 const orderFormSchema = z.object({
   ordererName: z.string().min(1, "発注者名を入力してください"),
@@ -37,7 +38,6 @@ type Material = {
   size?: string;
   type: string;
   weightKg: number;
-  unit: string;
   isActive: boolean;
 };
 
@@ -46,6 +46,8 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [showAddMaterialForm, setShowAddMaterialForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const {
     register,
@@ -105,10 +107,33 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
   
   const selectedMaterials = useMemo(() => watchedMaterials || {}, [watchedMaterials]);
 
-  const currentMaterials = materials.filter(m => m.categoryId === selectedCategoryId && m.isActive);
+  const currentMaterials = materials.filter(m => {
+    if (m.categoryId !== selectedCategoryId || !m.isActive) {
+      return false;
+    }
+    
+    if (searchQuery.trim() === "") {
+      return true;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return m.name.toLowerCase().includes(query) ||
+           (m.size && m.size.toLowerCase().includes(query)) ||
+           m.type.toLowerCase().includes(query) ||
+           m.materialCode.toLowerCase().includes(query);
+  });
+  
+  const selectedCategory = categories.find(cat => cat.id === selectedCategoryId);
+  const isOtherCategory = selectedCategory?.name === 'その他';
+
+  const handleAddMaterial = (newMaterial: Material) => {
+    setMaterials(prev => [...prev, newMaterial]);
+    setShowAddMaterialForm(false);
+  };
 
   const orderItems = useMemo(() => {
     const items: MaterialOrderItem[] = [];
+    const unitWeights: number[] = []; // 単位重量のみ（最小重量判定用）
     let total = 0;
     
     console.log('orderItems recalculating, selectedMaterials:', selectedMaterials);
@@ -118,24 +143,36 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         const material = materials.find((m) => m.id === materialId);
         
         if (material) {
-          const totalWeight = Number(material.weightKg) * Number(quantity);
-          console.log(`Material ${material.name}: ${quantity} x ${material.weightKg}kg = ${totalWeight}kg`);
+          const materialWeight = Number(material.weightKg);
+          const totalWeight = Math.round((materialWeight * Number(quantity)) * 10000) / 10000;
+          console.log(`Material ${material.name}: ${quantity} x ${materialWeight}kg = ${totalWeight}kg`);
+          console.log(`Running total before adding: ${total}`);
           
           items.push({
             id: material.id,
             name: material.name,
-            unit: material.unit,
             quantity: Number(quantity),
-            weightPerUnit: Number(material.weightKg),
+            weightPerUnit: materialWeight,
             totalWeight: totalWeight,
           });
+          
+          // 単位重量を記録（重複なし、最小重量判定用）
+          if (!unitWeights.includes(materialWeight)) {
+            unitWeights.push(materialWeight);
+          }
+          
           total += totalWeight;
+          console.log(`Running total after adding: ${total}`);
         }
       }
     });
 
+    // 浮動小数点演算の精度問題を回避
+    total = Math.round(total * 10000) / 10000;
+    
     console.log('Total weight calculated:', total);
-    return { items, totalWeight: total };
+    console.log('Unit weights for precision:', unitWeights);
+    return { items, totalWeight: total, unitWeights };
   }, [selectedMaterials, materials]);
 
   const handleQuantityChange = (materialId: string, delta: number) => {
@@ -231,7 +268,42 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         </div>
 
         <div className="space-y-4 mb-8">
-          <h2 className="text-2xl font-bold text-slate-800">資材選択</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-slate-800">資材選択</h2>
+            {isOtherCategory && (
+              <button
+                type="button"
+                onClick={() => setShowAddMaterialForm(true)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center space-x-2"
+              >
+                <span>+</span>
+                <span>材料を追加</span>
+              </button>
+            )}
+          </div>
+          
+          <div className="bg-white p-4 rounded-xl shadow-md">
+            <label className="block text-sm font-medium mb-2 text-slate-700">資材検索</label>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="資材名で検索..."
+            />
+            {searchQuery && (
+              <div className="flex justify-between items-center mt-2 text-sm text-slate-600">
+                <span>{currentMaterials.length}件見つかりました</span>
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="text-indigo-600 hover:text-indigo-800"
+                >
+                  クリア
+                </button>
+              </div>
+            )}
+          </div>
         {currentMaterials.map((material) => (
           <div
             key={material.id}
@@ -241,7 +313,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
               <div>
                 <h3 className="text-xl font-semibold text-slate-800">{material.name}</h3>
                 <p className="text-slate-600">
-                  単位: {material.unit} / 重量: {formatWeight(Number(material.weightKg))}
+                  重量: {formatWeight(Number(material.weightKg))}
                 </p>
               </div>
             </div>
@@ -288,7 +360,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         <div className="bg-white rounded-2xl p-6 shadow-xl mb-6">
           <div className="flex justify-between items-center text-2xl font-bold">
             <span className="text-slate-800">合計重量:</span>
-            <span className="text-indigo-600">{formatWeight(orderItems.totalWeight)}</span>
+            <span className="text-indigo-600">{formatTotalWeight(orderItems.totalWeight)}</span>
           </div>
           <div className="text-slate-600 mt-2">
             選択資材数: {orderItems.items.length}点
@@ -303,6 +375,14 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
           発注書を作成
         </button>
       </form>
+      
+      {showAddMaterialForm && (
+        <AddMaterialForm
+          categoryId={selectedCategoryId}
+          onSuccess={handleAddMaterial}
+          onCancel={() => setShowAddMaterialForm(false)}
+        />
+      )}
     </div>
   );
 }

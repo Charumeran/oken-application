@@ -6,9 +6,8 @@ export async function seedCategories(prisma: PrismaClient) {
   const categories = [
     { name: '枠', displayOrder: 1 },
     { name: 'くさび', displayOrder: 2 },
-    { name: 'パイプ', displayOrder: 3 },
-    { name: 'シート', displayOrder: 4 },
-    { name: 'その他', displayOrder: 5 },
+    { name: 'シート', displayOrder: 3 },
+    { name: 'その他', displayOrder: 4 },
   ]
 
   for (const category of categories) {
