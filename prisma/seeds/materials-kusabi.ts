@@ -42,17 +42,18 @@ export async function seedKusabiMaterials(prisma: PrismaClient) {
     { materialCode: 'KS-020', name: 'ブラケット（くさび）　500', size: '500', type: 'ブラケットくさび', weightKg: 2.4 },
     { materialCode: 'KS-021', name: 'ブラケット（くさび）　350', size: '350', type: 'ブラケットくさび', weightKg: 1.7 },
     { materialCode: 'KS-022', name: 'ブラケット（くさび）　250（小）', size: '250(小)', type: 'ブラケットくさび', weightKg: 1.5 },
+
+    // ===== はねだしブラケット =====
+    { materialCode: 'KS-023', name: 'はねだしブラケット　900', size: '900', type: 'はねだしブラケット', weightKg: 5.2 },
+    { materialCode: 'KS-024', name: 'はねだしブラケット　600(大）', size: '600(大)', type: 'はねだしブラケット', weightKg: 3.8 },
+    { materialCode: 'KS-025', name: 'はねだしブラケット　500', size: '500', type: 'はねだしブラケット', weightKg: 3.5 },
+    { materialCode: 'KS-026', name: 'はねだしブラケット　250（小）', size: '250(小)', type: 'はねだしブラケット', weightKg: 2.2 },
     
     // ===== ブラケット（次世代） =====
-    { materialCode: 'KS-023', name: 'ブラケット（次世代）　900', size: '900', type: 'ブラケット次世代', weightKg: 3.8 },
-    { materialCode: 'KS-024', name: 'ブラケット（次世代）　500', size: '500', type: 'ブラケット次世代', weightKg: 2.6 },
-    { materialCode: 'KS-025', name: 'ブラケット（次世代）　250', size: '250', type: 'ブラケット次世代', weightKg: 1.8 },
-    
-    // ===== はねだしブラケット =====
-    { materialCode: 'KS-026', name: 'はねだしブラケット　900', size: '900', type: 'はねだしブラケット', weightKg: 5.2 },
-    { materialCode: 'KS-027', name: 'はねだしブラケット　600(大）', size: '600(大)', type: 'はねだしブラケット', weightKg: 3.8 },
-    { materialCode: 'KS-028', name: 'はねだしブラケット　500', size: '500', type: 'はねだしブラケット', weightKg: 3.5 },
-    { materialCode: 'KS-029', name: 'はねだしブラケット　250（小）', size: '250(小)', type: 'はねだしブラケット', weightKg: 2.2 },
+    { materialCode: 'KS-027', name: 'ブラケット（次世代）　900', size: '900', type: 'ブラケット次世代', weightKg: 3.8 },
+    { materialCode: 'KS-028', name: 'ブラケット（次世代）　500', size: '500', type: 'ブラケット次世代', weightKg: 2.6 },
+    { materialCode: 'KS-029', name: 'ブラケット（次世代）　250', size: '250', type: 'ブラケット次世代', weightKg: 1.8 },
+
     
     // ===== ジャッキベース =====
     { materialCode: 'KS-030', name: 'ジャッキベース', size: null, type: 'ジャッキベース', weightKg: 2.8 },

@@ -93,72 +93,67 @@ export async function seedWakuMaterials(prisma: PrismaClient) {
     { materialCode: 'WK-053', name: '布板（500）　900', size: '900', type: '500mm幅', weightKg: 7.8 },
     { materialCode: 'WK-054', name: '布板（500）　600', size: '600', type: '500mm幅', weightKg: 5.3 },
     
-    { materialCode: 'WK-055', name: '布板（500）　1500', size: '1500', type: '500mm幅', weightKg: 11.9 },
-    { materialCode: 'WK-056', name: '布板（500）　1200', size: '1200', type: '500mm幅', weightKg: 10.3 },
-    { materialCode: 'WK-057', name: '布板（500）　900', size: '900', type: '500mm幅', weightKg: 7.8 },
-    { materialCode: 'WK-058', name: '布板（500）　600', size: '600', type: '500mm幅', weightKg: 5.3 },
-    
     // ===== 布板（240mm幅） =====
-    { materialCode: 'WK-059', name: '布板（240）　1800', size: '1800', type: '240mm幅', weightKg: 10.2 },
-    { materialCode: 'WK-060', name: '布板（240）　1500', size: '1500', type: '240mm幅', weightKg: 6.7 },
-    { materialCode: 'WK-061', name: '布板（240）　1200', size: '1200', type: '240mm幅', weightKg: 6.0 },
-    { materialCode: 'WK-062', name: '布板（240）　900', size: '900', type: '240mm幅', weightKg: 4.6 },
-    { materialCode: 'WK-063', name: '布板（240）　600', size: '600', type: '240mm幅', weightKg: 3.8 },
+    { materialCode: 'WK-055', name: '布板（240）　1800', size: '1800', type: '240mm幅', weightKg: 10.2 },
+    { materialCode: 'WK-056', name: '布板（240）　1500', size: '1500', type: '240mm幅', weightKg: 6.7 },
+    { materialCode: 'WK-057', name: '布板（240）　1200', size: '1200', type: '240mm幅', weightKg: 6.0 },
+    { materialCode: 'WK-058', name: '布板（240）　900', size: '900', type: '240mm幅', weightKg: 4.6 },
+    { materialCode: 'WK-059', name: '布板（240）　600', size: '600', type: '240mm幅', weightKg: 3.8 },
     
     // ===== 連結部材 =====
-    { materialCode: 'WK-064', name: 'エンドストッパー', size: null, type: '標準', weightKg: 2.5 },
-    { materialCode: 'WK-065', name: '連結ピン', size: null, type: '標準', weightKg: 0.6 },
-    { materialCode: 'WK-066', name: '手摺柱', size: null, type: '手摺', weightKg: 2.4 },
+    { materialCode: 'WK-060', name: 'エンドストッパー', size: null, type: '標準', weightKg: 2.5 },
+    { materialCode: 'WK-061', name: '連結ピン', size: null, type: '標準', weightKg: 0.6 },
+    { materialCode: 'WK-062', name: '手摺柱', size: null, type: '手摺', weightKg: 2.4 },
     
     // ===== ブラケット =====
-    { materialCode: 'WK-067', name: '伸縮ブラケット　350-500', size: '350-500', type: '伸縮', weightKg: 4.0 },
-    { materialCode: 'WK-068', name: '伸縮ブラケット　500-750', size: '500-750', type: '伸縮', weightKg: 4.6 },
-    { materialCode: 'WK-069', name: '伸縮ブラケット　750-1100', size: '750-1100', type: '伸縮', weightKg: 5.8 },
-    { materialCode: 'WK-070', name: 'ホリーブラケット　500', size: '500', type: 'ホリー', weightKg: 2.3 },
-    { materialCode: 'WK-071', name: 'ホリーブラケット　600', size: '600', type: 'ホリー', weightKg: 2.6 },
+    { materialCode: 'WK-063', name: '伸縮ブラケット　350-500', size: '350-500', type: '伸縮', weightKg: 4.0 },
+    { materialCode: 'WK-064', name: '伸縮ブラケット　500-750', size: '500-750', type: '伸縮', weightKg: 4.6 },
+    { materialCode: 'WK-065', name: '伸縮ブラケット　750-1100', size: '750-1100', type: '伸縮', weightKg: 5.8 },
+    { materialCode: 'WK-066', name: 'ホリーブラケット　500', size: '500', type: 'ホリー', weightKg: 2.3 },
+    { materialCode: 'WK-067', name: 'ホリーブラケット　600', size: '600', type: 'ホリー', weightKg: 2.6 },
     
     // ===== 下さん =====
-    { materialCode: 'WK-072', name: '下さん　1800', size: '1800', type: '下さん', weightKg: 1.8 },
-    { materialCode: 'WK-073', name: '下さん　1500', size: '1500', type: '下さん', weightKg: 1.5 },
-    { materialCode: 'WK-074', name: '下さん　1200', size: '1200', type: '下さん', weightKg: 1.2 },
-    { materialCode: 'WK-075', name: '下さん　900', size: '900', type: '下さん', weightKg: 0.9 },
+    { materialCode: 'WK-068', name: '下さん　1800', size: '1800', type: '下さん', weightKg: 1.8 },
+    { materialCode: 'WK-069', name: '下さん　1500', size: '1500', type: '下さん', weightKg: 1.5 },
+    { materialCode: 'WK-070', name: '下さん　1200', size: '1200', type: '下さん', weightKg: 1.2 },
+    { materialCode: 'WK-071', name: '下さん　900', size: '900', type: '下さん', weightKg: 0.9 },
 
     // ===== 梁枠・梁渡し =====
-    { materialCode: 'WK-076', name: '梁枠２スパーン', size: '2スパン', type: '梁枠', weightKg: 28.3 },
-    { materialCode: 'WK-077', name: '梁枠３スパーン', size: '3スパン', type: '梁枠', weightKg: 38.8 },
-    { materialCode: 'WK-078', name: '梁渡し914', size: '914', type: '梁渡し', weightKg: 5.4 },
-    { materialCode: 'WK-079', name: '梁渡し1219', size: '1219', type: '梁渡し', weightKg: 8.8 },
+    { materialCode: 'WK-072', name: '梁枠２スパーン', size: '2スパン', type: '梁枠', weightKg: 28.3 },
+    { materialCode: 'WK-073', name: '梁枠３スパーン', size: '3スパン', type: '梁枠', weightKg: 38.8 },
+    { materialCode: 'WK-074', name: '梁渡し914', size: '914', type: '梁渡し', weightKg: 5.4 },
+    { materialCode: 'WK-075', name: '梁渡し1219', size: '1219', type: '梁渡し', weightKg: 8.8 },
 
     // ===== 方杖・隅梁受 =====
-    { materialCode: 'WK-080', name: '方杖3スパーン', size: '3スパン', type: '方杖', weightKg: 6.2 },
-    { materialCode: 'WK-081', name: '方杖2スパーン', size: '2スパン', type: '方杖', weightKg: 4.8 },
-    { materialCode: 'WK-082', name: '隅梁受', size: null, type: '隅梁受', weightKg: 2.8 },
+    { materialCode: 'WK-076', name: '方杖3スパーン', size: '3スパン', type: '方杖', weightKg: 6.2 },
+    { materialCode: 'WK-077', name: '方杖2スパーン', size: '2スパン', type: '方杖', weightKg: 4.8 },
+    { materialCode: 'WK-078', name: '隅梁受', size: null, type: '隅梁受', weightKg: 2.8 },
     
     // ===== コーナーステップ・コンビステップ =====
-    { materialCode: 'WK-083', name: 'コーナーステップ　500', size: '500', type: 'コーナー', weightKg: 6.6 },
-    { materialCode: 'WK-084', name: 'コーナーステップ　240', size: '240', type: 'コーナー', weightKg: 3.4 },
-    { materialCode: 'WK-085', name: 'コンビステップ　600', size: '600', type: 'コンビ', weightKg: 5.7 },
-    { materialCode: 'WK-086', name: 'コンビステップ　900', size: '900', type: 'コンビ', weightKg: 4.4 },
+    { materialCode: 'WK-079', name: 'コーナーステップ　500', size: '500', type: 'コーナー', weightKg: 6.6 },
+    { materialCode: 'WK-080', name: 'コーナーステップ　240', size: '240', type: 'コーナー', weightKg: 3.4 },
+    { materialCode: 'WK-081', name: 'コンビステップ　600', size: '600', type: 'コンビ', weightKg: 5.7 },
+    { materialCode: 'WK-082', name: 'コンビステップ　900', size: '900', type: 'コンビ', weightKg: 4.4 },
     
     // ===== 手摺先行（据置き） =====
-    { materialCode: 'WK-087', name: '手摺先行（据置き）　1800', size: '1800', type: '据置き', weightKg: 13.0 },
-    { materialCode: 'WK-088', name: '手摺先行（据置き）　1500', size: '1500', type: '据置き', weightKg: 12.2 },
-    { materialCode: 'WK-089', name: '手摺先行（据置き）　1200', size: '1200', type: '据置き', weightKg: 10.4 },
-    { materialCode: 'WK-090', name: '手摺先行（据置き）　900', size: '900', type: '据置き', weightKg: 9.4 },
-    { materialCode: 'WK-091', name: '手摺先行（据置き）　600', size: '600', type: '据置き', weightKg: 7.6 },
+    { materialCode: 'WK-083', name: '手摺先行（据置き）　1800', size: '1800', type: '据置き', weightKg: 13.0 },
+    { materialCode: 'WK-084', name: '手摺先行（据置き）　1500', size: '1500', type: '据置き', weightKg: 12.2 },
+    { materialCode: 'WK-085', name: '手摺先行（据置き）　1200', size: '1200', type: '据置き', weightKg: 10.4 },
+    { materialCode: 'WK-086', name: '手摺先行（据置き）　900', size: '900', type: '据置き', weightKg: 9.4 },
+    { materialCode: 'WK-087', name: '手摺先行（据置き）　600', size: '600', type: '据置き', weightKg: 7.6 },
     
     // ===== 手摺先行（ネチス） =====
-    { materialCode: 'WK-092', name: '手摺先行（ネチス）　1800', size: '1800', type: 'ネチス', weightKg: 10.0 },
-    { materialCode: 'WK-093', name: '手摺先行（ネチス）　1500', size: '1500', type: 'ネチス', weightKg: 9.0 },
-    { materialCode: 'WK-094', name: '手摺先行（ネチス）　1200', size: '1200', type: 'ネチス', weightKg: 8.0 },
-    { materialCode: 'WK-095', name: '手摺先行（ネチス）　900', size: '900', type: 'ネチス', weightKg: 6.3 },
-    { materialCode: 'WK-096', name: '手摺先行（ネチス）　600', size: '600', type: 'ネチス', weightKg: 5.5 },
+    { materialCode: 'WK-088', name: '手摺先行（ネチス）　1800', size: '1800', type: 'ネチス', weightKg: 10.0 },
+    { materialCode: 'WK-089', name: '手摺先行（ネチス）　1500', size: '1500', type: 'ネチス', weightKg: 9.0 },
+    { materialCode: 'WK-090', name: '手摺先行（ネチス）　1200', size: '1200', type: 'ネチス', weightKg: 8.0 },
+    { materialCode: 'WK-091', name: '手摺先行（ネチス）　900', size: '900', type: 'ネチス', weightKg: 6.3 },
+    { materialCode: 'WK-092', name: '手摺先行（ネチス）　600', size: '600', type: 'ネチス', weightKg: 5.5 },
     
     // ===== 手摺先行（先送り） =====
-    { materialCode: 'WK-097', name: '手摺先行（先送り）　1800', size: '1800', type: '先送り', weightKg: 8.1 },
-    { materialCode: 'WK-098', name: '手摺先行（先送り）　1500', size: '1500', type: '先送り', weightKg: 7.4 },
-    { materialCode: 'WK-099', name: '手摺先行（先送り）　1200', size: '1200', type: '先送り', weightKg: 6.7 },
-    { materialCode: 'WK-100', name: '手摺先行（先送り）　900', size: '900', type: '先送り', weightKg: 6.0 },
+    { materialCode: 'WK-093', name: '手摺先行（先送り）　1800', size: '1800', type: '先送り', weightKg: 8.1 },
+    { materialCode: 'WK-094', name: '手摺先行（先送り）　1500', size: '1500', type: '先送り', weightKg: 7.4 },
+    { materialCode: 'WK-095', name: '手摺先行（先送り）　1200', size: '1200', type: '先送り', weightKg: 6.7 },
+    { materialCode: 'WK-096', name: '手摺先行（先送り）　900', size: '900', type: '先送り', weightKg: 6.0 },
   ]
 
   // データベースに投入

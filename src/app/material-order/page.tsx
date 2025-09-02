@@ -51,7 +51,7 @@ export default function MaterialOrderPage() {
               <button
                 onClick={handleGeneratePDF}
                 disabled={isGeneratingPDF}
-                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-lg hover:from-slate-900 hover:to-slate-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200"
               >
                 {isGeneratingPDF ? "PDF生成中..." : "PDFダウンロード"}
               </button>
@@ -72,7 +72,7 @@ export default function MaterialOrderPage() {
           <div className="overflow-x-auto">
               <table className="w-full border-collapse rounded-lg overflow-hidden shadow-sm">
                 <thead>
-                  <tr className="bg-gradient-to-r from-indigo-600 to-indigo-700">
+                  <tr className="bg-gradient-to-r from-slate-700 to-slate-600">
                     <th className="p-4 text-left text-white font-semibold">資材名</th>
                     <th className="p-4 text-right text-white font-semibold">数量</th>
                     <th className="p-4 text-right text-white font-semibold">単位重量(kg)</th>
@@ -90,16 +90,16 @@ export default function MaterialOrderPage() {
                 ))}
               </tbody>
               <tfoot>
-                  <tr className="bg-gradient-to-r from-indigo-50 to-indigo-100">
+                  <tr className="bg-gradient-to-r from-slate-50 to-slate-100">
                     <td colSpan={3} className="p-4 text-right font-bold text-slate-800">合計重量:</td>
-                    <td className="p-4 text-right font-bold text-indigo-700 text-lg">{formatTotalWeight(orderData.totalWeight)}</td>
+                    <td className="p-4 text-right font-bold text-slate-800 text-lg">{formatTotalWeight(orderData.totalWeight)}</td>
                   </tr>
               </tfoot>
             </table>
           </div>
 
           {orderData.note && (
-              <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+              <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <p className="font-semibold mb-2 text-slate-800">備考:</p>
                 <p className="whitespace-pre-wrap text-slate-700">{orderData.note}</p>
               </div>

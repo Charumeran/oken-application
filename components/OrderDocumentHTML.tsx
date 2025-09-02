@@ -50,8 +50,9 @@ export const printToPDF = (data: OrderDocument): void => {
         .info-section {
           margin-bottom: 30px;
           padding: 15px;
-          background-color: #f8f9fa;
-          border-radius: 5px;
+          background-color: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
         }
         .info-row {
           margin-bottom: 8px;
@@ -72,7 +73,7 @@ export const printToPDF = (data: OrderDocument): void => {
         th {
           border: 1px solid #333;
           padding: 12px;
-          background-color: #2d3748;
+          background-color: #475569;
           color: white;
           font-weight: bold;
           font-size: 11px;
@@ -88,9 +89,9 @@ export const printToPDF = (data: OrderDocument): void => {
         .total-section {
           margin-top: 20px;
           padding: 15px;
-          background-color: #e6f3ff;
-          border-radius: 5px;
-          border: 1px solid #2563eb;
+          background-color: #f8fafc;
+          border-radius: 8px;
+          border: 1px solid #64748b;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -103,14 +104,14 @@ export const printToPDF = (data: OrderDocument): void => {
         .total-value {
           font-size: 18px;
           font-weight: bold;
-          color: #2563eb;
+          color: #1e293b;
         }
         .note-section {
           margin-top: 25px;
           padding: 15px;
-          background-color: #fffbeb;
-          border-radius: 5px;
-          border: 1px solid #f59e0b;
+          background-color: #f8fafc;
+          border-radius: 8px;
+          border: 1px solid #64748b;
         }
         .note-label {
           font-size: 14px;
@@ -125,14 +126,21 @@ export const printToPDF = (data: OrderDocument): void => {
           white-space: pre-wrap;
         }
         .print-button {
-          background: #2563eb;
+          background: linear-gradient(to right, #1e293b, #334155);
           color: white;
           border: none;
-          padding: 10px 20px;
-          border-radius: 5px;
+          padding: 12px 24px;
+          border-radius: 8px;
           font-size: 14px;
+          font-weight: 600;
           cursor: pointer;
           margin-bottom: 20px;
+          transition: all 0.2s ease;
+        }
+        .print-button:hover {
+          background: linear-gradient(to right, #0f172a, #1e293b);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         @media print {
           .print-button { display: none; }

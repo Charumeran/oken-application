@@ -206,59 +206,70 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-slate-800">資材発注書作成</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-slate-100 p-6">
+      <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-6xl mx-auto">
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-bold mb-4 text-slate-800">
+            資材発注書作成
+          </h1>
+          <div className="h-1 w-24 mx-auto bg-slate-300 rounded-full"></div>
+        </div>
 
-        <div className="space-y-4 mb-8 bg-white p-6 rounded-2xl shadow-xl">
-          <div>
-            <label className="block text-lg font-semibold mb-2 text-slate-700">
+        <div className="space-y-6 mb-10 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+          <div className="relative">
+            <label className="block text-lg font-semibold mb-3 text-slate-700">
               発注者名 <span className="text-red-500">*</span>
             </label>
             <input
               {...register("ordererName")}
               type="text"
-              className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 placeholder:text-slate-400"
+              className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400"
               placeholder="山田太郎"
             />
             {errors.ordererName && (
-              <p className="text-red-500 mt-1 text-sm">{errors.ordererName.message}</p>
+              <p className="text-red-500 mt-2 text-sm font-medium">{errors.ordererName.message}</p>
             )}
           </div>
 
-          <div>
-            <label className="block text-lg font-semibold mb-2 text-slate-700">現場名</label>
+          <div className="relative">
+            <label className="block text-lg font-semibold mb-3 text-slate-700">
+              現場名
+            </label>
             <input
               {...register("siteName")}
               type="text"
-              className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 placeholder:text-slate-400"
+              className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400"
               placeholder="〇〇ビル新築工事"
             />
           </div>
 
-          <div>
-            <label className="block text-lg font-semibold mb-2 text-slate-700">備考</label>
+          <div className="relative">
+            <label className="block text-lg font-semibold mb-3 text-slate-700">
+              備考
+            </label>
             <textarea
               {...register("note")}
-              className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 placeholder:text-slate-400"
+              className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400 resize-none"
               rows={3}
               placeholder="特記事項があれば入力"
             />
           </div>
         </div>
 
-        <div className="mb-6 bg-white p-6 rounded-2xl shadow-xl">
-          <label className="block text-lg font-semibold mb-4 text-slate-700">資材カテゴリー</label>
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-10 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+          <label className="block text-2xl font-bold mb-6 text-slate-800 text-center">
+            資材カテゴリー
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {categories.map((category) => (
               <button
                 key={category.id}
                 type="button"
                 onClick={() => setSelectedCategoryId(category.id)}
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                className={`px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-md ${
                   selectedCategoryId === category.id
-                    ? "bg-indigo-600 text-white shadow-lg"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    ? "bg-slate-800 text-white shadow-lg shadow-slate-300"
+                    : "bg-gray-50 text-slate-700 hover:bg-gray-100 border border-gray-200 hover:shadow-lg"
                 }`}
               >
                 {category.name}
@@ -267,37 +278,51 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
           </div>
         </div>
 
-        <div className="space-y-4 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-slate-800">資材選択</h2>
+        <div className="space-y-6 mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold text-slate-800">
+              資材選択
+            </h2>
             {isOtherCategory && (
               <button
                 type="button"
                 onClick={() => setShowAddMaterialForm(true)}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center space-x-2"
+                className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 flex items-center space-x-2"
               >
-                <span>+</span>
                 <span>材料を追加</span>
               </button>
             )}
           </div>
           
-          <div className="bg-white p-4 rounded-xl shadow-md">
-            <label className="block text-sm font-medium mb-2 text-slate-700">資材検索</label>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="資材名で検索..."
-            />
+          <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
+            <label className="block text-lg font-semibold mb-4 text-slate-700">
+              資材検索
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400 pr-12"
+                placeholder="資材名で検索..."
+              />
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
             {searchQuery && (
-              <div className="flex justify-between items-center mt-2 text-sm text-slate-600">
-                <span>{currentMaterials.length}件見つかりました</span>
+              <div className="flex justify-between items-center mt-4 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                <span className="text-slate-700 font-medium">
+                  {currentMaterials.length}件見つかりました
+                </span>
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="text-indigo-600 hover:text-indigo-800"
+                  className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors font-medium"
                 >
                   クリア
                 </button>
@@ -307,70 +332,88 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         {currentMaterials.map((material) => (
           <div
             key={material.id}
-            className="rounded-xl p-5 bg-white shadow-md hover:shadow-lg transition-shadow duration-200"
+            className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.01] border border-gray-200"
           >
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-xl font-semibold text-slate-800">{material.name}</h3>
-                <p className="text-slate-600">
-                  重量: {formatWeight(Number(material.weightKg))}
-                </p>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">{material.name}</h3>
+                <div className="flex items-center space-x-2">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                    {formatWeight(Number(material.weightKg))}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <button
-                type="button"
-                onClick={() => handleQuantityChange(material.id, -1)}
-                className="w-12 h-12 bg-red-500 text-white rounded-lg text-2xl font-bold hover:bg-red-600 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
-              >
-                −
-              </button>
-              <Controller
-                name={`materials.${material.id}`}
-                control={control}
-                defaultValue={0}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="number"
-                    value={field.value || 0}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value) || 0;
-                      field.onChange(Math.max(0, value));
-                    }}
-                    className="w-24 text-center text-2xl border border-slate-200 rounded-lg p-2 font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => handleQuantityChange(material.id, 1)}
-                className="w-12 h-12 bg-indigo-600 text-white rounded-lg text-2xl font-bold hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
-              >
-                +
-              </button>
-              <span className="text-xl min-w-[100px] text-right font-semibold text-slate-800">
-                {formatWeight(Number(selectedMaterials[material.id] || 0) * Number(material.weightKg))}
-              </span>
+            <div className="flex items-center justify-between space-x-4">
+              <div className="flex items-center space-x-4">
+                <button
+                  type="button"
+                  onClick={() => handleQuantityChange(material.id, -1)}
+                  className="w-12 h-12 bg-slate-600 text-white rounded-xl text-xl font-bold hover:bg-slate-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+                >
+                  −
+                </button>
+                <Controller
+                  name={`materials.${material.id}`}
+                  control={control}
+                  defaultValue={0}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="number"
+                      value={field.value || 0}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 0;
+                        field.onChange(Math.max(0, value));
+                      }}
+                      className="w-20 text-center text-xl bg-gray-50 border-2 border-gray-200 rounded-xl p-2 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200"
+                    />
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleQuantityChange(material.id, 1)}
+                  className="w-12 h-12 bg-slate-600 text-white rounded-xl text-xl font-bold hover:bg-slate-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+                >
+                  +
+                </button>
+              </div>
+              <div className="min-w-[100px] text-right">
+                <div className="px-4 py-2 bg-orange-100 text-orange-800 font-bold text-lg rounded-xl">
+                  {formatWeight(Number(selectedMaterials[material.id] || 0) * Number(material.weightKg))}
+                </div>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-        <div className="bg-white rounded-2xl p-6 shadow-xl mb-6">
-          <div className="flex justify-between items-center text-2xl font-bold">
-            <span className="text-slate-800">合計重量:</span>
-            <span className="text-indigo-600">{formatTotalWeight(orderItems.totalWeight)}</span>
+        <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-200 mb-8">
+          <div className="text-center mb-6">
+            <div className="text-slate-500 text-sm font-medium uppercase tracking-wider mb-2">合計重量</div>
+            <div className="text-4xl font-bold text-slate-800">
+              {formatTotalWeight(orderItems.totalWeight)}
+            </div>
           </div>
-          <div className="text-slate-600 mt-2">
-            選択資材数: {orderItems.items.length}点
+          <div className="flex justify-center items-center space-x-8 text-slate-600">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-slate-800">{orderItems.items.length}</div>
+              <div className="text-sm font-medium">選択資材</div>
+            </div>
+            <div className="w-px h-12 bg-gray-300"></div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-slate-800">
+                {orderItems.items.reduce((sum, item) => sum + item.quantity, 0)}
+              </div>
+              <div className="text-sm font-medium">合計点数</div>
+            </div>
           </div>
         </div>
 
         <button
           type="submit"
           disabled={orderItems.items.length === 0}
-          className="w-full py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-xl font-bold rounded-lg hover:from-indigo-700 hover:to-indigo-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 active:scale-[0.98]"
+          className="w-full py-5 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-xl font-bold rounded-xl hover:from-slate-900 hover:to-slate-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 active:scale-[0.98]"
         >
           発注書を作成
         </button>
