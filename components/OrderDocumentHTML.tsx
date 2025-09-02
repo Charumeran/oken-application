@@ -56,11 +56,13 @@ export const printToPDF = (data: OrderDocument): void => {
         }
         .info-row {
           margin-bottom: 8px;
+          font-size: 16px;
         }
         .info-label {
           font-weight: bold;
           min-width: 100px;
           display: inline-block;
+          font-size: 16px;
         }
         .table-container {
           margin-bottom: 25px;
@@ -76,12 +78,12 @@ export const printToPDF = (data: OrderDocument): void => {
           background-color: #475569;
           color: white;
           font-weight: bold;
-          font-size: 11px;
+          font-size: 18px;
         }
         td {
           border: 1px solid #e2e8f0;
-          padding: 10px;
-          font-size: 10px;
+          padding: 12px;
+          font-size: 17px;
         }
         .row-alternate {
           background-color: #f7fafc;

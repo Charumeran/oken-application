@@ -260,7 +260,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
           <label className="block text-2xl font-bold mb-6 text-slate-800 text-center">
             資材カテゴリー
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -332,24 +332,22 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         {currentMaterials.map((material) => (
           <div
             key={material.id}
-            className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.01] border border-gray-200"
+            className="bg-white rounded-2xl p-4 md:p-6 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.01] border border-gray-200"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">{material.name}</h3>
-                <div className="flex items-center space-x-2">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                    {formatWeight(Number(material.weightKg))}
-                  </span>
-                </div>
+            <div className="mb-4">
+              <h3 className="text-lg md:text-xl font-bold text-slate-800 mb-2">{material.name}</h3>
+              <div className="flex items-center space-x-2">
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                  {formatWeight(Number(material.weightKg))}
+                </span>
               </div>
             </div>
-            <div className="flex items-center justify-between space-x-4">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="flex items-center justify-center sm:justify-start space-x-3 md:space-x-4">
                 <button
                   type="button"
                   onClick={() => handleQuantityChange(material.id, -1)}
-                  className="w-12 h-12 bg-slate-600 text-white rounded-xl text-xl font-bold hover:bg-slate-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+                  className="w-10 h-10 md:w-12 md:h-12 bg-slate-600 text-white rounded-xl text-lg md:text-xl font-bold hover:bg-slate-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
                 >
                   −
                 </button>
@@ -366,20 +364,20 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
                         const value = parseInt(e.target.value) || 0;
                         field.onChange(Math.max(0, value));
                       }}
-                      className="w-20 text-center text-xl bg-gray-50 border-2 border-gray-200 rounded-xl p-2 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200"
+                      className="w-16 md:w-20 text-center text-lg md:text-xl bg-gray-50 border-2 border-gray-200 rounded-xl p-2 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200"
                     />
                   )}
                 />
                 <button
                   type="button"
                   onClick={() => handleQuantityChange(material.id, 1)}
-                  className="w-12 h-12 bg-slate-600 text-white rounded-xl text-xl font-bold hover:bg-slate-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
+                  className="w-10 h-10 md:w-12 md:h-12 bg-slate-600 text-white rounded-xl text-lg md:text-xl font-bold hover:bg-slate-700 shadow-md hover:shadow-lg transition-all duration-200 active:scale-95"
                 >
                   +
                 </button>
               </div>
-              <div className="min-w-[100px] text-right">
-                <div className="px-4 py-2 bg-orange-100 text-orange-800 font-bold text-lg rounded-xl">
+              <div className="flex justify-center sm:justify-end">
+                <div className="px-3 py-2 md:px-4 md:py-2 bg-orange-100 text-orange-800 font-bold text-base md:text-lg rounded-xl max-w-full overflow-hidden">
                   {formatWeight(Number(selectedMaterials[material.id] || 0) * Number(material.weightKg))}
                 </div>
               </div>
