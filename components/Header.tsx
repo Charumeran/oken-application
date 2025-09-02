@@ -11,7 +11,7 @@ export default function Header() {
     const response = await fetch('/api/auth/logout', { method: 'POST' })
     
     if (response.ok) {
-      router.push('/auth/login')
+      router.push('/')
       router.refresh()
     }
   }

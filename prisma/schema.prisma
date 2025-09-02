@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// カテゴリテーブル
+model Category {
+  id           String    @id @default(uuid())
+  name         String    @unique
+  displayOrder Int       @default(0) @map("display_order")
+  materials    Material[]
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  
+  @@map("categories")
+}
+
+// 資材マスタテーブル
+model Material {
+  id           String    @id @default(uuid())
+  materialCode String    @unique @map("material_code")
+  name         String
+  categoryId   String    @map("category_id")
+  size         String?
+  type         String    @default("標準")
+  weightKg     Float     @map("weight_kg")
+  unit         String    @default("個")
+  isActive     Boolean   @default(true) @map("is_active")
+  notes        String?   @db.Text
+  
+  category     Category  @relation(fields: [categoryId], references: [id])
+  orderDetails OrderDetail[]
+  
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  
+  @@index([categoryId])
+  @@index([name])
+  @@map("materials")
+}
+
+// 注文書テーブル
+model Order {
+  id              String    @id @default(uuid())
+  orderNumber     String    @unique @map("order_number")
+  projectName     String    @map("project_name")
+  personInCharge  String?   @map("person_in_charge")
+  orderDate       DateTime  @map("order_date")
+  deliveryDate    DateTime? @map("delivery_date")
+  status          String    @default("draft")
+  notes           String?   @db.Text
+  
+  orderDetails    OrderDetail[]
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  @@index([orderDate])
+  @@index([status])
+  @@map("orders")
+}
+
+// 注文明細テーブル
+model OrderDetail {
+  id            String    @id @default(uuid())
+  orderId       String    @map("order_id")
+  materialId    String    @map("material_id")
+  quantity      Float
+  totalWeightKg Float?    @map("total_weight_kg")
+  notes         String?   @db.Text
+  
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  material      Material  @relation(fields: [materialId], references: [id])
+  
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  @@index([orderId])
+  @@index([materialId])
+  @@map("order_details")
+}

@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
+import React, { useState, useMemo, useEffect } from "react";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   MaterialOrderItem,
   OrderDocument,
-  materialsByCategory,
 } from "@/types/material-order";
+import { formatWeight } from "@/lib/utils/format";
 
 const orderFormSchema = z.object({
   ordererName: z.string().min(1, "発注者名を入力してください"),
@@ -23,16 +23,34 @@ interface MaterialOrderFormProps {
   onSubmit: (data: OrderDocument) => void;
 }
 
+type Category = {
+  id: string;
+  name: string;
+  displayOrder: number;
+};
+
+type Material = {
+  id: string;
+  materialCode: string;
+  name: string;
+  categoryId: string;
+  size?: string;
+  type: string;
+  weightKg: number;
+  unit: string;
+  isActive: boolean;
+};
+
 export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    Object.keys(materialsByCategory)[0]
-  );
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
   const {
     register,
     control,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<OrderFormData>({
@@ -45,44 +63,89 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     },
   });
 
-  // 全フォームデータを監視
-  const watchAllFields = watch();
-  const materials = watchAllFields.materials || {};
+  // データをDBから取得
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [categoriesRes, materialsRes] = await Promise.all([
+          fetch('/api/categories'),
+          fetch('/api/materials')
+        ]);
+        
+        const categoriesData = await categoriesRes.json();
+        const materialsData = await materialsRes.json();
+        
+        setCategories(categoriesData);
+        setMaterials(materialsData);
+        
+        if (categoriesData.length > 0) {
+          setSelectedCategoryId(categoriesData[0].id);
+        }
+      } catch (error) {
+        console.error('データの取得に失敗しました:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
-  const currentMaterials = materialsByCategory[selectedCategory] || [];
+  // useWatchを使用してmaterialsフィールドを監視
+  const watchedMaterials = useWatch({
+    control,
+    name: 'materials',
+    defaultValue: {}
+  });
+  
+  // デバッグ用
+  useEffect(() => {
+    console.log('watchedMaterials changed (useWatch):', watchedMaterials);
+  }, [watchedMaterials]);
+  
+  const selectedMaterials = useMemo(() => watchedMaterials || {}, [watchedMaterials]);
+
+  const currentMaterials = materials.filter(m => m.categoryId === selectedCategoryId && m.isActive);
 
   const orderItems = useMemo(() => {
     const items: MaterialOrderItem[] = [];
     let total = 0;
-
-    Object.entries(materials).forEach(([materialId, quantity]) => {
+    
+    console.log('orderItems recalculating, selectedMaterials:', selectedMaterials);
+    
+    Object.entries(selectedMaterials).forEach(([materialId, quantity]) => {
       if (quantity > 0) {
-        const material = Object.values(materialsByCategory)
-          .flat()
-          .find((m) => m.id === materialId);
+        const material = materials.find((m) => m.id === materialId);
         
         if (material) {
-          const totalWeight = material.weightPerUnit * quantity;
+          const totalWeight = Number(material.weightKg) * Number(quantity);
+          console.log(`Material ${material.name}: ${quantity} x ${material.weightKg}kg = ${totalWeight}kg`);
+          
           items.push({
             id: material.id,
             name: material.name,
             unit: material.unit,
-            quantity,
-            weightPerUnit: material.weightPerUnit,
-            totalWeight,
+            quantity: Number(quantity),
+            weightPerUnit: Number(material.weightKg),
+            totalWeight: totalWeight,
           });
           total += totalWeight;
         }
       }
     });
 
+    console.log('Total weight calculated:', total);
     return { items, totalWeight: total };
-  }, [watchAllFields, materials]);
+  }, [selectedMaterials, materials]);
 
   const handleQuantityChange = (materialId: string, delta: number) => {
-    const currentValue = materials[materialId] || 0;
+    const currentValue = selectedMaterials[materialId] || 0;
     const newValue = Math.max(0, currentValue + delta);
-    setValue(`materials.${materialId}`, newValue, { shouldValidate: true });
+    setValue(`materials.${materialId}`, newValue, { 
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true 
+    });
   };
 
   const onFormSubmit = (data: OrderFormData) => {
@@ -96,6 +159,14 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     };
     onSubmit(orderDocument);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 flex items-center justify-center">
+        <div className="text-slate-600">データを読み込み中...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
@@ -140,18 +211,23 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         </div>
 
         <div className="mb-6 bg-white p-6 rounded-2xl shadow-xl">
-          <label className="block text-lg font-semibold mb-2 text-slate-700">資材カテゴリー</label>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full p-3 text-lg text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:border-slate-400 bg-white"
-          >
-            {Object.keys(materialsByCategory).map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
+          <label className="block text-lg font-semibold mb-4 text-slate-700">資材カテゴリー</label>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => setSelectedCategoryId(category.id)}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                  selectedCategoryId === category.id
+                    ? "bg-indigo-600 text-white shadow-lg"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {category.name}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
         <div className="space-y-4 mb-8">
@@ -165,7 +241,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
               <div>
                 <h3 className="text-xl font-semibold text-slate-800">{material.name}</h3>
                 <p className="text-slate-600">
-                  単位: {material.unit} / 重量: {material.weightPerUnit}kg
+                  単位: {material.unit} / 重量: {formatWeight(Number(material.weightKg))}
                 </p>
               </div>
             </div>
@@ -202,7 +278,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
                 +
               </button>
               <span className="text-xl min-w-[100px] text-right font-semibold text-slate-800">
-                {((materials[material.id] || 0) * material.weightPerUnit).toFixed(1)}kg
+                {formatWeight(Number(selectedMaterials[material.id] || 0) * Number(material.weightKg))}
               </span>
             </div>
           </div>
@@ -212,7 +288,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         <div className="bg-white rounded-2xl p-6 shadow-xl mb-6">
           <div className="flex justify-between items-center text-2xl font-bold">
             <span className="text-slate-800">合計重量:</span>
-            <span className="text-indigo-600">{orderItems.totalWeight.toFixed(1)}kg</span>
+            <span className="text-indigo-600">{formatWeight(orderItems.totalWeight)}</span>
           </div>
           <div className="text-slate-600 mt-2">
             選択資材数: {orderItems.items.length}点
