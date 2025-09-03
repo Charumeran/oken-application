@@ -8,7 +8,8 @@ import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
 export default function MaterialOrderPage() {
   const [orderData, setOrderData] = useState<OrderDocument | null>(null);
   const [showPDFPreview, setShowPDFPreview] = useState(false);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [orderCreated, setOrderCreated] = useState(false);
 
   const handleFormSubmit = (data: OrderDocument) => {
     setOrderData(data);
@@ -18,20 +19,59 @@ export default function MaterialOrderPage() {
   const handleReset = () => {
     setOrderData(null);
     setShowPDFPreview(false);
+    setOrderCreated(false);
   };
 
-  const handleGeneratePDF = async () => {
+  const handleCreateOrder = async () => {
     if (!orderData) return;
     
-    setIsGeneratingPDF(true);
+    setIsCreatingOrder(true);
     try {
+      // 発注書データをAPIに送信して保存
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectName: orderData.siteName,
+          personInCharge: orderData.ordererName,
+          orderDate: orderData.orderDate,
+          deliveryDate: null,
+          status: 'completed',
+          notes: orderData.note,
+          items: orderData.items.map(item => ({
+            materialId: item.id,
+            quantity: item.quantity,
+            totalWeightKg: item.totalWeight,
+            notes: null
+          }))
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('発注書の作成に失敗しました');
+      }
+
+      const result = await response.json();
+      console.log('発注書を作成しました:', result);
+      
+      // PDFをダウンロード
       const { printToPDF } = await import("@/components/OrderDocumentHTML");
       printToPDF(orderData);
+      
+      setOrderCreated(true);
+      alert('発注書を作成しました！');
+      
+      // 3秒後にダッシュボードに戻る
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 3000);
     } catch (error) {
-      console.error("PDF生成エラー:", error);
-      alert("PDF生成に失敗しました");
+      console.error("発注書作成エラー:", error);
+      alert("発注書の作成に失敗しました");
     } finally {
-      setIsGeneratingPDF(false);
+      setIsCreatingOrder(false);
     }
   };
 
@@ -49,11 +89,11 @@ export default function MaterialOrderPage() {
                 戻る
               </button>
               <button
-                onClick={handleGeneratePDF}
-                disabled={isGeneratingPDF}
-                className="px-6 py-3 bg-gradient-to-r from-slate-800 to-slate-700 text-white rounded-lg hover:from-slate-900 hover:to-slate-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                onClick={handleCreateOrder}
+                disabled={isCreatingOrder || orderCreated}
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200"
               >
-                {isGeneratingPDF ? "PDF生成中..." : "PDFダウンロード"}
+                {isCreatingOrder ? "作成中..." : orderCreated ? "作成済み" : "発注書を作成"}
               </button>
             </div>
           </div>

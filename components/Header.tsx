@@ -2,17 +2,33 @@
 
 import { useRouter, usePathname } from 'next/navigation'
 import Image from 'next/image'
+import { Button } from "@/components/ui/button"
+import { LogOut } from 'lucide-react'
 
 export default function Header() {
   const router = useRouter()
   const pathname = usePathname()
 
   const handleLogout = async () => {
+    // localStorageも併せてクリア
+    localStorage.removeItem('isAuthenticated')
+    localStorage.removeItem('userName')
+    
     const response = await fetch('/api/auth/logout', { method: 'POST' })
     
     if (response.ok) {
       router.push('/')
       router.refresh()
+    } else {
+      // APIが失敗してもログアウト処理を実行
+      router.push('/')
+      router.refresh()
+    }
+  }
+
+  const handleLogoClick = () => {
+    if (pathname !== '/') {
+      router.push('/dashboard')
     }
   }
 
@@ -20,14 +36,21 @@ export default function Header() {
     <header className="bg-white shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-6">
-          <Image src="/icons/icon.jpeg" alt="Logo" width={240} height={240} />
+          <div 
+            className={`flex items-center ${pathname !== '/' ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+            onClick={handleLogoClick}
+          >
+            <Image src="/icons/icon.jpeg" alt="株式会社櫻建" width={240} height={240} />
+          </div>
           {pathname !== '/' && (
-            <button
+            <Button
               onClick={handleLogout}
-              className="text-sm text-gray-700 hover:text-gray-900 font-medium"
+              variant="outline"
+              className="flex items-center gap-2 border-gray-300 text-white-700 hover:bg-gray-50"
             >
+              <LogOut className="h-4 w-4 text-white" />
               ログアウト
-            </button>
+            </Button>
           )}
         </div>
       </div>

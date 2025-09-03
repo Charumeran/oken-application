@@ -13,7 +13,7 @@ import AddMaterialForm from "./AddMaterialForm";
 
 const orderFormSchema = z.object({
   ordererName: z.string().min(1, "発注者名を入力してください"),
-  siteName: z.string().optional(),
+  siteName: z.string().min(1, "現場名を入力してください"),
   note: z.string().optional(),
   materials: z.record(z.number().int().min(0)),
 });
@@ -233,7 +233,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
 
           <div className="relative">
             <label className="block text-lg font-semibold mb-3 text-slate-700">
-              現場名
+              現場名 <span className="text-red-500">*</span>
             </label>
             <input
               {...register("siteName")}
@@ -241,6 +241,9 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
               className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400"
               placeholder="〇〇ビル新築工事"
             />
+            {errors.siteName && (
+              <p className="text-red-500 mt-2 text-sm font-medium">{errors.siteName.message}</p>
+            )}
           </div>
 
           <div className="relative">

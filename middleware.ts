@@ -18,10 +18,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
   
-  // 認証済みでホームページにアクセスした場合は資材発注ページへリダイレクト
+  // 認証済みでホームページにアクセスした場合はダッシュボードへリダイレクト
   if (hasSession && pathname === '/') {
-    const materialOrderUrl = new URL('/material-order', request.url)
-    return NextResponse.redirect(materialOrderUrl)
+    const dashboardUrl = new URL('/dashboard', request.url)
+    return NextResponse.redirect(dashboardUrl)
   }
   
   return NextResponse.next()

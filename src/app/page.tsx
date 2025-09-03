@@ -31,7 +31,9 @@ export default function Home() {
       }
 
       // ログイン成功時は window.location でリダイレクト
-      window.location.href = '/material-order'
+      localStorage.setItem('isAuthenticated', 'true')
+      localStorage.setItem('userName', username)
+      window.location.href = '/dashboard'
     } catch {
       setError('予期しないエラーが発生しました')
     } finally {
