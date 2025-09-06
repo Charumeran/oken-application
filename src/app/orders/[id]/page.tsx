@@ -7,13 +7,11 @@ import { ja } from 'date-fns/locale';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Download, Printer } from 'lucide-react';
+import { ArrowLeft, Download, FileText, Calendar, MapPin, Package, User } from 'lucide-react';
 
 interface OrderDetail {
   id: string;
@@ -64,33 +62,37 @@ export default function OrderDetailPage() {
     if (!order) return;
     
     try {
-      const response = await fetch(`/api/orders/${order.id}/download`);
-      if (!response.ok) throw new Error('Failed to download');
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `order-${order.orderNumber}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // OrderDocument形式に変換
+      const orderDocument = {
+        orderDate: order.deliveryDate || order.createdAt,
+        ordererName: order.customerAddress || '担当者',
+        siteName: order.customerName,
+        items: order.items.map(item => ({
+          id: `${order.id}-${item.productName}`,
+          name: item.productName,
+          quantity: item.quantity,
+          weightPerUnit: item.weightPerUnit,
+          totalWeight: item.totalWeight
+        })),
+        totalWeight: order.totalWeight,
+        note: order.shippingAddress || ''
+      };
+
+      // 発注書PDFを生成
+      const { printToPDF } = await import("@/components/OrderDocumentHTML");
+      printToPDF(orderDocument);
     } catch (error) {
       console.error('Error downloading order:', error);
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4">読み込み中...</p>
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center bg-white rounded-lg p-8 shadow-lg">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">読み込み中...</p>
         </div>
       </div>
     );
@@ -98,141 +100,180 @@ export default function OrderDetailPage() {
 
   if (!order) {
     return (
-      <div className="container mx-auto py-8">
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-gray-500">発注書が見つかりません</p>
-            <Button
-              className="mt-4"
-              onClick={() => router.push('/order-history')}
-            >
-              履歴に戻る
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-6 py-8">
+          <Card className="border border-gray-200">
+            <CardContent className="py-12 text-center">
+              <p className="text-gray-500 mb-4">発注書が見つかりません</p>
+              <Button
+                onClick={() => router.push('/order-history')}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                履歴に戻る
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
-      pending: { label: '処理中', variant: 'secondary' },
-      completed: { label: '完了', variant: 'default' },
-      cancelled: { label: 'キャンセル', variant: 'destructive' },
+    const statusConfig: Record<string, { label: string; className: string }> = {
+      pending: { label: '処理中', className: 'bg-yellow-50 text-yellow-700 border border-yellow-200' },
+      completed: { label: '完了', className: 'bg-green-50 text-green-700 border border-green-200' },
+      cancelled: { label: 'キャンセル', className: 'bg-red-50 text-red-700 border border-red-200' },
     };
     
-    const config = statusConfig[status] || { label: status, variant: 'outline' as const };
-    return <Badge variant={config.variant as "default" | "secondary" | "outline" | "destructive"}>{config.label}</Badge>;
+    const config = statusConfig[status] || { label: status, className: 'bg-gray-50 text-gray-700 border border-gray-200' };
+    return <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${config.className}`}>{config.label}</span>;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900" style={{backgroundColor: '#f9fafb', color: '#111827'}}>
-      <div className="container mx-auto py-8">
-      <div className="mb-6 flex justify-between items-center">
-        <Button
-          variant="outline"
-          onClick={() => router.push('/order-history')}
-          className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          履歴に戻る
-        </Button>
-        <div className="flex gap-2">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-6 py-8">
+        {/* ヘッダーアクション */}
+        <div className="mb-6 flex justify-between items-center">
           <Button
             variant="outline"
-            onClick={handlePrint}
-            className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+            onClick={() => router.push('/order-history')}
+            className="flex items-center gap-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
           >
-            <Printer className="h-4 w-4" />
-            印刷
+            <ArrowLeft className="h-4 w-4" />
+            履歴に戻る
           </Button>
           <Button
             onClick={handleDownload}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Download className="h-4 w-4" />
-            PDFダウンロード
+            発注書出力
           </Button>
         </div>
-      </div>
 
-        <Card className="border border-gray-200 bg-white shadow-sm">
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-2xl">発注書詳細</CardTitle>
-              <CardDescription>
-                発注番号: {order.orderNumber}
-              </CardDescription>
-            </div>
-            {getStatusBadge(order.status)}
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        {/* メインコンテンツ */}
+        <div className="grid gap-6">
+          {/* ヘッダー情報カード */}
+          <Card className="border border-gray-200 bg-white shadow-sm">
+            <CardHeader className="pb-4">
+              <div className="flex justify-between items-start">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-gray-600" />
+                    <CardTitle className="text-2xl font-semibold text-gray-900">発注書詳細</CardTitle>
+                  </div>
+                  <p className="text-gray-600">発注番号: <span className="font-medium text-gray-900">{order.orderNumber}</span></p>
+                </div>
+                <div>{getStatusBadge(order.status)}</div>
+              </div>
+            </CardHeader>
+          </Card>
+
+          {/* 発注・配送情報カード */}
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <h3 className="font-semibold text-lg">発注情報</h3>
-              <div className="space-y-2">
-                <p><span className="text-gray-600">現場名:</span> {order.customerName}</p>
-                <p><span className="text-gray-600">担当者:</span> {order.customerAddress}</p>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <h3 className="font-semibold text-lg">配送情報</h3>
-              <div className="space-y-2">
-                <p>
-                  <span className="text-gray-600">納品日:</span>{' '}
-                  {format(new Date(order.deliveryDate), 'yyyy年M月d日', { locale: ja })}
-                </p>
-                <p><span className="text-gray-600">配送先:</span> {order.shippingAddress}</p>
-              </div>
-            </div>
+            <Card className="border border-gray-200 bg-white shadow-sm">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-gray-600" />
+                  <CardTitle className="text-lg font-medium text-gray-900">発注情報</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">現場名</p>
+                    <p className="font-medium text-gray-900">{order.customerName}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">担当者</p>
+                    <p className="font-medium text-gray-900">{order.customerAddress}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-gray-200 bg-white shadow-sm">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-gray-600" />
+                  <CardTitle className="text-lg font-medium text-gray-900">配送情報</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      納品日
+                    </p>
+                    <p className="font-medium text-gray-900">
+                      {format(new Date(order.deliveryDate), 'yyyy年M月d日', { locale: ja })}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">配送先</p>
+                    <p className="font-medium text-gray-900">{order.shippingAddress}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-lg mb-3">注文商品</h3>
-            <div className="rounded-md border">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left p-4">商品名</th>
-                    <th className="text-right p-4">数量</th>
-                    <th className="text-right p-4">単位重量(kg)</th>
-                    <th className="text-right p-4">合計重量(kg)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items.map((item, index) => (
-                    <tr key={index} className="border-t">
-                      <td className="p-4">{item.productName}</td>
-                      <td className="text-right p-4">{item.quantity}</td>
-                      <td className="text-right p-4">{item.weightPerUnit.toFixed(1)}</td>
-                      <td className="text-right p-4">{item.totalWeight.toFixed(1)}</td>
+          {/* 注文商品リストカード */}
+          <Card className="border border-gray-200 bg-white shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-gray-600" />
+                <CardTitle className="text-lg font-medium text-gray-900">注文商品</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gray-50 border-y border-gray-200">
+                      <th className="text-left px-4 py-3 font-medium text-gray-700">商品名</th>
+                      <th className="text-right px-4 py-3 font-medium text-gray-700">数量</th>
+                      <th className="text-right px-4 py-3 font-medium text-gray-700">単位重量(kg)</th>
+                      <th className="text-right px-4 py-3 font-medium text-gray-700">合計重量(kg)</th>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot className="bg-gray-50">
-                  <tr>
-                    <td colSpan={3} className="text-right p-4 font-semibold">
-                      合計重量:
-                    </td>
-                    <td className="text-right p-4 font-semibold text-lg">
-                      {order.totalWeight.toFixed(1)}kg
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </div>
+                  </thead>
+                  <tbody>
+                    {order.items.map((item, index) => (
+                      <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3 text-gray-900 font-medium">{item.productName}</td>
+                        <td className="text-right px-4 py-3 text-gray-700">{item.quantity}</td>
+                        <td className="text-right px-4 py-3 text-gray-700">{item.weightPerUnit.toFixed(1)}</td>
+                        <td className="text-right px-4 py-3 text-gray-900 font-medium">{item.totalWeight.toFixed(1)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="bg-gray-50 border-t border-gray-200">
+                      <td colSpan={3} className="text-right px-4 py-3 font-semibold text-gray-700">
+                        合計重量:
+                      </td>
+                      <td className="text-right px-4 py-3 font-bold text-lg text-gray-900">
+                        {order.totalWeight.toFixed(1)}kg
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="pt-4 border-t">
-            <p className="text-sm text-gray-600">
-              作成日: {format(new Date(order.createdAt), 'yyyy年M月d日 HH:mm', { locale: ja })}
-            </p>
-          </div>
-        </CardContent>
-        </Card>
+          {/* フッター情報 */}
+          <Card className="border border-gray-200 bg-white shadow-sm">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between text-sm">
+                <p className="text-gray-600">
+                  作成日: <span className="font-medium text-gray-900">{format(new Date(order.createdAt), 'yyyy年M月d日 HH:mm', { locale: ja })}</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
