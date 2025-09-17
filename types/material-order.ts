@@ -9,6 +9,8 @@ export type MaterialOrderItem = {
 export type OrderDocument = {
   ordererName: string;
   siteName?: string;
+  contactInfo?: string;
+  loadingDate?: string;
   orderDate: string; // ISO8601形式
   note?: string;
   items: MaterialOrderItem[];

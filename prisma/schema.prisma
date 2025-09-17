@@ -8,6 +8,23 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ユーザー（企業）テーブル
+model User {
+  id          String    @id @default(uuid())
+  username    String    @unique
+  password    String
+  companyName String    @map("company_name")
+  isActive    Boolean   @default(true) @map("is_active")
+  
+  orders      Order[]
+  
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  @@index([username])
+  @@map("users")
+}
+
 // カテゴリテーブル
 model Category {
   id           String    @id @default(uuid())
@@ -47,18 +64,23 @@ model Material {
 model Order {
   id              String    @id @default(uuid())
   orderNumber     String    @unique @map("order_number")
+  userId          String    @map("user_id")
   projectName     String    @map("project_name")
   personInCharge  String?   @map("person_in_charge")
+  contactInfo     String?   @map("contact_info")
+  loadingDate     DateTime? @map("loading_date")
   orderDate       DateTime  @map("order_date")
   deliveryDate    DateTime? @map("delivery_date")
   status          String    @default("draft")
   notes           String?   @db.Text
   
+  user            User      @relation(fields: [userId], references: [id])
   orderDetails    OrderDetail[]
   
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
   
+  @@index([userId])
   @@index([orderDate])
   @@index([status])
   @@map("orders")

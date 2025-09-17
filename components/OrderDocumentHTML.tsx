@@ -14,6 +14,13 @@ export const printToPDF = (data: OrderDocument): void => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
+  // アイテムを列に分割する（1列あたり最大12アイテム）
+  const ITEMS_PER_COLUMN = 12;
+  const columns: typeof data.items[] = [];
+  for (let i = 0; i < data.items.length; i += ITEMS_PER_COLUMN) {
+    columns.push(data.items.slice(i, i + ITEMS_PER_COLUMN));
+  }
+
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -23,8 +30,8 @@ export const printToPDF = (data: OrderDocument): void => {
       <style>
         @media print {
           @page {
-            size: A4;
-            margin: 20mm;
+            size: A4 landscape;
+            margin: 15mm;
           }
           body { margin: 0; }
         }
@@ -38,17 +45,17 @@ export const printToPDF = (data: OrderDocument): void => {
         }
         .title {
           text-align: center;
-          margin-bottom: 30px;
+          margin-bottom: 25px;
         }
         .title h1 {
           font-size: 28px;
           font-weight: bold;
-          margin: 0 0 20px 0;
+          margin: 0 0 15px 0;
           border-bottom: 2px solid #333;
           padding-bottom: 10px;
         }
         .info-section {
-          margin-bottom: 30px;
+          margin-bottom: 20px;
           padding: 15px;
           background-color: #f8fafc;
           border: 1px solid #e2e8f0;
@@ -64,8 +71,13 @@ export const printToPDF = (data: OrderDocument): void => {
           display: inline-block;
           font-size: 16px;
         }
-        .table-container {
-          margin-bottom: 25px;
+        .tables-container {
+          display: flex;
+          gap: 15px;
+          margin-bottom: 20px;
+        }
+        .table-wrapper {
+          flex: 1;
         }
         table {
           width: 100%;
@@ -74,16 +86,16 @@ export const printToPDF = (data: OrderDocument): void => {
         }
         th {
           border: 1px solid #333;
-          padding: 12px;
+          padding: 10px;
           background-color: #475569;
           color: white;
           font-weight: bold;
-          font-size: 18px;
+          font-size: 14px;
         }
         td {
           border: 1px solid #e2e8f0;
-          padding: 12px;
-          font-size: 17px;
+          padding: 8px;
+          font-size: 13px;
         }
         .row-alternate {
           background-color: #f7fafc;
@@ -109,7 +121,7 @@ export const printToPDF = (data: OrderDocument): void => {
           color: #1e293b;
         }
         .note-section {
-          margin-top: 25px;
+          margin-top: 20px;
           padding: 15px;
           background-color: #f8fafc;
           border-radius: 8px;
@@ -176,7 +188,7 @@ export const printToPDF = (data: OrderDocument): void => {
           <span>${formatDate(data.orderDate)}</span>
         </div>
         <div class="info-row">
-          <span class="info-label">発注者:</span>
+          <span class="info-label">注文者:</span>
           <span>${data.ordererName}</span>
         </div>
         ${data.siteName ? `
@@ -184,29 +196,52 @@ export const printToPDF = (data: OrderDocument): void => {
           <span class="info-label">現場名:</span>
           <span>${data.siteName}</span>
         </div>` : ''}
+        ${data.contactInfo ? `
+        <div class="info-row">
+          <span class="info-label">連絡先:</span>
+          <span>${data.contactInfo}</span>
+        </div>` : ''}
+        ${data.loadingDate ? `
+        <div class="info-row">
+          <span class="info-label">積込日:</span>
+          <span>${formatDate(data.loadingDate)}</span>
+        </div>` : ''}
       </div>
       
       ${data.items.length > 0 ? `
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 50%; text-align: left;">資材名</th>
-              <th style="width: 16%; text-align: right;">数量</th>
-              <th style="width: 17%; text-align: right;">単位重量(kg)</th>
-              <th style="width: 17%; text-align: right;">合計重量(kg)</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${data.items.map((item, index) => `
-            <tr ${index % 2 === 1 ? 'class="row-alternate"' : ''}>
-              <td style="font-weight: bold;">${item.name}</td>
-              <td style="text-align: right; font-weight: bold;">${item.quantity}</td>
-              <td style="text-align: right;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
-              <td style="text-align: right; font-weight: bold;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
-            </tr>`).join('')}
-          </tbody>
-        </table>
+      <div class="tables-container">
+        ${columns.map((columnItems) => `
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align: left;">資材名</th>
+                <th style="text-align: right;">数量</th>
+                <th style="text-align: right;">単位重量</th>
+                <th style="text-align: right;">合計重量</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${columnItems.map((item, index) => `
+              <tr ${index % 2 === 1 ? 'class="row-alternate"' : ''}>
+                <td style="font-weight: bold;">${item.name}</td>
+                <td style="text-align: right; font-weight: bold;">${item.quantity}</td>
+                <td style="text-align: right;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
+                <td style="text-align: right; font-weight: bold;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
+              </tr>`).join('')}
+              ${columnItems.length < ITEMS_PER_COLUMN ? 
+                Array(ITEMS_PER_COLUMN - columnItems.length).fill(0).map((_, i) => 
+                  `<tr ${(columnItems.length + i) % 2 === 1 ? 'class="row-alternate"' : ''}>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                  </tr>`
+                ).join('') : ''}
+            </tbody>
+          </table>
+        </div>
+        `).join('')}
       </div>` : ''}
       
       <div class="total-section">

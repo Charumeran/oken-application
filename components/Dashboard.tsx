@@ -3,19 +3,45 @@
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Clock, User, BarChart3, CheckCircle, AlertCircle } from 'lucide-react';
+import { FileText, Clock, User, BarChart3, CheckCircle, AlertCircle, Building2, LogOut } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
+interface UserInfo {
+  username: string;
+  companyName: string;
+}
 
 export default function Dashboard() {
   const router = useRouter();
-  const [userName, setUserName] = useState<string>('');
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const user = localStorage.getItem('userName');
-    if (user) {
-      setUserName(user);
-    }
+    fetchUserInfo();
   }, []);
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const data = await response.json();
+        setUserInfo(data.user);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      router.push('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   const navigateToOrderForm = () => {
     router.push('/material-order');
@@ -25,8 +51,50 @@ export default function Dashboard() {
     router.push('/order-history');
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* ヘッダー */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-6">
+              {userInfo && (
+                <>
+                  <div className="flex items-center">
+                    <Building2 className="h-5 w-5 text-gray-600 mr-2" />
+                    <span className="text-lg font-semibold text-gray-900">{userInfo.companyName}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <User className="h-4 w-4 mr-1" />
+                    <span>{userInfo.username}</span>
+                  </div>
+                </>
+              )}
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-gray-700 hover:text-red-600 hover:border-red-600"
+            >
+              <LogOut className="h-4 w-4" />
+              ログアウト
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {/* メインコンテンツ */}
       <div className="container mx-auto px-6 py-8">
         {/* ページタイトルとウェルカムメッセージ */}
@@ -34,10 +102,9 @@ export default function Dashboard() {
           <h1 className="text-2xl font-semibold text-gray-900 mb-2">
             ダッシュボード
           </h1>
-          {userName && (
+          {userInfo && (
             <div className="flex items-center text-gray-600">
-              <User className="h-4 w-4 mr-2" />
-              <span>{userName}さん、こんにちは</span>
+              <span>こんにちは、{userInfo.companyName}様</span>
             </div>
           )}
         </div>

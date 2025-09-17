@@ -11,13 +11,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, FileText, Calendar, MapPin, Package, User } from 'lucide-react';
+import { ArrowLeft, Download, FileText, Calendar, MapPin, Package, User, Edit } from 'lucide-react';
 
 interface OrderDetail {
   id: string;
   orderNumber: string;
   customerName: string;
   customerAddress: string;
+  contactInfo: string;
+  loadingDate: string | null;
   deliveryDate: string;
   shippingAddress: string;
   totalWeight: number;
@@ -67,6 +69,8 @@ export default function OrderDetailPage() {
         orderDate: order.deliveryDate || order.createdAt,
         ordererName: order.customerAddress || '担当者',
         siteName: order.customerName,
+        contactInfo: order.contactInfo,
+        loadingDate: order.loadingDate || undefined,
         items: order.items.map(item => ({
           id: `${order.id}-${item.productName}`,
           name: item.productName,
@@ -84,6 +88,32 @@ export default function OrderDetailPage() {
     } catch (error) {
       console.error('Error downloading order:', error);
     }
+  };
+
+  const handleEdit = () => {
+    if (!order) return;
+    
+    // 発注書データをlocalStorageに保存
+    const editData = {
+      orderId: order.id,
+      ordererName: order.customerAddress || '',
+      siteName: order.customerName || '',
+      contactInfo: order.contactInfo || '',
+      loadingDate: order.loadingDate ? order.loadingDate.split('T')[0] : '', // YYYY-MM-DD形式に変換
+      note: order.shippingAddress || '',
+      items: order.items.map(item => ({
+        id: item.productName, // 資材名で特定するための一時的ID
+        name: item.productName,
+        quantity: item.quantity,
+        weightPerUnit: item.weightPerUnit,
+        totalWeight: item.totalWeight
+      }))
+    };
+    
+    console.log('Saving edit data:', editData);
+    localStorage.setItem('editOrderData', JSON.stringify(editData));
+    console.log('Data saved to localStorage');
+    router.push('/material-order');
   };
 
 
@@ -142,13 +172,22 @@ export default function OrderDetailPage() {
             <ArrowLeft className="h-4 w-4" />
             履歴に戻る
           </Button>
-          <Button
-            onClick={handleDownload}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Download className="h-4 w-4" />
-            発注書出力
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleEdit}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Edit className="h-4 w-4" />
+              編集
+            </Button>
+            <Button
+              onClick={handleDownload}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Download className="h-4 w-4" />
+              発注書出力
+            </Button>
+          </div>
         </div>
 
         {/* メインコンテンツ */}
@@ -188,6 +227,12 @@ export default function OrderDetailPage() {
                     <p className="text-sm text-gray-600 mb-1">担当者</p>
                     <p className="font-medium text-gray-900">{order.customerAddress}</p>
                   </div>
+                  {order.contactInfo && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">連絡先</p>
+                      <p className="font-medium text-gray-900">{order.contactInfo}</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -201,19 +246,17 @@ export default function OrderDetailPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      納品日
-                    </p>
-                    <p className="font-medium text-gray-900">
-                      {format(new Date(order.deliveryDate), 'yyyy年M月d日', { locale: ja })}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">配送先</p>
-                    <p className="font-medium text-gray-900">{order.shippingAddress}</p>
-                  </div>
+                  {order.loadingDate && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        積込日
+                      </p>
+                      <p className="font-medium text-gray-900">
+                        {format(new Date(order.loadingDate), 'yyyy年M月d日', { locale: ja })}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

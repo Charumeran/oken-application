@@ -22,12 +22,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, Search, Calendar, FileText, Printer } from 'lucide-react';
+import { Eye, Search, Calendar, FileText, Printer, Trash2 } from 'lucide-react';
 
 interface OrderData {
   id: string;
   orderNumber: string;
   customerName: string;
+  loadingDate: string | null;
   deliveryDate: string;
   totalWeight: number;
   status: string;
@@ -98,6 +99,30 @@ export default function OrderHistory() {
     router.push(`/orders/${orderId}`);
   };
 
+  const handleDelete = async (orderId: string, orderNumber: string) => {
+    if (!confirm(`発注書「${orderNumber}」を削除しますか？\n\nこの操作は元に戻すことができません。`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete order');
+      }
+
+      alert('発注書を削除しました');
+      
+      // 一覧を再読み込み
+      fetchOrders();
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert('発注書の削除に失敗しました');
+    }
+  };
+
   const handleDownload = async (orderId: string) => {
     try {
       // 注文詳細を取得
@@ -113,6 +138,8 @@ export default function OrderHistory() {
         orderDate: order.deliveryDate || order.createdAt,
         ordererName: order.customerAddress || '担当者',
         siteName: order.customerName,
+        contactInfo: order.contactInfo,
+        loadingDate: order.loadingDate || undefined,
         items: order.items.map((item: { productName: string; quantity: number; weightPerUnit: number; totalWeight: number }) => ({
           id: `${order.id}-${item.productName}`,
           name: item.productName,
@@ -247,7 +274,7 @@ export default function OrderHistory() {
                     <TableRow className="bg-gray-50 border-b border-gray-200">
                       <TableHead className="font-medium text-gray-700">発注番号</TableHead>
                       <TableHead className="font-medium text-gray-700">現場名</TableHead>
-                      <TableHead className="font-medium text-gray-700">納品日</TableHead>
+                      <TableHead className="font-medium text-gray-700">積込日</TableHead>
                       <TableHead className="text-right font-medium text-gray-700">合計重量</TableHead>
                       <TableHead className="font-medium text-gray-700">ステータス</TableHead>
                       <TableHead className="font-medium text-gray-700">作成日</TableHead>
@@ -262,7 +289,7 @@ export default function OrderHistory() {
                         </TableCell>
                         <TableCell className="text-gray-700">{order.customerName}</TableCell>
                         <TableCell className="text-gray-700">
-                          {format(new Date(order.deliveryDate), 'yyyy年M月d日', { locale: ja })}
+                          {order.loadingDate ? format(new Date(order.loadingDate), 'yyyy年M月d日', { locale: ja }) : '-'}
                         </TableCell>
                         <TableCell className="text-right text-gray-700">
                           {order.totalWeight.toFixed(1)}kg
@@ -290,6 +317,15 @@ export default function OrderHistory() {
                               title="発注書出力"
                             >
                               <Printer className="h-4 w-4 text-gray-600" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDelete(order.id, order.orderNumber)}
+                              className="h-8 w-8 p-0 bg-white border-red-300 hover:bg-red-50 hover:border-red-400 transition-colors"
+                              title="削除"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
                             </Button>
                           </div>
                         </TableCell>

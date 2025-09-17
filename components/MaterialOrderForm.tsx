@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,18 +10,38 @@ import {
 } from "@/types/material-order";
 import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
 import AddMaterialForm from "./AddMaterialForm";
+import { ChevronDown } from "lucide-react";
 
 const orderFormSchema = z.object({
-  ordererName: z.string().min(1, "発注者名を入力してください"),
+  ordererName: z.string().min(1, "注文者名を入力してください"),
   siteName: z.string().min(1, "現場名を入力してください"),
+  contactInfo: z.string().optional(),
+  loadingDate: z.string().optional(),
   note: z.string().optional(),
   materials: z.record(z.number().int().min(0)),
 });
 
 type OrderFormData = z.infer<typeof orderFormSchema>;
 
+interface EditOrderData {
+  orderId: string;
+  ordererName: string;
+  siteName: string;
+  contactInfo: string;
+  loadingDate: string;
+  note: string;
+  items: Array<{
+    id: string;
+    name: string;
+    quantity: number;
+    weightPerUnit: number;
+    totalWeight: number;
+  }>;
+}
+
 interface MaterialOrderFormProps {
   onSubmit: (data: OrderDocument) => void;
+  editMode?: boolean;
 }
 
 type Category = {
@@ -41,31 +61,62 @@ type Material = {
   isActive: boolean;
 };
 
-export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) {
+export default function MaterialOrderForm({ onSubmit, editMode = false }: MaterialOrderFormProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [showAddMaterialForm, setShowAddMaterialForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [editData, setEditData] = useState<EditOrderData | null>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  // 編集モードの場合、最初にlocalStorageからデータを読み込む
+  useEffect(() => {
+    console.log('MaterialOrderForm mounted, editMode:', editMode);
+    
+    if (editMode) {
+      const data = localStorage.getItem('editOrderData');
+      console.log('localStorage data:', data);
+      
+      if (data) {
+        try {
+          const parsedData = JSON.parse(data);
+          console.log('Edit data found and parsed:', parsedData);
+          setEditData(parsedData);
+          // localStorageは後で削除する
+        } catch (error) {
+          console.error('Failed to parse edit data:', error);
+          localStorage.removeItem('editOrderData');
+        }
+      } else {
+        console.log('No edit data found in localStorage');
+      }
+    } else {
+      console.log('Not in edit mode');
+    }
+  }, [editMode]);
 
   const {
     register,
     control,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<OrderFormData>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       ordererName: "",
       siteName: "",
+      contactInfo: "",
+      loadingDate: "",
       note: "",
       materials: {},
     },
   });
 
-  // データをDBから取得
+  // 編集データの読み込みとデータ取得
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,6 +134,8 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         if (categoriesData.length > 0) {
           setSelectedCategoryId(categoriesData[0].id);
         }
+
+        
       } catch (error) {
         console.error('データの取得に失敗しました:', error);
       } finally {
@@ -91,7 +144,51 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     };
     
     fetchData();
-  }, []);
+  }, [editMode, setValue]);
+
+  // 編集データと資材データが揃ったらフォームを初期化
+  useEffect(() => {
+    console.log('Form initialization check:', {
+      editMode,
+      hasEditData: !!editData,
+      materialsCount: materials.length,
+      loading
+    });
+    
+    if (editMode && editData && materials.length > 0 && !loading) {
+      console.log('Initializing form with edit data:', editData);
+      
+      // 資材の数量を復元
+      const materialQuantities: { [key: string]: number } = {};
+      editData.items?.forEach((item) => {
+        const material = materials.find((m: Material) => m.name === item.name);
+        if (material) {
+          materialQuantities[material.id] = item.quantity;
+          console.log(`Mapping material: ${item.name} -> ${material.id} (quantity: ${item.quantity})`);
+        } else {
+          console.warn(`Material not found: ${item.name}`);
+        }
+      });
+      
+      console.log('Material quantities to set:', materialQuantities);
+      
+      // reset()を使用してフォーム全体を再初期化
+      const formData = {
+        ordererName: editData.ordererName || "",
+        siteName: editData.siteName || "",
+        contactInfo: editData.contactInfo || "",
+        loadingDate: editData.loadingDate || "",
+        note: editData.note || "",
+        materials: materialQuantities,
+      };
+      
+      console.log('Resetting form with:', formData);
+      reset(formData);
+      
+      // localStorageをクリア
+      localStorage.removeItem('editOrderData');
+    }
+  }, [editMode, editData, materials, loading, reset]);
 
   // useWatchを使用してmaterialsフィールドを監視
   const watchedMaterials = useWatch({
@@ -129,6 +226,16 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
   const handleAddMaterial = (newMaterial: Material) => {
     setMaterials(prev => [...prev, newMaterial]);
     setShowAddMaterialForm(false);
+  };
+
+  // 注文ボタンまでスクロールする関数
+  const scrollToSubmit = () => {
+    if (submitButtonRef.current) {
+      submitButtonRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
   };
 
   const orderItems = useMemo(() => {
@@ -189,6 +296,8 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
     const orderDocument: OrderDocument = {
       ordererName: data.ordererName,
       siteName: data.siteName,
+      contactInfo: data.contactInfo,
+      loadingDate: data.loadingDate,
       orderDate: new Date().toISOString(),
       note: data.note,
       items: orderItems.items,
@@ -210,7 +319,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
       <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold mb-4 text-slate-800">
-            資材発注書作成
+            {editMode ? '発注書編集' : '資材発注書作成'}
           </h1>
           <div className="h-1 w-24 mx-auto bg-slate-300 rounded-full"></div>
         </div>
@@ -218,7 +327,7 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         <div className="space-y-6 mb-10 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
           <div className="relative">
             <label className="block text-lg font-semibold mb-3 text-slate-700">
-              発注者名 <span className="text-red-500">*</span>
+              注文者名 <span className="text-red-500">*</span>
             </label>
             <input
               {...register("ordererName")}
@@ -243,6 +352,36 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
             />
             {errors.siteName && (
               <p className="text-red-500 mt-2 text-sm font-medium">{errors.siteName.message}</p>
+            )}
+          </div>
+
+          <div className="relative">
+            <label className="block text-lg font-semibold mb-3 text-slate-700">
+              連絡先
+            </label>
+            <input
+              {...register("contactInfo")}
+              type="text"
+              className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400"
+              placeholder="090-1234-5678"
+            />
+            {errors.contactInfo && (
+              <p className="text-red-500 mt-2 text-sm font-medium">{errors.contactInfo.message}</p>
+            )}
+          </div>
+
+          <div className="relative">
+            <label className="block text-lg font-semibold mb-3 text-slate-700">
+              積込日
+            </label>
+            <input
+              {...register("loadingDate")}
+              type="date"
+              placeholder="積込予定日を選択"
+              className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400"
+            />
+            {errors.loadingDate && (
+              <p className="text-red-500 mt-2 text-sm font-medium">{errors.loadingDate.message}</p>
             )}
           </div>
 
@@ -362,12 +501,35 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
                     <input
                       {...field}
                       type="number"
-                      value={field.value || 0}
+                      min="0"
+                      step="1"
+                      value={field.value ?? ''}
                       onChange={(e) => {
-                        const value = parseInt(e.target.value) || 0;
-                        field.onChange(Math.max(0, value));
+                        const inputValue = e.target.value;
+                        // 空文字の場合はそのまま空文字を設定（0にしない）
+                        if (inputValue === '') {
+                          field.onChange('');
+                          return;
+                        }
+                        const value = parseInt(inputValue);
+                        // 数値でない場合は0、負の数の場合は0にする
+                        if (isNaN(value)) {
+                          field.onChange(0);
+                        } else {
+                          field.onChange(Math.max(0, value));
+                        }
                       }}
-                      className="w-16 md:w-20 text-center text-lg md:text-xl bg-gray-50 border-2 border-gray-200 rounded-xl p-2 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200"
+                      onFocus={(e) => {
+                        // フォーカス時に全選択
+                        e.target.select();
+                      }}
+                      onBlur={(e) => {
+                        // フォーカスが外れた時に空文字なら0にする
+                        if (e.target.value === '' || e.target.value === null) {
+                          field.onChange(0);
+                        }
+                      }}
+                      className="w-16 md:w-20 text-center text-lg md:text-xl bg-white border-2 border-gray-300 rounded-xl p-2 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   )}
                 />
@@ -412,13 +574,23 @@ export default function MaterialOrderForm({ onSubmit }: MaterialOrderFormProps) 
         </div>
 
         <button
+          ref={submitButtonRef}
           type="submit"
           disabled={orderItems.items.length === 0}
           className="w-full py-5 bg-gradient-to-r from-slate-800 to-slate-700 text-white text-xl font-bold rounded-xl hover:from-slate-900 hover:to-slate-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1 active:scale-[0.98]"
         >
-          発注書を作成
+          {editMode ? '発注書を更新' : '発注書を作成'}
         </button>
       </form>
+      
+      {/* スクロールボタン */}
+      <button
+        onClick={scrollToSubmit}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 active:scale-95 z-50 flex items-center justify-center"
+        title="注文ボタンまで移動"
+      >
+        <ChevronDown className="h-6 w-6" />
+      </button>
       
       {showAddMaterialForm && (
         <AddMaterialForm

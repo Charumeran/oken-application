@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MaterialOrderForm from "@/components/MaterialOrderForm";
 import { OrderDocument } from "@/types/material-order";
 import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
@@ -10,11 +10,36 @@ export default function MaterialOrderPage() {
   const [showPDFPreview, setShowPDFPreview] = useState(false);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editOrderId, setEditOrderId] = useState<string | null>(null);
 
   const handleFormSubmit = (data: OrderDocument) => {
     setOrderData(data);
     setShowPDFPreview(true);
   };
+
+  // 編集データの読み込み
+  useEffect(() => {
+    console.log('MaterialOrderPage mounted, checking for edit data...');
+    
+    const editData = localStorage.getItem('editOrderData');
+    console.log('Edit data in localStorage:', editData);
+    
+    if (editData) {
+      try {
+        const parsedData = JSON.parse(editData);
+        console.log('Setting edit mode, parsed data:', parsedData);
+        setEditMode(true);
+        setEditOrderId(parsedData.orderId);
+        // localStorageはここでは削除しない（MaterialOrderFormで使用するため）
+      } catch (error) {
+        console.error('Failed to parse edit data:', error);
+        localStorage.removeItem('editOrderData');
+      }
+    } else {
+      console.log('No edit data found, using create mode');
+    }
+  }, []);
 
   const handleReset = () => {
     setOrderData(null);
@@ -27,49 +52,58 @@ export default function MaterialOrderPage() {
     
     setIsCreatingOrder(true);
     try {
-      // 発注書データをAPIに送信して保存
-      const response = await fetch('/api/orders', {
-        method: 'POST',
+      const requestData = {
+        projectName: orderData.siteName,
+        personInCharge: orderData.ordererName,
+        contactInfo: orderData.contactInfo,
+        loadingDate: orderData.loadingDate,
+        orderDate: orderData.orderDate,
+        deliveryDate: null,
+        status: 'completed',
+        notes: orderData.note,
+        items: orderData.items.map(item => ({
+          materialId: item.id,
+          quantity: item.quantity,
+          totalWeightKg: item.totalWeight,
+          notes: null
+        }))
+      };
+
+      // 編集モードの場合はPUT、新規の場合はPOST
+      const url = editMode && editOrderId ? `/api/orders/${editOrderId}` : '/api/orders';
+      const method = editMode && editOrderId ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          projectName: orderData.siteName,
-          personInCharge: orderData.ordererName,
-          orderDate: orderData.orderDate,
-          deliveryDate: null,
-          status: 'completed',
-          notes: orderData.note,
-          items: orderData.items.map(item => ({
-            materialId: item.id,
-            quantity: item.quantity,
-            totalWeightKg: item.totalWeight,
-            notes: null
-          }))
-        })
+        body: JSON.stringify(requestData)
       });
 
       if (!response.ok) {
-        throw new Error('発注書の作成に失敗しました');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(errorData.error || '発注書の作成に失敗しました');
       }
 
       const result = await response.json();
-      console.log('発注書を作成しました:', result);
+      console.log(editMode ? '発注書を更新しました:' : '発注書を作成しました:', result);
       
       // PDFをダウンロード
       const { printToPDF } = await import("@/components/OrderDocumentHTML");
       printToPDF(orderData);
       
       setOrderCreated(true);
-      alert('発注書を作成しました！');
+      alert(editMode ? '発注書を更新しました！' : '発注書を作成しました！');
       
       // 3秒後にダッシュボードに戻る
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 3000);
     } catch (error) {
-      console.error("発注書作成エラー:", error);
-      alert("発注書の作成に失敗しました");
+      console.error(editMode ? "発注書更新エラー:" : "発注書作成エラー:", error);
+      alert(editMode ? "発注書の更新に失敗しました" : "発注書の作成に失敗しました");
     } finally {
       setIsCreatingOrder(false);
     }
@@ -80,7 +114,7 @@ export default function MaterialOrderPage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-slate-800">発注書プレビュー</h1>
+            <h1 className="text-3xl font-bold text-slate-800">{editMode ? '発注書編集プレビュー' : '発注書プレビュー'}</h1>
             <div className="space-x-4">
               <button
                 onClick={handleReset}
@@ -93,7 +127,7 @@ export default function MaterialOrderPage() {
                 disabled={isCreatingOrder || orderCreated}
                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200"
               >
-                {isCreatingOrder ? "作成中..." : orderCreated ? "作成済み" : "発注書を作成"}
+                {isCreatingOrder ? (editMode ? "更新中..." : "作成中...") : orderCreated ? (editMode ? "更新済み" : "作成済み") : (editMode ? "発注書を更新" : "発注書を作成")}
               </button>
             </div>
           </div>
@@ -102,10 +136,16 @@ export default function MaterialOrderPage() {
             <h2 className="text-2xl font-bold mb-6 text-slate-800">発注内容確認</h2>
           
             <div className="space-y-3 mb-8 p-4 bg-slate-50 rounded-lg">
-              <p className="text-lg"><span className="font-semibold text-slate-700">発注者:</span> <span className="text-slate-800">{orderData.ordererName}</span></p>
+              <p className="text-lg"><span className="font-semibold text-slate-700">注文者:</span> <span className="text-slate-800">{orderData.ordererName}</span></p>
               <p className="text-lg"><span className="font-semibold text-slate-700">発注日:</span> <span className="text-slate-800">{new Date(orderData.orderDate).toLocaleDateString('ja-JP')}</span></p>
               {orderData.siteName && (
                 <p className="text-lg"><span className="font-semibold text-slate-700">現場名:</span> <span className="text-slate-800">{orderData.siteName}</span></p>
+              )}
+              {orderData.contactInfo && (
+                <p className="text-lg"><span className="font-semibold text-slate-700">連絡先:</span> <span className="text-slate-800">{orderData.contactInfo}</span></p>
+              )}
+              {orderData.loadingDate && (
+                <p className="text-lg"><span className="font-semibold text-slate-700">積込日:</span> <span className="text-slate-800">{new Date(orderData.loadingDate).toLocaleDateString('ja-JP')}</span></p>
               )}
             </div>
 
@@ -150,5 +190,6 @@ export default function MaterialOrderPage() {
     );
   }
 
-  return <MaterialOrderForm onSubmit={handleFormSubmit} />;
+  console.log('Rendering MaterialOrderForm with editMode:', editMode);
+  return <MaterialOrderForm onSubmit={handleFormSubmit} editMode={editMode} />;
 }

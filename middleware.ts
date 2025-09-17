@@ -10,16 +10,27 @@ export async function middleware(request: NextRequest) {
   const isPublicPath = publicPaths.includes(pathname)
   
   // セッションチェック
-  const hasSession = request.cookies.has(SESSION_NAME)
+  const sessionCookie = request.cookies.get(SESSION_NAME)
+  let hasValidSession = false
+  
+  if (sessionCookie?.value) {
+    try {
+      const sessionData = JSON.parse(sessionCookie.value)
+      hasValidSession = !!sessionData.userId
+    } catch {
+      // 旧形式や無効なセッションの場合はfalse
+      hasValidSession = false
+    }
+  }
   
   // 未認証でプライベートページにアクセスした場合
-  if (!hasSession && !isPublicPath) {
+  if (!hasValidSession && !isPublicPath) {
     const loginUrl = new URL('/', request.url)
     return NextResponse.redirect(loginUrl)
   }
   
   // 認証済みでホームページにアクセスした場合はダッシュボードへリダイレクト
-  if (hasSession && pathname === '/') {
+  if (hasValidSession && pathname === '/') {
     const dashboardUrl = new URL('/dashboard', request.url)
     return NextResponse.redirect(dashboardUrl)
   }
