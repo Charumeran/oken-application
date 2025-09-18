@@ -28,6 +28,7 @@ interface OrderData {
   id: string;
   orderNumber: string;
   customerName: string;
+  customerAddress: string;
   loadingDate: string | null;
   deliveryDate: string;
   totalWeight: number;
@@ -47,7 +48,23 @@ export default function OrderHistory() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('all');
+  const [monthFilter, setMonthFilter] = useState('all');
+  
+  // 月選択用のオプションを生成
+  const generateMonthOptions = () => {
+    const months = [];
+    const currentDate = new Date();
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      months.push({
+        value: format(date, 'yyyy-MM'),
+        label: format(date, 'yyyy年M月', { locale: ja })
+      });
+    }
+    return months;
+  };
+  
+  const monthOptions = useMemo(() => generateMonthOptions(), []);
 
   useEffect(() => {
     fetchOrders();
@@ -70,30 +87,23 @@ export default function OrderHistory() {
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
+      // 検索条件（現場名、担当者名）
       const matchesSearch = 
         order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase());
+        (order.customerAddress && order.customerAddress.toLowerCase().includes(searchTerm.toLowerCase()));
       
       const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
       
-      let matchesDate = true;
-      if (dateFilter !== 'all') {
-        const orderDate = new Date(order.createdAt);
-        const today = new Date();
-        if (dateFilter === 'today') {
-          matchesDate = orderDate.toDateString() === today.toDateString();
-        } else if (dateFilter === 'week') {
-          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-          matchesDate = orderDate >= weekAgo;
-        } else if (dateFilter === 'month') {
-          const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-          matchesDate = orderDate >= monthAgo;
-        }
+      // 月フィルター
+      let matchesMonth = true;
+      if (monthFilter !== 'all') {
+        const orderMonth = format(new Date(order.createdAt), 'yyyy-MM');
+        matchesMonth = orderMonth === monthFilter;
       }
       
-      return matchesSearch && matchesStatus && matchesDate;
+      return matchesSearch && matchesStatus && matchesMonth;
     });
-  }, [orders, searchTerm, statusFilter, dateFilter]);
+  }, [orders, searchTerm, statusFilter, monthFilter]);
 
   const handleView = (orderId: string) => {
     router.push(`/orders/${orderId}`);
@@ -211,7 +221,7 @@ export default function OrderHistory() {
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
-                  placeholder="現場名または発注番号で検索..."
+                  placeholder="現場名、担当者名で検索..."
                   value={searchTerm}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                   className="pl-10 h-10 bg-white text-gray-900 border-gray-300 focus:border-blue-500 focus:ring-blue-500 placeholder-gray-500"
@@ -220,6 +230,23 @@ export default function OrderHistory() {
               
               {/* フィルター */}
               <div className="flex flex-col sm:flex-row gap-3 lg:w-auto">
+                <Select value={monthFilter} onValueChange={setMonthFilter}>
+                  <SelectTrigger className="w-full sm:w-[140px] h-10 bg-white text-gray-900 border-gray-300">
+                    <div className="flex items-center">
+                      <Calendar className="mr-2 h-4 w-4 text-gray-500" />
+                      <SelectValue placeholder="月" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-white text-gray-900">
+                    <SelectItem value="all">すべて</SelectItem>
+                    {monthOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-full sm:w-[140px] h-10 bg-white text-gray-900 border-gray-300">
                     <SelectValue placeholder="ステータス" />
@@ -229,21 +256,6 @@ export default function OrderHistory() {
                     <SelectItem value="pending">処理中</SelectItem>
                     <SelectItem value="completed">完了</SelectItem>
                     <SelectItem value="cancelled">キャンセル</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select value={dateFilter} onValueChange={setDateFilter}>
-                  <SelectTrigger className="w-full sm:w-[140px] h-10 bg-white text-gray-900 border-gray-300">
-                    <div className="flex items-center">
-                      <Calendar className="mr-2 h-4 w-4 text-gray-500" />
-                      <SelectValue placeholder="期間" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-white text-gray-900">
-                    <SelectItem value="all">すべて</SelectItem>
-                    <SelectItem value="today">今日</SelectItem>
-                    <SelectItem value="week">過去7日間</SelectItem>
-                    <SelectItem value="month">過去30日間</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -272,22 +284,23 @@ export default function OrderHistory() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50 border-b border-gray-200">
-                      <TableHead className="font-medium text-gray-700">発注番号</TableHead>
                       <TableHead className="font-medium text-gray-700">現場名</TableHead>
+                      <TableHead className="font-medium text-gray-700">担当者名</TableHead>
+                      <TableHead className="font-medium text-gray-700">発注日</TableHead>
                       <TableHead className="font-medium text-gray-700">積込日</TableHead>
                       <TableHead className="text-right font-medium text-gray-700">合計重量</TableHead>
                       <TableHead className="font-medium text-gray-700">ステータス</TableHead>
-                      <TableHead className="font-medium text-gray-700">作成日</TableHead>
-                      <TableHead className="text-right font-medium text-gray-700">操作</TableHead>
+                      <TableHead className="text-right font-medium text-gray-700"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredOrders.map((order) => (
                       <TableRow key={order.id} className="hover:bg-gray-50 border-b border-gray-100">
-                        <TableCell className="font-medium text-gray-900">
-                          {order.orderNumber}
-                        </TableCell>
                         <TableCell className="text-gray-700">{order.customerName}</TableCell>
+                        <TableCell className="text-gray-700">{order.customerAddress}</TableCell>
+                        <TableCell className="text-gray-700">
+                          {format(new Date(order.createdAt), 'yyyy/MM/dd', { locale: ja })}
+                        </TableCell>
                         <TableCell className="text-gray-700">
                           {order.loadingDate ? format(new Date(order.loadingDate), 'yyyy年M月d日', { locale: ja }) : '-'}
                         </TableCell>
@@ -295,9 +308,6 @@ export default function OrderHistory() {
                           {order.totalWeight.toFixed(1)}kg
                         </TableCell>
                         <TableCell>{getStatusBadge(order.status)}</TableCell>
-                        <TableCell className="text-gray-700">
-                          {format(new Date(order.createdAt), 'yyyy/MM/dd', { locale: ja })}
-                        </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button

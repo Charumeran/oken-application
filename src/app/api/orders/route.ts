@@ -26,6 +26,7 @@ export async function GET() {
       id: order.id,
       orderNumber: order.orderNumber,
       customerName: order.projectName,
+      customerAddress: order.personInCharge || '',
       loadingDate: order.loadingDate,
       deliveryDate: order.deliveryDate || order.orderDate,
       totalWeight: order.orderDetails.reduce((sum, detail) => 

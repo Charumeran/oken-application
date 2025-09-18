@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, FileText, Calendar, MapPin, Package, User, Edit } from 'lucide-react';
+import { ArrowLeft, Download, FileText, Calendar, Package, User, Edit } from 'lucide-react';
 
 interface OrderDetail {
   id: string;
@@ -209,7 +209,7 @@ export default function OrderDetailPage() {
           </Card>
 
           {/* 発注・配送情報カード */}
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid gap-6">
             <Card className="border border-gray-200 bg-white shadow-sm">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
@@ -233,19 +233,6 @@ export default function OrderDetailPage() {
                       <p className="font-medium text-gray-900">{order.contactInfo}</p>
                     </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200 bg-white shadow-sm">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-gray-600" />
-                  <CardTitle className="text-lg font-medium text-gray-900">配送情報</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                   {order.loadingDate && (
                     <div>
                       <p className="text-sm text-gray-600 mb-1 flex items-center gap-1">
@@ -311,7 +298,7 @@ export default function OrderDetailPage() {
             <CardContent className="py-4">
               <div className="flex items-center justify-between text-sm">
                 <p className="text-gray-600">
-                  作成日: <span className="font-medium text-gray-900">{format(new Date(order.createdAt), 'yyyy年M月d日 HH:mm', { locale: ja })}</span>
+                  発注日: <span className="font-medium text-gray-900">{format(new Date(order.createdAt), 'yyyy年M月d日 HH:mm', { locale: ja })}</span>
                 </p>
               </div>
             </CardContent>
