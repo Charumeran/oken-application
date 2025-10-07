@@ -14,8 +14,8 @@ export const printToPDF = (data: OrderDocument): void => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
-  // アイテムを列に分割する（1列あたり最大12アイテム）
-  const ITEMS_PER_COLUMN = 12;
+  // アイテムを列に分割する（1列あたり最大30アイテム - 3列×30行でA4に収める）
+  const ITEMS_PER_COLUMN = 30;
   const columns: typeof data.items[] = [];
   for (let i = 0; i < data.items.length; i += ITEMS_PER_COLUMN) {
     columns.push(data.items.slice(i, i + ITEMS_PER_COLUMN));
@@ -30,51 +30,51 @@ export const printToPDF = (data: OrderDocument): void => {
       <style>
         @media print {
           @page {
-            size: A4 landscape;
-            margin: 15mm;
+            size: A4 portrait;
+            margin: 10mm;
           }
           body { margin: 0; }
         }
         body {
           font-family: system-ui, -apple-system, sans-serif;
-          font-size: 12px;
-          line-height: 1.5;
+          font-size: 9px;
+          line-height: 1.2;
           color: #000;
           margin: 0;
-          padding: 20px;
+          padding: 10px;
         }
         .title {
           text-align: center;
-          margin-bottom: 25px;
+          margin-bottom: 8px;
         }
         .title h1 {
-          font-size: 28px;
+          font-size: 18px;
           font-weight: bold;
-          margin: 0 0 15px 0;
-          border-bottom: 2px solid #333;
-          padding-bottom: 10px;
+          margin: 0 0 5px 0;
+          border-bottom: 1px solid #333;
+          padding-bottom: 5px;
         }
         .info-section {
-          margin-bottom: 20px;
-          padding: 15px;
+          margin-bottom: 10px;
+          padding: 8px;
           background-color: #f8fafc;
           border: 1px solid #e2e8f0;
-          border-radius: 8px;
+          border-radius: 4px;
         }
         .info-row {
-          margin-bottom: 8px;
-          font-size: 16px;
+          margin-bottom: 3px;
+          font-size: 10px;
         }
         .info-label {
           font-weight: bold;
-          min-width: 100px;
+          min-width: 60px;
           display: inline-block;
-          font-size: 16px;
+          font-size: 10px;
         }
         .tables-container {
           display: flex;
-          gap: 15px;
-          margin-bottom: 20px;
+          gap: 8px;
+          margin-bottom: 10px;
         }
         .table-wrapper {
           flex: 1;
@@ -86,56 +86,56 @@ export const printToPDF = (data: OrderDocument): void => {
         }
         th {
           border: 1px solid #333;
-          padding: 10px;
+          padding: 4px 3px;
           background-color: #475569;
           color: white;
           font-weight: bold;
-          font-size: 14px;
+          font-size: 9px;
         }
         td {
           border: 1px solid #e2e8f0;
-          padding: 8px;
-          font-size: 13px;
+          padding: 3px 3px;
+          font-size: 8px;
         }
         .row-alternate {
           background-color: #f7fafc;
         }
         .total-section {
-          margin-top: 20px;
-          padding: 15px;
+          margin-top: 10px;
+          padding: 8px;
           background-color: #f8fafc;
-          border-radius: 8px;
+          border-radius: 4px;
           border: 1px solid #64748b;
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
         .total-label {
-          font-size: 16px;
+          font-size: 11px;
           font-weight: bold;
           color: #1a1a1a;
         }
         .total-value {
-          font-size: 18px;
+          font-size: 12px;
           font-weight: bold;
           color: #1e293b;
         }
         .note-section {
-          margin-top: 20px;
-          padding: 15px;
+          margin-top: 10px;
+          padding: 8px;
           background-color: #f8fafc;
-          border-radius: 8px;
+          border-radius: 4px;
           border: 1px solid #64748b;
         }
         .note-label {
-          font-size: 14px;
+          font-size: 10px;
           font-weight: bold;
           color: #333;
-          margin-bottom: 8px;
+          margin-bottom: 4px;
         }
         .note-text {
-          font-size: 11px;
-          line-height: 1.5;
+          font-size: 9px;
+          line-height: 1.3;
           color: #1a1a1a;
           white-space: pre-wrap;
         }
@@ -164,7 +164,7 @@ export const printToPDF = (data: OrderDocument): void => {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%) rotate(-45deg);
-          font-size: 120px;
+          font-size: 80px;
           font-weight: bold;
           color: rgba(0, 0, 0, 0.05);
           z-index: -1;
@@ -215,10 +215,10 @@ export const printToPDF = (data: OrderDocument): void => {
           <table>
             <thead>
               <tr>
-                <th style="text-align: left;">資材名</th>
-                <th style="text-align: right;">数量</th>
-                <th style="text-align: right;">単位重量</th>
-                <th style="text-align: right;">合計重量</th>
+                <th style="text-align: left; width: 45%;">資材名</th>
+                <th style="text-align: right; width: 15%;">数量</th>
+                <th style="text-align: right; width: 20%;">単位重量</th>
+                <th style="text-align: right; width: 20%;">合計重量</th>
               </tr>
             </thead>
             <tbody>
