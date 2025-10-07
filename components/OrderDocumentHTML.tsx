@@ -14,8 +14,9 @@ export const printToPDF = (data: OrderDocument): void => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
-  // アイテムを列に分割する（1列あたり最大30アイテム - 3列×30行でA4に収める）
-  const ITEMS_PER_COLUMN = 30;
+  // アイテムを列に分割する（90個以上の場合は1列あたり35行、未満は30行）
+  const ITEMS_PER_COLUMN = data.items.length >= 90 ? 35 : 30;
+  const isCompactMode = data.items.length >= 90;
   const columns: typeof data.items[] = [];
   for (let i = 0; i < data.items.length; i += ITEMS_PER_COLUMN) {
     columns.push(data.items.slice(i, i + ITEMS_PER_COLUMN));
@@ -78,24 +79,29 @@ export const printToPDF = (data: OrderDocument): void => {
         }
         .table-wrapper {
           flex: 1;
+          page-break-inside: avoid;
         }
         table {
           width: 100%;
           border-collapse: collapse;
           border: 1px solid #333;
+          page-break-inside: auto;
+        }
+        tbody tr {
+          page-break-inside: avoid;
         }
         th {
           border: 1px solid #333;
-          padding: 4px 3px;
+          padding: ${isCompactMode ? '2px 2px' : '4px 3px'};
           background-color: #475569;
           color: white;
           font-weight: bold;
-          font-size: 9px;
+          font-size: ${isCompactMode ? '8px' : '9px'};
         }
         td {
           border: 1px solid #e2e8f0;
-          padding: 3px 3px;
-          font-size: 8px;
+          padding: ${isCompactMode ? '2px 2px' : '3px 3px'};
+          font-size: ${isCompactMode ? '7px' : '8px'};
         }
         .row-alternate {
           background-color: #f7fafc;
@@ -229,15 +235,6 @@ export const printToPDF = (data: OrderDocument): void => {
                 <td style="text-align: right;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
                 <td style="text-align: right; font-weight: bold;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
               </tr>`).join('')}
-              ${columnItems.length < ITEMS_PER_COLUMN ? 
-                Array(ITEMS_PER_COLUMN - columnItems.length).fill(0).map((_, i) => 
-                  `<tr ${(columnItems.length + i) % 2 === 1 ? 'class="row-alternate"' : ''}>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                  </tr>`
-                ).join('') : ''}
             </tbody>
           </table>
         </div>

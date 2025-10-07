@@ -175,14 +175,14 @@ export default function OrderDetailPage() {
           <div className="flex gap-2">
             <Button
               onClick={handleEdit}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+              className="flex items-center gap-2 bg-slate-700 hover:bg-slate-800 text-white shadow-sm"
             >
               <Edit className="h-4 w-4" />
               編集
             </Button>
             <Button
               onClick={handleDownload}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+              className="flex items-center gap-2 bg-slate-700 hover:bg-slate-800 text-white shadow-sm"
             >
               <Download className="h-4 w-4" />
               発注書出力
