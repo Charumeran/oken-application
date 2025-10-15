@@ -210,8 +210,8 @@ export const generatePDFContent = (data: OrderDocument): string => {
           top: 0;
           left: 0;
           width: 100%;
-          height: 100%;
-          min-height: 100vh;
+          height: 100vh;
+          max-height: 100vh;
           z-index: -1;
           pointer-events: none;
           user-select: none;
@@ -219,12 +219,11 @@ export const generatePDFContent = (data: OrderDocument): string => {
         }
         .watermark {
           position: absolute;
-          transform: rotate(-45deg);
           font-size: 24px;
           font-weight: bold;
           color: rgba(0, 0, 0, 0.12);
           white-space: nowrap;
-          transform-origin: center;
+          transform: translate(-50%, -50%) rotate(-45deg);
         }
         @media screen and (max-width: 767px) {
           .watermark {
@@ -244,6 +243,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
               const top = (row * (100 / (rows - 1))) + (col % 2 === 0 ? 0 : 5);
+              // 左端0%から右端100%まで文字の中央を基準に配置
               const left = (col * (100 / (cols - 1)));
               watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${left}%;">株式会社　櫻建</div>`);
             }

@@ -81,7 +81,7 @@ export default function OrderHistory() {
       const response = await fetch('/api/orders');
       if (response.status === 401) {
         // セッション切れ - ログインページにリダイレクト
-        router.push('/login');
+        router.push('/');
         return;
       }
       if (!response.ok) {
@@ -136,7 +136,7 @@ export default function OrderHistory() {
 
       if (response.status === 401) {
         // セッション切れ - ログインページにリダイレクト
-        router.push('/login');
+        router.push('/');
         return;
       }
 
@@ -168,7 +168,7 @@ export default function OrderHistory() {
       if (response.status === 401) {
         // セッション切れ - ログインページにリダイレクト
         setCopyDialogOpen(false);
-        router.push('/login');
+        router.push('/');
         return;
       }
       if (!response.ok) {
@@ -204,7 +204,7 @@ export default function OrderHistory() {
       if (createResponse.status === 401) {
         // セッション切れ - ログインページにリダイレクト
         setCopyDialogOpen(false);
-        router.push('/login');
+        router.push('/');
         return;
       }
 
@@ -233,7 +233,7 @@ export default function OrderHistory() {
       const response = await fetch(`/api/orders/${orderId}`);
       if (response.status === 401) {
         // セッション切れ - ログインページにリダイレクト
-        router.push('/login');
+        router.push('/');
         return;
       }
       if (!response.ok) {
@@ -291,7 +291,7 @@ export default function OrderHistory() {
 
         if (updateResponse.status === 401) {
           // セッション切れ - ログインページにリダイレクト
-          router.push('/login');
+          router.push('/');
           return;
         }
 

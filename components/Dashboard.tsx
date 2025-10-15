@@ -27,7 +27,7 @@ export default function Dashboard() {
       const response = await fetch('/api/orders');
       if (response.status === 401) {
         // セッション切れ - ログインページにリダイレクト
-        router.push('/login');
+        router.push('/');
         return;
       }
       if (!response.ok) {
