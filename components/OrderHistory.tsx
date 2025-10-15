@@ -25,7 +25,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -496,30 +495,29 @@ export default function OrderHistory() {
 
       {/* コピー確認ダイアログ */}
       <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle>発注書のコピー</DialogTitle>
-            <DialogDescription>
-              {selectedOrder && (
-                <div className="space-y-2">
-                  <p>発注書「{selectedOrder.orderNumber}」をコピーしますか？</p>
-                  <p>新しい発注書として複製されます。</p>
-                </div>
-              )}
-            </DialogDescription>
+            <DialogTitle className="text-gray-900">発注書のコピー</DialogTitle>
           </DialogHeader>
+          {selectedOrder && (
+            <div className="space-y-2 text-sm text-gray-900">
+              <p>発注書「{selectedOrder.orderNumber}」をコピーしますか？</p>
+              <p>新しい発注書として複製されます。</p>
+            </div>
+          )}
           <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => setCopyDialogOpen(false)}
+              className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               キャンセル
             </Button>
             <Button
               type="button"
               onClick={confirmCopy}
-              className="bg-slate-700 hover:bg-slate-800"
+              className="bg-slate-700 hover:bg-slate-800 text-white"
             >
               コピー
             </Button>
