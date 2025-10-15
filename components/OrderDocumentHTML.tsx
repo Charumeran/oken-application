@@ -45,12 +45,21 @@ export const generatePDFContent = (data: OrderDocument): string => {
             margin: 8mm;
           }
           html, body {
-            height: 100vh !important;
+            height: auto !important;
             overflow: visible !important;
           }
           body {
             margin: 0 !important;
             padding: 8px !important;
+            position: relative;
+          }
+          .print-button {
+            display: none;
+          }
+          .watermark-container {
+            position: absolute !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
           }
         }
         body {
@@ -59,10 +68,13 @@ export const generatePDFContent = (data: OrderDocument): string => {
           line-height: 1.2;
           color: #000;
           padding: 10px;
+          position: relative;
+          min-height: 100vh;
         }
         .print-content {
           display: block;
           max-width: 100%;
+          position: relative;
         }
         .title {
           text-align: center;
@@ -190,19 +202,17 @@ export const generatePDFContent = (data: OrderDocument): string => {
           transform: translateY(-1px);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
-        @media print {
-          .print-button { display: none; }
-        }
         .watermark-container {
-          position: fixed;
+          position: absolute;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
+          min-height: 100vh;
           z-index: -1;
           pointer-events: none;
           user-select: none;
-          overflow: hidden;
+          overflow: visible;
         }
         .watermark {
           position: absolute;
@@ -216,11 +226,11 @@ export const generatePDFContent = (data: OrderDocument): string => {
     </head>
     <body>
       <div class="watermark-container">
-        ${Array.from({ length: 60 }, (_, i) => {
-          const row = Math.floor(i / 5);
-          const col = i % 5;
-          const top = row * 10 + 5;
-          const left = col * 20 + 5;
+        ${Array.from({ length: 20 }, (_, i) => {
+          const row = Math.floor(i / 4);
+          const col = i % 4;
+          const top = row * 20 + 10;
+          const left = col * 25 + 5;
           return `<div class="watermark" style="top: ${top}%; left: ${left}%;">株式会社　櫻建</div>`;
         }).join('')}
       </div>
