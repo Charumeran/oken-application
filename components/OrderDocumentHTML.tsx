@@ -58,6 +58,10 @@ export const generatePDFContent = (data: OrderDocument): string => {
           }
           .watermark-container {
             position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100vw !important;
             height: 100vh !important;
             min-height: 297mm !important;
           }
