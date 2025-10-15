@@ -73,6 +73,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           padding: 10px;
           position: relative;
           min-height: 100vh;
+          overflow-x: hidden;
         }
         .print-content {
           display: block;
@@ -206,16 +207,16 @@ export const generatePDFContent = (data: OrderDocument): string => {
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         .watermark-container {
-          position: absolute;
+          position: fixed;
           top: 0;
           left: 0;
-          width: 100%;
+          right: 0;
+          width: 100vw;
           height: 100vh;
-          max-height: 100vh;
           z-index: -1;
           pointer-events: none;
           user-select: none;
-          overflow: hidden;
+          overflow: visible;
         }
         .watermark {
           position: absolute;
