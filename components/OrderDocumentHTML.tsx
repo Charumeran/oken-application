@@ -240,17 +240,16 @@ export const generatePDFContent = (data: OrderDocument): string => {
     <body>
       <div class="watermark-container">
         ${(() => {
-          // 画面サイズに応じて動的に透かしの数を計算
-          const rows = 8; // 縦方向の繰り返し数
-          const cols = 4; // 横方向の繰り返し数
+          // 透かしをvw単位で等間隔に配置（画面幅に応じて柔軟に対応）
           const watermarks = [];
+          const rows = 8; // 縦方向の繰り返し数
+          const spacing = 25; // 透かし間の間隔（vw単位）
 
           for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-              const top = (row * (100 / (rows - 1))) + (col % 2 === 0 ? 0 : 5);
-              // 左端0%から右端100%まで文字の中央を基準に配置
-              const left = (col * (100 / (cols - 1)));
-              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${left}%;">株式会社　櫻建</div>`);
+            // 横方向は0vwから始めて、spacing間隔で配置
+            for (let colVw = 0; colVw <= 100; colVw += spacing) {
+              const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacing) % 2 === 0 ? 0 : 5);
+              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">株式会社　櫻建</div>`);
             }
           }
 
