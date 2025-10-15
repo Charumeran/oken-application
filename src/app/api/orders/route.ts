@@ -72,6 +72,57 @@ export async function POST(request: Request) {
     const uniqueId = randomBytes(4).toString('hex').toUpperCase();
     const orderNumber = `${currentUser.username.toUpperCase()}-${uniqueId}`;
 
+    // copyFromOrderIdが指定されている場合、元の発注書のisTemporary材料を複製してIDマッピングを作成
+    const materialIdMap = new Map<string, string>();
+    if (data.copyFromOrderId) {
+      console.log('Copying temporary materials from order:', data.copyFromOrderId);
+
+      const temporaryMaterials = await prisma.material.findMany({
+        where: {
+          isTemporary: true,
+          createdForOrderId: data.copyFromOrderId
+        }
+      });
+
+      console.log('Found temporary materials:', temporaryMaterials.length);
+
+      // 各isTemporary材料を複製して新しいorderIdに紐づける
+      for (const material of temporaryMaterials) {
+        // 新しいmaterialCodeを生成
+        // 元のコードから最後のサフィックス（-XXXXの部分）を削除して、新しいサフィックスを追加
+        const baseCode = material.materialCode.split('-').slice(0, 2).join('-'); // OT-001の部分だけを取得
+        const suffix = randomBytes(2).toString('hex').toUpperCase();
+        const newMaterialCode = `${baseCode}-${suffix}`;
+
+        const newMaterial = await prisma.material.create({
+          data: {
+            materialCode: newMaterialCode,
+            name: material.name,
+            categoryId: material.categoryId,
+            size: material.size,
+            type: material.type,
+            weightKg: material.weightKg,
+            notes: material.notes,
+            isActive: true,
+            isTemporary: true,
+            createdForOrderId: null // まだorderIdを設定しない
+          }
+        });
+
+        // 古いID -> 新しいIDのマッピングを作成
+        materialIdMap.set(material.id, newMaterial.id);
+        console.log(`Mapped material: ${material.id} -> ${newMaterial.id} (base: ${baseCode}, new code: ${newMaterialCode})`);
+      }
+    }
+
+    // itemsのmaterialIdをマッピングで置き換え
+    const mappedItems = data.items?.map((item: { materialId: string; quantity: number; totalWeightKg: number; notes: string | null }) => ({
+      materialId: materialIdMap.get(item.materialId) || item.materialId,
+      quantity: item.quantity,
+      totalWeightKg: item.totalWeightKg,
+      notes: item.notes
+    })) || [];
+
     const order = await prisma.order.create({
         data: {
           orderNumber: orderNumber,
@@ -85,12 +136,7 @@ export async function POST(request: Request) {
           status: data.status || 'draft',
           notes: data.notes || null,
           orderDetails: {
-            create: data.items?.map((item: { materialId: string; quantity: number; totalWeightKg: number; notes: string | null }) => ({
-              materialId: item.materialId,
-              quantity: item.quantity,
-              totalWeightKg: item.totalWeightKg,
-              notes: item.notes
-            })) || []
+            create: mappedItems
           }
         },
         include: {
@@ -101,6 +147,19 @@ export async function POST(request: Request) {
           }
         }
       });
+
+    // 複製した材料のcreatedForOrderIdを更新
+    if (data.copyFromOrderId && materialIdMap.size > 0) {
+      await prisma.material.updateMany({
+        where: {
+          id: { in: Array.from(materialIdMap.values()) }
+        },
+        data: {
+          createdForOrderId: order.id
+        }
+      });
+      console.log('Updated createdForOrderId for copied materials');
+    }
 
     return NextResponse.json({ order });
   } catch (error) {

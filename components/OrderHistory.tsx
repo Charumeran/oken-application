@@ -191,6 +191,7 @@ export default function OrderHistory() {
           deliveryDate: order.deliveryDate,
           notes: order.shippingAddress,
           status: 'pending',
+          copyFromOrderId: selectedOrder.id, // 元の発注書のIDを渡してisTemporary材料を複製
           items: order.items.map((item: { materialId: string; quantity: number; totalWeight: number; notes: string | null }) => ({
             materialId: item.materialId,
             quantity: item.quantity,
