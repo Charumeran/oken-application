@@ -498,29 +498,30 @@ export default function OrderHistory() {
       <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>発注書のコピー</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg font-semibold text-gray-900">発注書のコピー</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
               {selectedOrder && (
                 <>
-                  発注書「{selectedOrder.orderNumber}」をコピーしますか？
+                  発注書「<span className="font-medium text-gray-900">{selectedOrder.orderNumber}</span>」をコピーしますか？
                   <br />
                   新しい発注書として複製されます。
                 </>
               )}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 sm:gap-3">
             <Button
               type="button"
               variant="outline"
               onClick={() => setCopyDialogOpen(false)}
+              className="flex-1 sm:flex-none border-gray-300 text-gray-700 hover:bg-gray-50"
             >
               キャンセル
             </Button>
             <Button
               type="button"
               onClick={confirmCopy}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="flex-1 sm:flex-none bg-slate-700 hover:bg-slate-800 text-white shadow-sm"
             >
               コピー
             </Button>
