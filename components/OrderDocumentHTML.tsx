@@ -1,18 +1,12 @@
 import { OrderDocument } from '@/types/material-order';
 import { formatWeight, formatTotalWeight } from '@/lib/utils/format';
 
-export const printToPDF = (data: OrderDocument): void => {
-  // 新しいウィンドウを開いてPDF印刷用のHTMLを表示
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) {
-    alert('ポップアップがブロックされました。ポップアップを許可してください。');
-    return;
-  }
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+};
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-  };
+export const generatePDFContent = (data: OrderDocument): string => {
 
   // アイテムを列に分割する（90個以上の場合は1列あたり35行、未満は30行）
   const ITEMS_PER_COLUMN = data.items.length >= 90 ? 35 : 30;
@@ -22,7 +16,7 @@ export const printToPDF = (data: OrderDocument): void => {
     columns.push(data.items.slice(i, i + ITEMS_PER_COLUMN));
   }
 
-  const htmlContent = `
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -165,23 +159,37 @@ export const printToPDF = (data: OrderDocument): void => {
         @media print {
           .print-button { display: none; }
         }
-        .watermark {
+        .watermark-container {
           position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%) rotate(-45deg);
-          font-size: 80px;
-          font-weight: bold;
-          color: rgba(0, 0, 0, 0.05);
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
           z-index: -1;
           pointer-events: none;
           user-select: none;
+          overflow: hidden;
+        }
+        .watermark {
+          position: absolute;
+          transform: rotate(-45deg);
+          font-size: 24px;
+          font-weight: bold;
+          color: rgba(0, 0, 0, 0.04);
           white-space: nowrap;
         }
       </style>
     </head>
     <body>
-      <div class="watermark">株式会社　櫻建</div>
+      <div class="watermark-container">
+        ${Array.from({ length: 20 }, (_, i) => {
+          const row = Math.floor(i / 4);
+          const col = i % 4;
+          const top = row * 20 + 10;
+          const left = col * 25 + 5;
+          return `<div class="watermark" style="top: ${top}%; left: ${left}%;">株式会社　櫻建</div>`;
+        }).join('')}
+      </div>
       <button class="print-button" onclick="window.print()">印刷 / PDFに保存</button>
       
       <div class="title">
@@ -254,7 +262,17 @@ export const printToPDF = (data: OrderDocument): void => {
     </body>
     </html>
   `;
+};
 
+export const printToPDF = (data: OrderDocument): void => {
+  // 新しいウィンドウを開いてPDF印刷用のHTMLを表示
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('ポップアップがブロックされました。ポップアップを許可してください。');
+    return;
+  }
+
+  const htmlContent = generatePDFContent(data);
   printWindow.document.write(htmlContent);
   printWindow.document.close();
 };

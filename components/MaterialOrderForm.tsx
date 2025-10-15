@@ -586,7 +586,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
       {/* スクロールボタン */}
       <button
         onClick={scrollToSubmit}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 active:scale-95 z-50 flex items-center justify-center"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-slate-700 hover:bg-slate-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 active:scale-95 z-50 flex items-center justify-center"
         title="注文ボタンまで移動"
       >
         <ChevronDown className="h-6 w-6" />
