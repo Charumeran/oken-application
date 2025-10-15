@@ -68,6 +68,9 @@ export const generatePDFContent = (data: OrderDocument): string => {
           .watermark {
             font-size: 20px !important;
           }
+          body {
+            overflow-x: visible !important;
+          }
         }
         body {
           font-family: system-ui, -apple-system, sans-serif;
@@ -240,16 +243,16 @@ export const generatePDFContent = (data: OrderDocument): string => {
     <body>
       <div class="watermark-container">
         ${(() => {
-          // 透かしをvw単位で等間隔に配置（画面幅に応じて柔軟に対応）
+          // 透かしを%単位で等間隔に配置（印刷プレビューでも正しく表示）
           const watermarks = [];
           const rows = 8; // 縦方向の繰り返し数
-          const spacing = 25; // 透かし間の間隔（vw単位）
+          const spacing = 25; // 透かし間の間隔（%単位）
 
           for (let row = 0; row < rows; row++) {
-            // 横方向は0vwから始めて、spacing間隔で配置
-            for (let colVw = 0; colVw <= 100; colVw += spacing) {
-              const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacing) % 2 === 0 ? 0 : 5);
-              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">株式会社　櫻建</div>`);
+            // 横方向は0%から始めて、spacing間隔で配置
+            for (let colPercent = 0; colPercent <= 100; colPercent += spacing) {
+              const top = (row * (100 / (rows - 1))) + (Math.floor(colPercent / spacing) % 2 === 0 ? 0 : 5);
+              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colPercent}%;">株式会社　櫻建</div>`);
             }
           }
 
