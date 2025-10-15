@@ -216,11 +216,11 @@ export const generatePDFContent = (data: OrderDocument): string => {
     </head>
     <body>
       <div class="watermark-container">
-        ${Array.from({ length: 20 }, (_, i) => {
-          const row = Math.floor(i / 4);
-          const col = i % 4;
-          const top = row * 20 + 10;
-          const left = col * 25 + 5;
+        ${Array.from({ length: 60 }, (_, i) => {
+          const row = Math.floor(i / 5);
+          const col = i % 5;
+          const top = row * 10 + 5;
+          const left = col * 20 + 5;
           return `<div class="watermark" style="top: ${top}%; left: ${left}%;">株式会社　櫻建</div>`;
         }).join('')}
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -76,13 +76,14 @@ export default function OrderHistory() {
   
   const monthOptions = useMemo(() => generateMonthOptions(), []);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch('/api/orders');
+      if (response.status === 401) {
+        // セッション切れ - ログインページにリダイレクト
+        router.push('/login');
+        return;
+      }
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
       }
@@ -93,7 +94,11 @@ export default function OrderHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
@@ -129,6 +134,12 @@ export default function OrderHistory() {
         method: 'DELETE',
       });
 
+      if (response.status === 401) {
+        // セッション切れ - ログインページにリダイレクト
+        router.push('/login');
+        return;
+      }
+
       if (!response.ok) {
         throw new Error('Failed to delete order');
       }
@@ -154,6 +165,12 @@ export default function OrderHistory() {
     try {
       // 注文詳細を取得
       const response = await fetch(`/api/orders/${selectedOrder.id}`);
+      if (response.status === 401) {
+        // セッション切れ - ログインページにリダイレクト
+        setCopyDialogOpen(false);
+        router.push('/login');
+        return;
+      }
       if (!response.ok) {
         throw new Error('Failed to fetch order');
       }
@@ -184,6 +201,13 @@ export default function OrderHistory() {
         }),
       });
 
+      if (createResponse.status === 401) {
+        // セッション切れ - ログインページにリダイレクト
+        setCopyDialogOpen(false);
+        router.push('/login');
+        return;
+      }
+
       if (!createResponse.ok) {
         const errorData = await createResponse.json();
         console.error('Error response:', errorData);
@@ -207,6 +231,11 @@ export default function OrderHistory() {
     try {
       // 注文詳細を取得
       const response = await fetch(`/api/orders/${orderId}`);
+      if (response.status === 401) {
+        // セッション切れ - ログインページにリダイレクト
+        router.push('/login');
+        return;
+      }
       if (!response.ok) {
         throw new Error('Failed to fetch order');
       }
@@ -259,6 +288,12 @@ export default function OrderHistory() {
             }))
           }),
         });
+
+        if (updateResponse.status === 401) {
+          // セッション切れ - ログインページにリダイレクト
+          router.push('/login');
+          return;
+        }
 
         if (updateResponse.ok) {
           // 一覧を再読み込み
