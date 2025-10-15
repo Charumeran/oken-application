@@ -7,14 +7,21 @@ const formatDate = (dateString: string) => {
 };
 
 export const generatePDFContent = (data: OrderDocument): string => {
-
-  // アイテムを列に分割する（90個以上の場合は1列あたり33行、未満は28行）
-  // 行の高さを広げたため、行数を調整してA4 1枚に収まるようにする
-  const ITEMS_PER_COLUMN = data.items.length >= 90 ? 33 : 28;
+  // アイテム数に応じてコンパクトモードを判定
   const isCompactMode = data.items.length >= 90;
+
+  // カラム数を決定（アイテム数に応じて2-4列）
+  let columnCount = 2;
+  if (data.items.length > 60) columnCount = 3;
+  if (data.items.length > 100) columnCount = 4;
+
+  // アイテムをカラムに均等に分割
+  const itemsPerColumn = Math.ceil(data.items.length / columnCount);
   const columns: typeof data.items[] = [];
-  for (let i = 0; i < data.items.length; i += ITEMS_PER_COLUMN) {
-    columns.push(data.items.slice(i, i + ITEMS_PER_COLUMN));
+  for (let i = 0; i < columnCount; i++) {
+    const start = i * itemsPerColumn;
+    const end = Math.min(start + itemsPerColumn, data.items.length);
+    columns.push(data.items.slice(start, end));
   }
 
   return `
@@ -29,7 +36,6 @@ export const generatePDFContent = (data: OrderDocument): string => {
           box-sizing: border-box;
         }
         html, body {
-          height: 100%;
           margin: 0;
           padding: 0;
         }
@@ -39,19 +45,12 @@ export const generatePDFContent = (data: OrderDocument): string => {
             margin: 8mm;
           }
           html, body {
-            height: 100%;
-            overflow: hidden;
-            page-break-after: avoid;
-            page-break-before: avoid;
-            page-break-inside: avoid;
+            height: 100vh !important;
+            overflow: visible !important;
           }
           body {
             margin: 0 !important;
             padding: 8px !important;
-          }
-          .print-content {
-            page-break-inside: avoid;
-            page-break-after: avoid;
           }
         }
         body {
@@ -62,8 +61,8 @@ export const generatePDFContent = (data: OrderDocument): string => {
           padding: 10px;
         }
         .print-content {
-          page-break-inside: avoid;
           display: block;
+          max-width: 100%;
         }
         .title {
           text-align: center;
@@ -82,7 +81,6 @@ export const generatePDFContent = (data: OrderDocument): string => {
           background-color: #f8fafc;
           border: 2px solid #000;
           border-radius: 4px;
-          page-break-inside: avoid;
         }
         .info-row {
           margin-bottom: 3px;
@@ -96,35 +94,42 @@ export const generatePDFContent = (data: OrderDocument): string => {
         }
         .tables-container {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           margin-bottom: 10px;
-          page-break-inside: avoid;
+          justify-content: space-between;
         }
-        .table-wrapper {
+        .table-column {
           flex: 1;
-          page-break-inside: avoid;
+          min-width: 0;
         }
         table {
           width: 100%;
           border-collapse: collapse;
           border: 2px solid #000;
-          page-break-inside: avoid;
-        }
-        tbody tr {
-          page-break-inside: avoid;
+          table-layout: fixed;
         }
         th {
           border: 1px solid #000;
-          padding: ${isCompactMode ? '3px 2px' : '5px 4px'};
+          padding: ${isCompactMode ? '3px 2px' : '4px 3px'};
           background-color: #475569;
           color: white;
           font-weight: bold;
-          font-size: ${isCompactMode ? '8px' : '9px'};
+          font-size: ${isCompactMode ? '7px' : '8px'};
         }
         td {
-          border: 1px solid #333;
-          padding: ${isCompactMode ? '4px 3px' : '5px 4px'};
-          font-size: ${isCompactMode ? '7px' : '8px'};
+          border: 1px solid #000;
+          padding: ${isCompactMode ? '3px 2px' : '4px 3px'};
+          font-size: ${isCompactMode ? '6px' : '7px'};
+          height: ${isCompactMode ? '18px' : '22px'};
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          vertical-align: middle;
+        }
+        td:first-child {
+          white-space: normal;
+          word-break: break-word;
+          line-height: 1.15;
         }
         .row-alternate {
           background-color: #f7fafc;
@@ -134,11 +139,10 @@ export const generatePDFContent = (data: OrderDocument): string => {
           padding: 8px;
           background-color: #f8fafc;
           border-radius: 4px;
-          border: 1px solid #64748b;
+          border: 2px solid #000;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          page-break-inside: avoid;
         }
         .total-label {
           font-size: 11px;
@@ -155,8 +159,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           padding: 8px;
           background-color: #f8fafc;
           border-radius: 4px;
-          border: 1px solid #64748b;
-          page-break-inside: avoid;
+          border: 2px solid #000;
         }
         .note-label {
           font-size: 10px;
@@ -227,7 +230,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
       <div class="title">
         <h1>資材発注書</h1>
       </div>
-      
+
       <div class="info-section">
         <div class="info-row">
           <span class="info-label">発注日:</span>
@@ -253,18 +256,18 @@ export const generatePDFContent = (data: OrderDocument): string => {
           <span>${formatDate(data.loadingDate)}</span>
         </div>` : ''}
       </div>
-      
+
       ${data.items.length > 0 ? `
       <div class="tables-container">
         ${columns.map((columnItems) => `
-        <div class="table-wrapper">
+        <div class="table-column">
           <table>
             <thead>
               <tr>
-                <th style="text-align: left; width: 45%;">資材名</th>
-                <th style="text-align: right; width: 15%;">数量</th>
-                <th style="text-align: right; width: 20%;">単位重量</th>
-                <th style="text-align: right; width: 20%;">合計重量</th>
+                <th style="text-align: left; width: 42%;">資材名</th>
+                <th style="text-align: right; width: 18%;">数量</th>
+                <th style="text-align: right; width: 20%;">単重</th>
+                <th style="text-align: right; width: 20%;">合計</th>
               </tr>
             </thead>
             <tbody>
@@ -277,15 +280,14 @@ export const generatePDFContent = (data: OrderDocument): string => {
               </tr>`).join('')}
             </tbody>
           </table>
-        </div>
-        `).join('')}
+        </div>`).join('')}
       </div>` : ''}
-      
+
       <div class="total-section">
         <span class="total-label">合計重量:</span>
         <span class="total-value">${formatTotalWeight(data.totalWeight)}</span>
       </div>
-      
+
       ${data.note ? `
       <div class="note-section">
         <div class="note-label">備考:</div>
