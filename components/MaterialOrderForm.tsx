@@ -429,7 +429,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
               <button
                 type="button"
                 onClick={() => setShowAddMaterialForm(true)}
-                className="px-6 py-3 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 flex items-center space-x-2"
+                className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 flex items-center space-x-2"
               >
                 <span>材料を追加</span>
               </button>

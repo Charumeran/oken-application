@@ -8,8 +8,8 @@ import { z } from "zod";
 const addMaterialSchema = z.object({
   name: z.string().min(1, "材料名を入力してください"),
   size: z.string().optional(),
-  type: z.string().min(1, "種別を入力してください"),
-  weightKg: z.number().positive("重量は正の数値で入力してください"),
+  type: z.string().optional(),
+  weightKg: z.number().min(0, "重量は0以上で入力してください"),
   notes: z.string().optional(),
 });
 
@@ -103,7 +103,7 @@ export default function AddMaterialForm({ categoryId, onSuccess, onCancel }: Add
             <input
               {...register("name")}
               type="text"
-              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               placeholder="材料名を入力"
             />
             {errors.name && (
@@ -116,20 +116,19 @@ export default function AddMaterialForm({ categoryId, onSuccess, onCancel }: Add
             <input
               {...register("size")}
               type="text"
-              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               placeholder="例: 1.2×5.1"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2 text-slate-700">
-              種別 <span className="text-red-500">*</span>
+              種別
             </label>
             <input
               {...register("type")}
               type="text"
-              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="例: 標準, 特殊"
+              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
             />
             {errors.type && (
               <p className="text-red-500 mt-1 text-sm">{errors.type.message}</p>
@@ -144,7 +143,7 @@ export default function AddMaterialForm({ categoryId, onSuccess, onCancel }: Add
               {...register("weightKg", { valueAsNumber: true })}
               type="number"
               step="0.0001"
-              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               placeholder="0.0000"
             />
             {errors.weightKg && (
@@ -156,7 +155,7 @@ export default function AddMaterialForm({ categoryId, onSuccess, onCancel }: Add
             <label className="block text-sm font-medium mb-2 text-slate-700">備考</label>
             <textarea
               {...register("notes")}
-              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
               rows={3}
               placeholder="特記事項があれば入力"
             />
@@ -166,14 +165,14 @@ export default function AddMaterialForm({ categoryId, onSuccess, onCancel }: Add
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors font-medium"
+              className="flex-1 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
               キャンセル
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors font-medium"
+              className="flex-1 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors font-medium"
             >
               {isSubmitting ? "追加中..." : "追加"}
             </button>
