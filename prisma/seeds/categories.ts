@@ -11,10 +11,14 @@ export async function seedCategories(prisma: PrismaClient) {
   ]
 
   for (const category of categories) {
-    await prisma.category.create({
-      data: category
+    await prisma.category.upsert({
+      where: { name: category.name },
+      update: {
+        displayOrder: category.displayOrder
+      },
+      create: category
     })
-    console.log(`  ✓ ${category.name} カテゴリを作成`)
+    console.log(`  ✓ ${category.name} カテゴリを作成/更新`)
   }
   
   console.log('✅ カテゴリデータの投入完了\n')

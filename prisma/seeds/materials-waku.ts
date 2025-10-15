@@ -35,36 +35,36 @@ export async function seedWakuMaterials(prisma: PrismaClient) {
     { materialCode: 'WK-013', name: '筋違　L1829H1700　　A-14', size: '1829x1700', type: '筋違', weightKg: 4.2 },
     { materialCode: 'WK-014', name: '筋違　L1524H1700　　A-11', size: '1524x1700', type: '筋違', weightKg: 3.7 },
     { materialCode: 'WK-015', name: '筋違　L1219H1700　　A-13', size: '1219x1700', type: '筋違', weightKg: 3.3 },
-    { materialCode: 'WK-016', name: '筋違　L914H1700　　  A-012', size: '914x1700', type: '筋違', weightKg: 2.9 },
-    { materialCode: 'WK-017', name: '筋違　L610H1700      A-12', size: '610x1700', type: '筋違', weightKg: 2.6 },
+    { materialCode: 'WK-016', name: '筋違　L914H1700　　A-012', size: '914x1700', type: '筋違', weightKg: 2.9 },
+    { materialCode: 'WK-017', name: '筋違　L610H1700　　A-12', size: '610x1700', type: '筋違', weightKg: 2.6 },
     
     // ===== 筋違 L×H 1219 =====
     { materialCode: 'WK-018', name: '筋違　L1829H1219　　A-19', size: '1829x1219', type: '筋違', weightKg: 3.9 },
     { materialCode: 'WK-019', name: '筋違　L1524H1219　　A-18', size: '1524x1219', type: '筋違', weightKg: 3.4 },
     { materialCode: 'WK-020', name: '筋違　L1219H1219　　A-012', size: '1219x1219', type: '筋違', weightKg: 2.9 },
-    { materialCode: 'WK-021', name: '筋違　L914H1219　　  A-07', size: '914x1219', type: '筋違', weightKg: 2.4 },
-    { materialCode: 'WK-022', name: '筋違　L610H1219      A-09', size: '610x1219', type: '筋違', weightKg: 2.1 },
+    { materialCode: 'WK-021', name: '筋違　L914H1219　　A-07', size: '914x1219', type: '筋違', weightKg: 2.4 },
+    { materialCode: 'WK-022', name: '筋違　L610H1219　　A-09', size: '610x1219', type: '筋違', weightKg: 2.1 },
     
     // ===== 筋違 L×H 914 (1回目) =====
     { materialCode: 'WK-023', name: '筋違　L1829H914　　A-08', size: '1829x914', type: '筋違', weightKg: 3.7 },
     { materialCode: 'WK-024', name: '筋違　L1524H914　　A-9', size: '1524x914', type: '筋違', weightKg: 3.1 },
     { materialCode: 'WK-025', name: '筋違　L1219H914　　A-12', size: '1219x914', type: '筋違', weightKg: 2.6 },
-    { materialCode: 'WK-026', name: '筋違　L914H914　　  A-09', size: '914x914', type: '筋違', weightKg: 2.1 },
-    { materialCode: 'WK-027', name: '筋違　L610H914       A-06', size: '610x914', type: '筋違', weightKg: 1.7 },
+    { materialCode: 'WK-026', name: '筋違　L914H914　　A-09', size: '914x914', type: '筋違', weightKg: 2.1 },
+    { materialCode: 'WK-027', name: '筋違　L610H914　　A-06', size: '610x914', type: '筋違', weightKg: 1.7 },
     
     // ===== 筋違 L×H 914 (2回目 - 重複) =====
     { materialCode: 'WK-028', name: '筋違　L1829H914　　A-08', size: '1829x914', type: '筋違', weightKg: 3.7 },
     { materialCode: 'WK-029', name: '筋違　L1524H914　　A-9', size: '1524x914', type: '筋違', weightKg: 3.1 },
     { materialCode: 'WK-030', name: '筋違　L1219H914　　A-12', size: '1219x914', type: '筋違', weightKg: 2.6 },
-    { materialCode: 'WK-031', name: '筋違　L914H914　　  A-09', size: '914x914', type: '筋違', weightKg: 2.1 },
-    { materialCode: 'WK-032', name: '筋違　L610H914       A-06', size: '610x914', type: '筋違', weightKg: 1.7 },
+    { materialCode: 'WK-031', name: '筋違　L914H914　　A-09', size: '914x914', type: '筋違', weightKg: 2.1 },
+    { materialCode: 'WK-032', name: '筋違　L610H914　　A-06', size: '610x914', type: '筋違', weightKg: 1.7 },
     
     // ===== 筋違 L×H 490 =====
     { materialCode: 'WK-033', name: '筋違　L1829H490　　A-16S', size: '1829x490', type: '筋違', weightKg: 3.5 },
     { materialCode: 'WK-034', name: '筋違　L1524H490　　A-16', size: '1524x490', type: '筋違', weightKg: 3.0 },
     { materialCode: 'WK-035', name: '筋違　L1219H490　　A-05', size: '1219x490', type: '筋違', weightKg: 2.5 },
-    { materialCode: 'WK-036', name: '筋違　L914H490　　  A-04', size: '914x490', type: '筋違', weightKg: 1.9 },
-    { materialCode: 'WK-037', name: '筋違　L610H490       A-03', size: '610x490', type: '筋違', weightKg: 1.4 },
+    { materialCode: 'WK-036', name: '筋違　L914H490　　A-04', size: '914x490', type: '筋違', weightKg: 1.9 },
+    { materialCode: 'WK-037', name: '筋違　L610H490　　A-03', size: '610x490', type: '筋違', weightKg: 1.4 },
     
     // ===== 調整枠 H×W 1219 =====
     { materialCode: 'WK-038', name: '調整枠　H1524×W1219', size: '1524x1219', type: '調整枠', weightKg: 15.0 },
@@ -119,14 +119,14 @@ export async function seedWakuMaterials(prisma: PrismaClient) {
     { materialCode: 'WK-071', name: '下さん　900', size: '900', type: '下さん', weightKg: 0.9 },
 
     // ===== 梁枠・梁渡し =====
-    { materialCode: 'WK-072', name: '梁枠２スパーン', size: '2スパン', type: '梁枠', weightKg: 28.3 },
-    { materialCode: 'WK-073', name: '梁枠３スパーン', size: '3スパン', type: '梁枠', weightKg: 38.8 },
+    { materialCode: 'WK-072', name: '梁枠２スパン', size: '2スパン', type: '梁枠', weightKg: 28.3 },
+    { materialCode: 'WK-073', name: '梁枠３スパン', size: '3スパン', type: '梁枠', weightKg: 38.8 },
     { materialCode: 'WK-074', name: '梁渡し914', size: '914', type: '梁渡し', weightKg: 5.4 },
     { materialCode: 'WK-075', name: '梁渡し1219', size: '1219', type: '梁渡し', weightKg: 8.8 },
 
     // ===== 方杖・隅梁受 =====
-    { materialCode: 'WK-076', name: '方杖3スパーン', size: '3スパン', type: '方杖', weightKg: 6.2 },
-    { materialCode: 'WK-077', name: '方杖2スパーン', size: '2スパン', type: '方杖', weightKg: 4.8 },
+    { materialCode: 'WK-076', name: '方杖3スパン', size: '3スパン', type: '方杖', weightKg: 6.2 },
+    { materialCode: 'WK-077', name: '方杖2スパン', size: '2スパン', type: '方杖', weightKg: 4.8 },
     { materialCode: 'WK-078', name: '隅梁受', size: null, type: '隅梁受', weightKg: 2.8 },
     
     // ===== コーナーステップ・コンビステップ =====

@@ -12,11 +12,8 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 データベースに初期データを投入中...\n')
   
-  // 0. 既存データをクリア
-  console.log('🧹 既存データをクリア中...')
-  await prisma.material.deleteMany()
-  await prisma.category.deleteMany()
-  console.log('✅ 既存データのクリア完了\n')
+  // 0. 既存データはクリアしない（upsertで更新）
+  console.log('⚠️ 注意: 既存データはクリアせず、upsertで更新します\n')
   
   // 1. カテゴリを作成
   await seedCategories(prisma)

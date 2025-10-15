@@ -20,12 +20,12 @@ export async function seedSheetMaterials(prisma: PrismaClient) {
     { materialCode: 'SH-004', name: 'メッシュシート　　Ⅰ類　0.9×5.1　メーターサイズ', size: '0.9×5.1', type: 'Ⅰ類メーター', weightKg: 2.70 },
     { materialCode: 'SH-005', name: 'メッシュシート　　Ⅰ類　0.6×5.1　メーターサイズ', size: '0.6×5.1', type: 'Ⅰ類メーター', weightKg: 2.00 },
     
-    // ===== メッシュシート　　Ⅰ類（インチーサイズ） =====
-    { materialCode: 'SH-006', name: 'メッシュシート　　Ⅰ類　1.829×5.1　インチーサイズ', size: '1.829×5.1', type: 'Ⅰ類インチー', weightKg: 5.50 },
-    { materialCode: 'SH-007', name: 'メッシュシート　　Ⅰ類　1.524×5.1　インチーサイズ', size: '1.524×5.1', type: 'Ⅰ類インチー', weightKg: 4.60 },
-    { materialCode: 'SH-008', name: 'メッシュシート　　Ⅰ類　1.219×5.1　インチーサイズ', size: '1.219×5.1', type: 'Ⅰ類インチー', weightKg: 3.70 },
-    { materialCode: 'SH-009', name: 'メッシュシート　　Ⅰ類　0.914×5.1　インチーサイズ', size: '0.914×5.1', type: 'Ⅰ類インチー', weightKg: 3.00 },
-    { materialCode: 'SH-010', name: 'メッシュシート　　Ⅰ類　0.610×5.1　インチーサイズ', size: '0.610×5.1', type: 'Ⅰ類インチー', weightKg: 2.30 },
+    // ===== メッシュシート　　Ⅰ類（インチサイズ） =====
+    { materialCode: 'SH-006', name: 'メッシュシート　　Ⅰ類　1.829×5.1　インチサイズ', size: '1.829×5.1', type: 'Ⅰ類インチ', weightKg: 5.50 },
+    { materialCode: 'SH-007', name: 'メッシュシート　　Ⅰ類　1.524×5.1　インチサイズ', size: '1.524×5.1', type: 'Ⅰ類インチ', weightKg: 4.60 },
+    { materialCode: 'SH-008', name: 'メッシュシート　　Ⅰ類　1.219×5.1　インチサイズ', size: '1.219×5.1', type: 'Ⅰ類インチ', weightKg: 3.70 },
+    { materialCode: 'SH-009', name: 'メッシュシート　　Ⅰ類　0.914×5.1　インチサイズ', size: '0.914×5.1', type: 'Ⅰ類インチ', weightKg: 3.00 },
+    { materialCode: 'SH-010', name: 'メッシュシート　　Ⅰ類　0.610×5.1　インチサイズ', size: '0.610×5.1', type: 'Ⅰ類インチ', weightKg: 2.30 },
     
     // ===== メッシュシート　　Ⅱ類（5.1mサイズ） =====
     { materialCode: 'SH-011', name: 'メッシュシート　　Ⅱ類　1.8×5.1　メーターサイズ', size: '1.8×5.1', type: 'Ⅱ類5.1m', weightKg: 1.50 },
@@ -62,12 +62,12 @@ export async function seedSheetMaterials(prisma: PrismaClient) {
     { materialCode: 'SH-035', name: 'メッシュシート　　Ⅰ類　内張り用　0.9×5.1　メーターサイズ', size: '0.9×5.1', type: 'Ⅰ類内張りメーター', weightKg: 2.40 },
     { materialCode: 'SH-036', name: 'メッシュシート　　Ⅰ類　内張り用　0.6×5.1　メーターサイズ', size: '0.6×5.1', type: 'Ⅰ類内張りメーター', weightKg: 1.80 },
     
-    // ===== メッシュシート　　Ⅰ類　内張り用（インチーサイズ） =====
-    { materialCode: 'SH-037', name: 'メッシュシート　　Ⅰ類　内張り用　1.829×5.1　インチーサイズ', size: '1.829×5.1', type: 'Ⅰ類内張りインチー', weightKg: 4.10 },
-    { materialCode: 'SH-038', name: 'メッシュシート　　Ⅰ類　内張り用　1.524×5.1　インチーサイズ', size: '1.524×5.1', type: 'Ⅰ類内張りインチー', weightKg: 3.60 },
-    { materialCode: 'SH-039', name: 'メッシュシート　　Ⅰ類　内張り用　1.219×5.1　インチーサイズ', size: '1.219×5.1', type: 'Ⅰ類内張りインチー', weightKg: 2.90 },
-    { materialCode: 'SH-040', name: 'メッシュシート　　Ⅰ類　内張り用　0.914×5.1　インチーサイズ', size: '0.914×5.1', type: 'Ⅰ類内張りインチー', weightKg: 2.30 },
-    { materialCode: 'SH-041', name: 'メッシュシート　　Ⅰ類　内張り用　0.610×5.1　インチーサイズ', size: '0.610×5.1', type: 'Ⅰ類内張りインチー', weightKg: 1.70 },
+    // ===== メッシュシート　　Ⅰ類　内張り用（インチサイズ） =====
+    { materialCode: 'SH-037', name: 'メッシュシート　　Ⅰ類　内張り用　1.829×5.1　インチサイズ', size: '1.829×5.1', type: 'Ⅰ類内張りインチ', weightKg: 4.10 },
+    { materialCode: 'SH-038', name: 'メッシュシート　　Ⅰ類　内張り用　1.524×5.1　インチサイズ', size: '1.524×5.1', type: 'Ⅰ類内張りインチ', weightKg: 3.60 },
+    { materialCode: 'SH-039', name: 'メッシュシート　　Ⅰ類　内張り用　1.219×5.1　インチサイズ', size: '1.219×5.1', type: 'Ⅰ類内張りインチ', weightKg: 2.90 },
+    { materialCode: 'SH-040', name: 'メッシュシート　　Ⅰ類　内張り用　0.914×5.1　インチサイズ', size: '0.914×5.1', type: 'Ⅰ類内張りインチ', weightKg: 2.30 },
+    { materialCode: 'SH-041', name: 'メッシュシート　　Ⅰ類　内張り用　0.610×5.1　インチサイズ', size: '0.610×5.1', type: 'Ⅰ類内張りインチ', weightKg: 1.70 },
     
     // ===== 垂直ネット =====
     { materialCode: 'SH-042', name: '垂直ネット　15ｍｍマス　グリーン　6ｍ×8ｍ', size: '6ｍ×8ｍ', type: '垂直ネット', weightKg: 9.60 },

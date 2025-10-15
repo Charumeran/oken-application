@@ -56,7 +56,7 @@ export async function seedOtherMaterials(prisma: PrismaClient) {
     { materialCode: 'OT-030', name: '鋼製巾木　２ｍ', size: '2m', type: '巾木', weightKg: 7.20 },
     
     // ===== キャスター =====
-    { materialCode: 'OT-031', name: 'ローリンクキャスター', size: null, type: 'キャスター', weightKg: 7.40 },
+    { materialCode: 'OT-031', name: 'ローリングキャスター', size: null, type: 'キャスター', weightKg: 7.40 },
     
     // ===== フラットパネル =====
     { materialCode: 'OT-032', name: 'フラットパネル　H2.0ｍ', size: 'H2.0m', type: 'フラットパネル', weightKg: 12.40 },
@@ -89,7 +89,7 @@ export async function seedOtherMaterials(prisma: PrismaClient) {
     { materialCode: 'OT-055', name: '壁つなぎ(二段)　680-1060', size: '680-1060', type: '壁つなぎ二段', weightKg: 2.20 },
     
     // ===== 工具・小物 =====
-    { materialCode: 'OT-056', name: '釘', size: null, type: '小物', weightKg: 0.01 },
+    { materialCode: 'OT-056', name: '釘', size: null, type: '小物', weightKg: 0.00 },
     { materialCode: 'OT-057', name: '大ハンマー', size: null, type: '工具', weightKg: 3.50 },
     
     // ===== L型巾木 =====
@@ -111,8 +111,8 @@ export async function seedOtherMaterials(prisma: PrismaClient) {
     { materialCode: 'OT-071', name: '養生クランプ', size: null, type: '養生枠', weightKg: 0.34 },
     
     // ===== バンセン =====
-    { materialCode: 'OT-072', name: 'バンセン　10番', size: '10番', type: 'バンセン', weightKg: 25.00 },
-    { materialCode: 'OT-073', name: 'バンセン　12番', size: '12番', type: 'バンセン', weightKg: 25.00 },
+    { materialCode: 'OT-072', name: 'バンセン　10番', size: '10番', type: 'バンセン', weightKg: 0.00 },
+    { materialCode: 'OT-073', name: 'バンセン　12番', size: '12番', type: 'バンセン', weightKg: 0.00 },
   ]
 
   // データベースに投入

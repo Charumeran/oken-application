@@ -117,8 +117,8 @@ export async function seedKusabiMaterials(prisma: PrismaClient) {
     { materialCode: 'KS-072', name: '先行手摺（次世代）　600', size: '600', type: '先行手摺次世代', weightKg: 4.8 },
     
     // ===== 梁枠 =====
-    { materialCode: 'KS-073', name: '梁枠　３スパーン', size: '3スパーン', type: '梁枠', weightKg: 41.4 },
-    { materialCode: 'KS-074', name: '梁枠　２スパーン', size: '2スパーン', type: '梁枠', weightKg: 27.8 },
+    { materialCode: 'KS-073', name: '梁枠　３スパン', size: '3スパン', type: '梁枠', weightKg: 41.4 },
+    { materialCode: 'KS-074', name: '梁枠　２スパン', size: '2スパン', type: '梁枠', weightKg: 27.8 },
     
     // ===== 壁あてジャッキ =====
     { materialCode: 'KS-075', name: '壁あてジャッキ', size: null, type: '壁あてジャッキ', weightKg: 2.3 },
