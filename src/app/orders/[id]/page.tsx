@@ -220,17 +220,17 @@ export default function OrderDetailPage() {
           <div className="flex gap-2">
             <Button
               onClick={handleEdit}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white shadow-sm"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white shadow-sm text-sm"
             >
               <Edit className="h-4 w-4" />
-              <span className="hidden sm:inline">編集</span>
+              <span>編集</span>
             </Button>
             <Button
               onClick={handleDownload}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white shadow-sm"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white shadow-sm text-sm"
             >
               <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">発注書出力</span>
+              <span>発注書出力</span>
             </Button>
           </div>
         </div>
