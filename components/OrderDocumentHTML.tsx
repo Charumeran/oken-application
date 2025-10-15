@@ -61,7 +61,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
             top: 0 !important;
             left: 0 !important;
             right: 0 !important;
-            width: 100vw !important;
+            width: 100% !important;
             height: 100vh !important;
             min-height: 297mm !important;
           }
@@ -215,7 +215,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           top: 0;
           left: 0;
           right: 0;
-          width: 100vw;
+          width: 100%;
           height: 100vh;
           z-index: -1;
           pointer-events: none;
