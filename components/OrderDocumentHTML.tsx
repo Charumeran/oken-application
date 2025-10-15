@@ -57,9 +57,12 @@ export const generatePDFContent = (data: OrderDocument): string => {
             display: none;
           }
           .watermark-container {
-            position: absolute !important;
-            height: 297mm !important;
+            position: fixed !important;
+            height: 100vh !important;
             min-height: 297mm !important;
+          }
+          .watermark {
+            font-size: 20px !important;
           }
         }
         body {
@@ -212,7 +215,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           z-index: -1;
           pointer-events: none;
           user-select: none;
-          overflow: visible;
+          overflow: hidden;
         }
         .watermark {
           position: absolute;
@@ -221,18 +224,33 @@ export const generatePDFContent = (data: OrderDocument): string => {
           font-weight: bold;
           color: rgba(0, 0, 0, 0.12);
           white-space: nowrap;
+          transform-origin: center;
+        }
+        @media screen and (max-width: 767px) {
+          .watermark {
+            font-size: 16px;
+          }
         }
       </style>
     </head>
     <body>
       <div class="watermark-container">
-        ${Array.from({ length: 20 }, (_, i) => {
-          const row = Math.floor(i / 4);
-          const col = i % 4;
-          const top = row * 20 + 10;
-          const left = col * 25 + 5;
-          return `<div class="watermark" style="top: ${top}%; left: ${left}%;">株式会社　櫻建</div>`;
-        }).join('')}
+        ${(() => {
+          // 画面サイズに応じて動的に透かしの数を計算
+          const rows = 8; // 縦方向の繰り返し数
+          const cols = 4; // 横方向の繰り返し数
+          const watermarks = [];
+
+          for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+              const top = (row * (100 / (rows - 1))) + (col % 2 === 0 ? 0 : 5);
+              const left = (col * (100 / (cols - 1)));
+              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${left}%;">株式会社　櫻建</div>`);
+            }
+          }
+
+          return watermarks.join('');
+        })()}
       </div>
       <button class="print-button" onclick="window.print()">印刷 / PDFに保存</button>
 

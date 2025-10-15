@@ -166,77 +166,77 @@ export default function MaterialOrderPage() {
 
   if (showPDFPreview && orderData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-3 md:p-4">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-slate-800">{editMode ? '発注書編集プレビュー' : '発注書プレビュー'}</h1>
-            <div className="space-x-4">
+          <div className="mb-4 md:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <h1 className="text-xl md:text-3xl font-bold text-slate-800">{editMode ? '発注書編集プレビュー' : '発注書プレビュー'}</h1>
+            <div className="flex gap-2 sm:gap-4">
               <button
                 onClick={handleReset}
-                className="px-6 py-3 bg-slate-500 text-white rounded-lg hover:bg-slate-600 font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                className="flex-1 sm:flex-none px-4 md:px-6 py-2 md:py-3 bg-slate-500 text-white rounded-lg hover:bg-slate-600 font-semibold shadow-md hover:shadow-lg transition-all duration-200 text-sm md:text-base"
               >
                 戻る
               </button>
               <button
                 onClick={handleCreateOrder}
                 disabled={isCreatingOrder || orderCreated}
-                className="px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                className="flex-1 sm:flex-none px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200 text-sm md:text-base"
               >
                 {isCreatingOrder ? (editMode ? "更新中..." : "作成中...") : orderCreated ? (editMode ? "更新済み" : "作成済み") : (editMode ? "発注書を更新" : "発注書を作成")}
               </button>
             </div>
           </div>
 
-          <div className="rounded-2xl p-8 bg-white shadow-xl">
-            <h2 className="text-2xl font-bold mb-6 text-slate-800">発注内容確認</h2>
-          
-            <div className="space-y-3 mb-8 p-4 bg-slate-50 rounded-lg">
-              <p className="text-lg"><span className="font-semibold text-slate-700">注文者:</span> <span className="text-slate-800">{orderData.ordererName}</span></p>
-              <p className="text-lg"><span className="font-semibold text-slate-700">発注日:</span> <span className="text-slate-800">{new Date(orderData.orderDate).toLocaleDateString('ja-JP')}</span></p>
+          <div className="rounded-xl md:rounded-2xl p-4 md:p-8 bg-white shadow-xl">
+            <h2 className="text-lg md:text-2xl font-bold mb-4 md:mb-6 text-slate-800">発注内容確認</h2>
+
+            <div className="space-y-2 md:space-y-3 mb-6 md:mb-8 p-3 md:p-4 bg-slate-50 rounded-lg">
+              <p className="text-sm md:text-lg"><span className="font-semibold text-slate-700">注文者:</span> <span className="text-slate-800">{orderData.ordererName}</span></p>
+              <p className="text-sm md:text-lg"><span className="font-semibold text-slate-700">発注日:</span> <span className="text-slate-800">{new Date(orderData.orderDate).toLocaleDateString('ja-JP')}</span></p>
               {orderData.siteName && (
-                <p className="text-lg"><span className="font-semibold text-slate-700">現場名:</span> <span className="text-slate-800">{orderData.siteName}</span></p>
+                <p className="text-sm md:text-lg"><span className="font-semibold text-slate-700">現場名:</span> <span className="text-slate-800">{orderData.siteName}</span></p>
               )}
               {orderData.contactInfo && (
-                <p className="text-lg"><span className="font-semibold text-slate-700">連絡先:</span> <span className="text-slate-800">{orderData.contactInfo}</span></p>
+                <p className="text-sm md:text-lg"><span className="font-semibold text-slate-700">連絡先:</span> <span className="text-slate-800">{orderData.contactInfo}</span></p>
               )}
               {orderData.loadingDate && (
-                <p className="text-lg"><span className="font-semibold text-slate-700">積込日:</span> <span className="text-slate-800">{new Date(orderData.loadingDate).toLocaleDateString('ja-JP')}</span></p>
+                <p className="text-sm md:text-lg"><span className="font-semibold text-slate-700">積込日:</span> <span className="text-slate-800">{new Date(orderData.loadingDate).toLocaleDateString('ja-JP')}</span></p>
               )}
             </div>
 
-          <div className="overflow-x-auto">
-              <table className="w-full border-collapse rounded-lg overflow-hidden shadow-sm">
+          <div className="overflow-x-auto -mx-4 md:mx-0">
+              <table className="w-full min-w-[500px] border-collapse rounded-lg overflow-hidden shadow-sm">
                 <thead>
                   <tr className="bg-gradient-to-r from-slate-700 to-slate-600">
-                    <th className="p-4 text-left text-white font-semibold">資材名</th>
-                    <th className="p-4 text-right text-white font-semibold">数量</th>
-                    <th className="p-4 text-right text-white font-semibold">単位重量(kg)</th>
-                    <th className="p-4 text-right text-white font-semibold">合計重量(kg)</th>
+                    <th className="p-2 md:p-4 text-left text-white font-semibold text-xs md:text-base">資材名</th>
+                    <th className="p-2 md:p-4 text-right text-white font-semibold text-xs md:text-base whitespace-nowrap">数量</th>
+                    <th className="p-2 md:p-4 text-right text-white font-semibold text-xs md:text-base whitespace-nowrap">単位重量<span className="hidden sm:inline">(kg)</span></th>
+                    <th className="p-2 md:p-4 text-right text-white font-semibold text-xs md:text-base whitespace-nowrap">合計重量<span className="hidden sm:inline">(kg)</span></th>
                   </tr>
                 </thead>
               <tbody>
                 {orderData.items.map((item) => (
                     <tr key={item.id} className="bg-white hover:bg-slate-50 border-b border-slate-200 transition-colors duration-150">
-                      <td className="p-4 text-slate-800 font-medium">{item.name}</td>
-                      <td className="p-4 text-right text-slate-800 font-semibold">{item.quantity}</td>
-                      <td className="p-4 text-right text-slate-700">{formatWeight(item.weightPerUnit).replace('kg', '')}</td>
-                      <td className="p-4 text-right text-slate-800 font-semibold">{formatWeight(item.totalWeight).replace('kg', '')}</td>
+                      <td className="p-2 md:p-4 text-slate-800 font-medium text-xs md:text-base">{item.name}</td>
+                      <td className="p-2 md:p-4 text-right text-slate-800 font-semibold text-xs md:text-base">{item.quantity}</td>
+                      <td className="p-2 md:p-4 text-right text-slate-700 text-xs md:text-base">{formatWeight(item.weightPerUnit).replace('kg', '')}</td>
+                      <td className="p-2 md:p-4 text-right text-slate-800 font-semibold text-xs md:text-base">{formatWeight(item.totalWeight).replace('kg', '')}</td>
                     </tr>
                 ))}
               </tbody>
               <tfoot>
                   <tr className="bg-gradient-to-r from-slate-50 to-slate-100">
-                    <td colSpan={3} className="p-4 text-right font-bold text-slate-800">合計重量:</td>
-                    <td className="p-4 text-right font-bold text-slate-800 text-lg">{formatTotalWeight(orderData.totalWeight)}</td>
+                    <td colSpan={3} className="p-2 md:p-4 text-right font-bold text-slate-800 text-xs md:text-base">合計重量:</td>
+                    <td className="p-2 md:p-4 text-right font-bold text-slate-800 text-sm md:text-lg">{formatTotalWeight(orderData.totalWeight)}</td>
                   </tr>
               </tfoot>
             </table>
           </div>
 
           {orderData.note && (
-              <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="font-semibold mb-2 text-slate-800">備考:</p>
-                <p className="whitespace-pre-wrap text-slate-700">{orderData.note}</p>
+              <div className="mt-4 md:mt-6 p-3 md:p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="font-semibold mb-2 text-slate-800 text-sm md:text-base">備考:</p>
+                <p className="whitespace-pre-wrap text-slate-700 text-sm md:text-base">{orderData.note}</p>
               </div>
           )}
           </div>

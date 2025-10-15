@@ -68,9 +68,9 @@ export default function Header() {
             <Image src="/icons/icon.jpeg" alt="株式会社櫻建" width={240} height={240} />
           </div>
           {pathname !== '/' && (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               {userInfo && (
-                <div className="flex items-center text-sm text-gray-600">
+                <div className="hidden sm:flex items-center text-sm text-gray-600">
                   <User className="h-4 w-4 mr-1" />
                   <span>{userInfo.companyName}</span>
                 </div>
@@ -78,9 +78,9 @@ export default function Header() {
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                className="flex items-center gap-2 border-gray-300 text-white-700 hover:bg-gray-50"
+                className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
-                <LogOut className="h-4 w-4 text-white" />
+                <LogOut className="h-4 w-4 text-gray-600" />
                 ログアウト
               </Button>
             </div>
