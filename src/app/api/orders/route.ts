@@ -67,11 +67,11 @@ export async function POST(request: Request) {
     
     console.log('Received order data:', JSON.stringify(data, null, 2));
     
-    // ユーザー別の注文番号を生成
+    // ユーザー名付きの注文番号を生成（ユーザーごとに管理）
     const userOrderCount = await prisma.order.count({
       where: { userId: currentUser.id }
     });
-    const orderNumber = `ORD-${String(userOrderCount + 1).padStart(6, '0')}`;
+    const orderNumber = `${currentUser.username.toUpperCase()}-${String(userOrderCount + 1).padStart(6, '0')}`;
     
     const order = await prisma.order.create({
       data: {
