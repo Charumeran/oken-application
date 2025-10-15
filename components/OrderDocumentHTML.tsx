@@ -8,8 +8,9 @@ const formatDate = (dateString: string) => {
 
 export const generatePDFContent = (data: OrderDocument): string => {
 
-  // アイテムを列に分割する（90個以上の場合は1列あたり35行、未満は30行）
-  const ITEMS_PER_COLUMN = data.items.length >= 90 ? 35 : 30;
+  // アイテムを列に分割する（90個以上の場合は1列あたり33行、未満は28行）
+  // 行の高さを広げたため、行数を調整してA4 1枚に収まるようにする
+  const ITEMS_PER_COLUMN = data.items.length >= 90 ? 33 : 28;
   const isCompactMode = data.items.length >= 90;
   const columns: typeof data.items[] = [];
   for (let i = 0; i < data.items.length; i += ITEMS_PER_COLUMN) {
@@ -79,7 +80,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           margin-bottom: 10px;
           padding: 8px;
           background-color: #f8fafc;
-          border: 1px solid #e2e8f0;
+          border: 2px solid #000;
           border-radius: 4px;
           page-break-inside: avoid;
         }
@@ -106,23 +107,23 @@ export const generatePDFContent = (data: OrderDocument): string => {
         table {
           width: 100%;
           border-collapse: collapse;
-          border: 1px solid #333;
+          border: 2px solid #000;
           page-break-inside: avoid;
         }
         tbody tr {
           page-break-inside: avoid;
         }
         th {
-          border: 1px solid #333;
-          padding: ${isCompactMode ? '2px 2px' : '4px 3px'};
+          border: 1px solid #000;
+          padding: ${isCompactMode ? '3px 2px' : '5px 4px'};
           background-color: #475569;
           color: white;
           font-weight: bold;
           font-size: ${isCompactMode ? '8px' : '9px'};
         }
         td {
-          border: 1px solid #e2e8f0;
-          padding: ${isCompactMode ? '2px 2px' : '3px 3px'};
+          border: 1px solid #333;
+          padding: ${isCompactMode ? '4px 3px' : '5px 4px'};
           font-size: ${isCompactMode ? '7px' : '8px'};
         }
         .row-alternate {
@@ -205,7 +206,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           transform: rotate(-45deg);
           font-size: 24px;
           font-weight: bold;
-          color: rgba(0, 0, 0, 0.04);
+          color: rgba(0, 0, 0, 0.12);
           white-space: nowrap;
         }
       </style>
