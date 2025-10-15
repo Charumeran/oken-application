@@ -21,22 +21,48 @@ export const generatePDFContent = (data: OrderDocument): string => {
     <html>
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>発注書_${data.ordererName}_${new Date().toISOString().split('T')[0]}</title>
       <style>
+        * {
+          box-sizing: border-box;
+        }
+        html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
         @media print {
           @page {
             size: A4 portrait;
-            margin: 10mm;
+            margin: 8mm;
           }
-          body { margin: 0; }
+          html, body {
+            height: 100%;
+            overflow: hidden;
+            page-break-after: avoid;
+            page-break-before: avoid;
+            page-break-inside: avoid;
+          }
+          body {
+            margin: 0 !important;
+            padding: 8px !important;
+          }
+          .print-content {
+            page-break-inside: avoid;
+            page-break-after: avoid;
+          }
         }
         body {
           font-family: system-ui, -apple-system, sans-serif;
           font-size: 9px;
           line-height: 1.2;
           color: #000;
-          margin: 0;
           padding: 10px;
+        }
+        .print-content {
+          page-break-inside: avoid;
+          display: block;
         }
         .title {
           text-align: center;
@@ -55,6 +81,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           background-color: #f8fafc;
           border: 1px solid #e2e8f0;
           border-radius: 4px;
+          page-break-inside: avoid;
         }
         .info-row {
           margin-bottom: 3px;
@@ -70,6 +97,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           display: flex;
           gap: 8px;
           margin-bottom: 10px;
+          page-break-inside: avoid;
         }
         .table-wrapper {
           flex: 1;
@@ -79,7 +107,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           width: 100%;
           border-collapse: collapse;
           border: 1px solid #333;
-          page-break-inside: auto;
+          page-break-inside: avoid;
         }
         tbody tr {
           page-break-inside: avoid;
@@ -109,6 +137,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          page-break-inside: avoid;
         }
         .total-label {
           font-size: 11px;
@@ -126,6 +155,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           background-color: #f8fafc;
           border-radius: 4px;
           border: 1px solid #64748b;
+          page-break-inside: avoid;
         }
         .note-label {
           font-size: 10px;
@@ -191,7 +221,8 @@ export const generatePDFContent = (data: OrderDocument): string => {
         }).join('')}
       </div>
       <button class="print-button" onclick="window.print()">印刷 / PDFに保存</button>
-      
+
+      <div class="print-content">
       <div class="title">
         <h1>資材発注書</h1>
       </div>
@@ -259,6 +290,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
         <div class="note-label">備考:</div>
         <div class="note-text">${data.note}</div>
       </div>` : ''}
+      </div>
     </body>
     </html>
   `;
