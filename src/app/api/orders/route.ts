@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { randomBytes } from 'crypto';
 
 export async function GET() {
   try {
@@ -67,14 +68,11 @@ export async function POST(request: Request) {
 
     console.log('Received order data:', JSON.stringify(data, null, 2));
 
-    // トランザクション内でカウント取得と作成を実行（同時実行の競合を防ぐ）
-    const order = await prisma.$transaction(async (tx) => {
-      const userOrderCount = await tx.order.count({
-        where: { userId: currentUser.id }
-      });
-      const orderNumber = `${currentUser.username.toUpperCase()}-${String(userOrderCount + 1).padStart(6, '0')}`;
+    // ユーザー名 + ランダムなユニークIDで注文番号を生成
+    const uniqueId = randomBytes(4).toString('hex').toUpperCase();
+    const orderNumber = `${currentUser.username.toUpperCase()}-${uniqueId}`;
 
-      return await tx.order.create({
+    const order = await prisma.order.create({
         data: {
           orderNumber: orderNumber,
           userId: currentUser.id,
@@ -103,7 +101,6 @@ export async function POST(request: Request) {
           }
         }
       });
-    });
 
     return NextResponse.json({ order });
   } catch (error) {
