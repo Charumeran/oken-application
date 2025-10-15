@@ -64,43 +64,45 @@ export async function POST(request: Request) {
   try {
     const currentUser = await requireAuth();
     const data = await request.json();
-    
+
     console.log('Received order data:', JSON.stringify(data, null, 2));
-    
-    // ユーザー名付きの注文番号を生成（ユーザーごとに管理）
-    const userOrderCount = await prisma.order.count({
-      where: { userId: currentUser.id }
-    });
-    const orderNumber = `${currentUser.username.toUpperCase()}-${String(userOrderCount + 1).padStart(6, '0')}`;
-    
-    const order = await prisma.order.create({
-      data: {
-        orderNumber: orderNumber,
-        userId: currentUser.id,
-        projectName: data.projectName || 'プロジェクト',
-        personInCharge: data.personInCharge,
-        contactInfo: data.contactInfo || null,
-        loadingDate: data.loadingDate ? new Date(data.loadingDate) : null,
-        orderDate: new Date(data.orderDate || new Date()),
-        deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : null,
-        status: data.status || 'draft',
-        notes: data.notes || null,
-        orderDetails: {
-          create: data.items?.map((item: { materialId: string; quantity: number; totalWeightKg: number; notes: string | null }) => ({
-            materialId: item.materialId,
-            quantity: item.quantity,
-            totalWeightKg: item.totalWeightKg,
-            notes: item.notes
-          })) || []
-        }
-      },
-      include: {
-        orderDetails: {
-          include: {
-            material: true
+
+    // トランザクション内でカウント取得と作成を実行（同時実行の競合を防ぐ）
+    const order = await prisma.$transaction(async (tx) => {
+      const userOrderCount = await tx.order.count({
+        where: { userId: currentUser.id }
+      });
+      const orderNumber = `${currentUser.username.toUpperCase()}-${String(userOrderCount + 1).padStart(6, '0')}`;
+
+      return await tx.order.create({
+        data: {
+          orderNumber: orderNumber,
+          userId: currentUser.id,
+          projectName: data.projectName || 'プロジェクト',
+          personInCharge: data.personInCharge,
+          contactInfo: data.contactInfo || null,
+          loadingDate: data.loadingDate ? new Date(data.loadingDate) : null,
+          orderDate: new Date(data.orderDate || new Date()),
+          deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : null,
+          status: data.status || 'draft',
+          notes: data.notes || null,
+          orderDetails: {
+            create: data.items?.map((item: { materialId: string; quantity: number; totalWeightKg: number; notes: string | null }) => ({
+              materialId: item.materialId,
+              quantity: item.quantity,
+              totalWeightKg: item.totalWeightKg,
+              notes: item.notes
+            })) || []
+          }
+        },
+        include: {
+          orderDetails: {
+            include: {
+              material: true
+            }
           }
         }
-      }
+      });
     });
 
     return NextResponse.json({ order });
