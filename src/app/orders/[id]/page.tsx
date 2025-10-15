@@ -137,28 +137,7 @@ export default function OrderDetailPage() {
 
   const handleEdit = () => {
     if (!order) return;
-    
-    // 発注書データをlocalStorageに保存
-    const editData = {
-      orderId: order.id,
-      ordererName: order.customerAddress || '',
-      siteName: order.customerName || '',
-      contactInfo: order.contactInfo || '',
-      loadingDate: order.loadingDate ? order.loadingDate.split('T')[0] : '', // YYYY-MM-DD形式に変換
-      note: order.shippingAddress || '',
-      items: order.items.map(item => ({
-        id: item.productName, // 資材名で特定するための一時的ID
-        name: item.productName,
-        quantity: item.quantity,
-        weightPerUnit: item.weightPerUnit,
-        totalWeight: item.totalWeight
-      }))
-    };
-    
-    console.log('Saving edit data:', editData);
-    localStorage.setItem('editOrderData', JSON.stringify(editData));
-    console.log('Data saved to localStorage');
-    router.push('/material-order');
+    router.push(`/material-order/edit/${order.id}`);
   };
 
 

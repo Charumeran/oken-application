@@ -1,15 +1,80 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import MaterialOrderForm from "@/components/MaterialOrderForm";
 import { OrderDocument } from "@/types/material-order";
 import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
 
-export default function MaterialOrderPage() {
+interface EditOrderData {
+  orderId: string;
+  ordererName: string;
+  siteName: string;
+  contactInfo: string;
+  loadingDate: string;
+  note: string;
+  items: Array<{
+    id: string;
+    name: string;
+    quantity: number;
+    weightPerUnit: number;
+    totalWeight: number;
+  }>;
+}
+
+export default function MaterialOrderEditPage() {
+  const params = useParams();
+  const orderId = params.id as string;
+
   const [orderData, setOrderData] = useState<OrderDocument | null>(null);
   const [showPDFPreview, setShowPDFPreview] = useState(false);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
+  const [editOrderData, setEditOrderData] = useState<EditOrderData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // 発注データを取得
+  useEffect(() => {
+    const fetchOrderData = async () => {
+      try {
+        const response = await fetch(`/api/orders/${orderId}`);
+        if (!response.ok) {
+          throw new Error('発注データの取得に失敗しました');
+        }
+        const data = await response.json();
+        const order = data.order;
+
+        // MaterialOrderFormで使用する形式に変換
+        const editData: EditOrderData = {
+          orderId: order.id,
+          ordererName: order.customerAddress || '',
+          siteName: order.customerName || '',
+          contactInfo: order.contactInfo || '',
+          loadingDate: order.loadingDate ? new Date(order.loadingDate).toISOString().split('T')[0] : '',
+          note: order.shippingAddress || '',
+          items: order.items.map((item: { materialId: string; productName: string; quantity: number; weightPerUnit: number; totalWeight: number }) => ({
+            id: item.materialId,
+            name: item.productName,
+            quantity: item.quantity,
+            weightPerUnit: item.weightPerUnit,
+            totalWeight: item.totalWeight
+          }))
+        };
+
+        setEditOrderData(editData);
+      } catch (error) {
+        console.error('Error fetching order data:', error);
+        alert('発注データの取得に失敗しました');
+        window.location.href = '/dashboard';
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (orderId) {
+      fetchOrderData();
+    }
+  }, [orderId]);
 
   const handleFormSubmit = (data: OrderDocument) => {
     setOrderData(data);
@@ -22,7 +87,7 @@ export default function MaterialOrderPage() {
     setOrderCreated(false);
   };
 
-  const handleCreateOrder = async () => {
+  const handleUpdateOrder = async () => {
     if (!orderData) return;
 
     // ポップアップブロックを回避するため、クリックイベント内で即座にウィンドウを開く
@@ -38,7 +103,7 @@ export default function MaterialOrderPage() {
       <html>
       <head>
         <meta charset="UTF-8">
-        <title>発注書を生成中...</title>
+        <title>発注書を更新中...</title>
         <style>
           body {
             font-family: system-ui, -apple-system, sans-serif;
@@ -70,7 +135,7 @@ export default function MaterialOrderPage() {
       <body>
         <div class="loading">
           <div class="spinner"></div>
-          <p>発注書を生成中...</p>
+          <p>発注書を更新中...</p>
         </div>
       </body>
       </html>
@@ -95,8 +160,8 @@ export default function MaterialOrderPage() {
         }))
       };
 
-      const response = await fetch('/api/orders', {
-        method: 'POST',
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -107,11 +172,11 @@ export default function MaterialOrderPage() {
         const errorData = await response.json();
         console.error('API Error:', errorData);
         printWindow.close();
-        throw new Error(errorData.error || '発注書の作成に失敗しました');
+        throw new Error(errorData.error || '発注書の更新に失敗しました');
       }
 
       const result = await response.json();
-      console.log('発注書を作成しました:', result);
+      console.log('発注書を更新しました:', result);
 
       // PDFをダウンロード（既に開いているウィンドウに書き込む）
       const { generatePDFContent } = await import("@/components/OrderDocumentHTML");
@@ -121,26 +186,34 @@ export default function MaterialOrderPage() {
       printWindow.document.close();
 
       setOrderCreated(true);
-      alert('発注書を作成しました！');
+      alert('発注書を更新しました！');
 
       // 3秒後にダッシュボードに戻る
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 3000);
     } catch (error) {
-      console.error("発注書作成エラー:", error);
-      alert("発注書の作成に失敗しました");
+      console.error("発注書更新エラー:", error);
+      alert("発注書の更新に失敗しました");
     } finally {
       setIsCreatingOrder(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 flex items-center justify-center">
+        <div className="text-slate-600">データを読み込み中...</div>
+      </div>
+    );
+  }
 
   if (showPDFPreview && orderData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-3 md:p-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-4 md:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <h1 className="text-xl md:text-3xl font-bold text-slate-800">発注書プレビュー</h1>
+            <h1 className="text-xl md:text-3xl font-bold text-slate-800">発注書編集プレビュー</h1>
             <div className="flex gap-2 sm:gap-4">
               <button
                 onClick={handleReset}
@@ -149,11 +222,11 @@ export default function MaterialOrderPage() {
                 戻る
               </button>
               <button
-                onClick={handleCreateOrder}
+                onClick={handleUpdateOrder}
                 disabled={isCreatingOrder || orderCreated}
                 className="flex-1 sm:flex-none px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transition-all duration-200 text-sm md:text-base"
               >
-                {isCreatingOrder ? "作成中..." : orderCreated ? "作成済み" : "発注書を作成"}
+                {isCreatingOrder ? "更新中..." : orderCreated ? "更新済み" : "発注書を更新"}
               </button>
             </div>
           </div>
@@ -216,5 +289,5 @@ export default function MaterialOrderPage() {
     );
   }
 
-  return <MaterialOrderForm onSubmit={handleFormSubmit} />;
+  return <MaterialOrderForm onSubmit={handleFormSubmit} editMode={true} editOrderData={editOrderData} />;
 }

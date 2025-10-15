@@ -42,6 +42,7 @@ interface EditOrderData {
 interface MaterialOrderFormProps {
   onSubmit: (data: OrderDocument) => void;
   editMode?: boolean;
+  editOrderData?: EditOrderData | null;
 }
 
 type Category = {
@@ -61,42 +62,23 @@ type Material = {
   isActive: boolean;
 };
 
-export default function MaterialOrderForm({ onSubmit, editMode = false }: MaterialOrderFormProps) {
+export default function MaterialOrderForm({ onSubmit, editMode = false, editOrderData = null }: MaterialOrderFormProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [showAddMaterialForm, setShowAddMaterialForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [editData, setEditData] = useState<EditOrderData | null>(null);
+  const [editData, setEditData] = useState<EditOrderData | null>(editOrderData);
   const [draftOrderId, setDraftOrderId] = useState<string | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
 
-  // 編集モードの場合、最初にlocalStorageからデータを読み込む
+  // 編集データが props で渡された場合に設定
   useEffect(() => {
-    console.log('MaterialOrderForm mounted, editMode:', editMode);
-    
-    if (editMode) {
-      const data = localStorage.getItem('editOrderData');
-      console.log('localStorage data:', data);
-      
-      if (data) {
-        try {
-          const parsedData = JSON.parse(data);
-          console.log('Edit data found and parsed:', parsedData);
-          setEditData(parsedData);
-          // localStorageは後で削除する
-        } catch (error) {
-          console.error('Failed to parse edit data:', error);
-          localStorage.removeItem('editOrderData');
-        }
-      } else {
-        console.log('No edit data found in localStorage');
-      }
-    } else {
-      console.log('Not in edit mode');
+    if (editOrderData) {
+      setEditData(editOrderData);
     }
-  }, [editMode]);
+  }, [editOrderData]);
 
   const {
     register,
@@ -189,9 +171,6 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
       
       console.log('Resetting form with:', formData);
       reset(formData);
-      
-      // localStorageをクリア
-      localStorage.removeItem('editOrderData');
     }
   }, [editMode, editData, materials, loading, reset]);
 
@@ -209,22 +188,39 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
   
   const selectedMaterials = useMemo(() => watchedMaterials || {}, [watchedMaterials]);
 
-  const currentMaterials = materials.filter(m => {
-    if (m.categoryId !== selectedCategoryId || !m.isActive) {
-      return false;
+  const currentMaterials = useMemo(() => {
+    const filtered = materials.filter(m => {
+      if (m.categoryId !== selectedCategoryId || !m.isActive) {
+        return false;
+      }
+
+      if (searchQuery.trim() === "") {
+        return true;
+      }
+
+      const query = searchQuery.toLowerCase();
+      return m.name.toLowerCase().includes(query) ||
+             (m.size && m.size.toLowerCase().includes(query)) ||
+             m.type.toLowerCase().includes(query) ||
+             m.materialCode.toLowerCase().includes(query);
+    });
+
+    // 編集モードの場合は、数量が0より大きいものを優先的に上に表示
+    if (editMode) {
+      return filtered.sort((a, b) => {
+        const quantityA = selectedMaterials[a.id] || 0;
+        const quantityB = selectedMaterials[b.id] || 0;
+
+        // 数量が0より大きいものを優先
+        if (quantityA > 0 && quantityB === 0) return -1;
+        if (quantityA === 0 && quantityB > 0) return 1;
+        return 0;
+      });
     }
-    
-    if (searchQuery.trim() === "") {
-      return true;
-    }
-    
-    const query = searchQuery.toLowerCase();
-    return m.name.toLowerCase().includes(query) ||
-           (m.size && m.size.toLowerCase().includes(query)) ||
-           m.type.toLowerCase().includes(query) ||
-           m.materialCode.toLowerCase().includes(query);
-  });
-  
+
+    return filtered;
+  }, [materials, selectedCategoryId, searchQuery, editMode, selectedMaterials]);
+
   const selectedCategory = categories.find(cat => cat.id === selectedCategoryId);
   const isOtherCategory = selectedCategory?.name === 'その他';
 
