@@ -60,8 +60,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
+            width: 100vw !important;
             height: 100vh !important;
             min-height: 297mm !important;
           }
@@ -217,8 +216,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           position: fixed;
           top: 0;
           left: 0;
-          right: 0;
-          width: 100%;
+          width: 100vw;
           height: 100vh;
           z-index: -1;
           pointer-events: none;
@@ -243,16 +241,16 @@ export const generatePDFContent = (data: OrderDocument): string => {
     <body>
       <div class="watermark-container">
         ${(() => {
-          // 透かしを%単位で等間隔に配置（印刷プレビューでも正しく表示）
+          // 透かしをvw単位で等間隔に配置（画面幅に対する絶対位置）
           const watermarks = [];
           const rows = 8; // 縦方向の繰り返し数
-          const spacing = 25; // 透かし間の間隔（%単位）
+          const spacingVw = 25; // 透かし間の間隔（vw単位）
 
           for (let row = 0; row < rows; row++) {
-            // 横方向は0%から始めて、spacing間隔で配置
-            for (let colPercent = 0; colPercent <= 100; colPercent += spacing) {
-              const top = (row * (100 / (rows - 1))) + (Math.floor(colPercent / spacing) % 2 === 0 ? 0 : 5);
-              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colPercent}%;">株式会社　櫻建</div>`);
+            // 横方向は0vwから始めて、spacingVw間隔で配置
+            for (let colVw = 0; colVw <= 100; colVw += spacingVw) {
+              const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacingVw) % 2 === 0 ? 0 : 5);
+              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">株式会社　櫻建</div>`);
             }
           }
 
