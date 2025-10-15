@@ -22,7 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, Search, Calendar, FileText, Printer, Trash2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Eye, Search, Calendar, FileText, Printer, Trash2, Copy } from 'lucide-react';
 
 interface OrderData {
   id: string;
@@ -49,6 +57,8 @@ export default function OrderHistory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [monthFilter, setMonthFilter] = useState('all');
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<{ id: string; orderNumber: string } | null>(null);
   
   // 月選択用のオプションを生成
   const generateMonthOptions = () => {
@@ -124,12 +134,72 @@ export default function OrderHistory() {
       }
 
       alert('発注書を削除しました');
-      
+
       // 一覧を再読み込み
       fetchOrders();
     } catch (error) {
       console.error('Error deleting order:', error);
       alert('発注書の削除に失敗しました');
+    }
+  };
+
+  const handleCopy = (orderId: string, orderNumber: string) => {
+    setSelectedOrder({ id: orderId, orderNumber });
+    setCopyDialogOpen(true);
+  };
+
+  const confirmCopy = async () => {
+    if (!selectedOrder) return;
+
+    try {
+      // 注文詳細を取得
+      const response = await fetch(`/api/orders/${selectedOrder.id}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch order');
+      }
+      const data = await response.json();
+      const order = data.order;
+
+      // 新しい発注書として作成（APIが期待する形式に変換）
+      const createResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectName: order.customerName,
+          personInCharge: order.customerAddress,
+          contactInfo: order.contactInfo,
+          loadingDate: order.loadingDate,
+          orderDate: new Date().toISOString(),
+          deliveryDate: order.deliveryDate,
+          notes: order.shippingAddress,
+          status: 'pending',
+          items: order.items.map((item: { materialId: string; quantity: number; totalWeight: number; notes: string | null }) => ({
+            materialId: item.materialId,
+            quantity: item.quantity,
+            totalWeightKg: item.totalWeight,
+            notes: item.notes
+          }))
+        }),
+      });
+
+      if (!createResponse.ok) {
+        const errorData = await createResponse.json();
+        console.error('Error response:', errorData);
+        throw new Error('Failed to create order copy');
+      }
+
+      const newOrderData = await createResponse.json();
+      setCopyDialogOpen(false);
+      alert('発注書をコピーしました');
+
+      // 新しく作成された発注書の詳細ページに移動
+      router.push(`/orders/${newOrderData.order.id}`);
+    } catch (error) {
+      console.error('Error copying order:', error);
+      alert('発注書のコピーに失敗しました');
+      setCopyDialogOpen(false);
     }
   };
 
@@ -164,6 +234,37 @@ export default function OrderHistory() {
       // 発注書PDFを生成
       const { printToPDF } = await import("@/components/OrderDocumentHTML");
       printToPDF(orderDocument);
+
+      // ステータスを処理済みに更新
+      if (order.status !== 'completed') {
+        const updateResponse = await fetch(`/api/orders/${orderId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            projectName: order.customerName,
+            personInCharge: order.customerAddress,
+            contactInfo: order.contactInfo,
+            loadingDate: order.loadingDate,
+            orderDate: order.deliveryDate || order.createdAt,
+            deliveryDate: order.deliveryDate,
+            notes: order.shippingAddress,
+            status: 'completed',
+            items: order.items.map((item: { materialId: string; quantity: number; totalWeight: number; notes: string | null }) => ({
+              materialId: item.materialId,
+              quantity: item.quantity,
+              totalWeightKg: item.totalWeight,
+              notes: item.notes
+            }))
+          }),
+        });
+
+        if (updateResponse.ok) {
+          // 一覧を再読み込み
+          fetchOrders();
+        }
+      }
     } catch (error) {
       console.error('Error downloading order:', error);
       alert('発注書の出力に失敗しました');
@@ -313,6 +414,15 @@ export default function OrderHistory() {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => handleCopy(order.id, order.orderNumber)}
+                              className="h-8 w-8 p-0 bg-white border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                              title="コピー"
+                            >
+                              <Copy className="h-4 w-4 text-gray-600" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() => handleView(order.id)}
                               className="h-8 w-8 p-0 bg-white border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-colors"
                               title="詳細表示"
@@ -348,6 +458,40 @@ export default function OrderHistory() {
           </CardContent>
         </Card>
       </div>
+
+      {/* コピー確認ダイアログ */}
+      <Dialog open={copyDialogOpen} onOpenChange={setCopyDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>発注書のコピー</DialogTitle>
+            <DialogDescription>
+              {selectedOrder && (
+                <>
+                  発注書「{selectedOrder.orderNumber}」をコピーしますか？
+                  <br />
+                  新しい発注書として複製されます。
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCopyDialogOpen(false)}
+            >
+              キャンセル
+            </Button>
+            <Button
+              type="button"
+              onClick={confirmCopy}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              コピー
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

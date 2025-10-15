@@ -26,10 +26,12 @@ interface OrderDetail {
   status: string;
   createdAt: string;
   items: Array<{
+    materialId: string;
     productName: string;
     quantity: number;
     weightPerUnit: number;
     totalWeight: number;
+    notes: string | null;
   }>;
 }
 
@@ -62,7 +64,7 @@ export default function OrderDetailPage() {
 
   const handleDownload = async () => {
     if (!order) return;
-    
+
     try {
       // OrderDocument形式に変換
       const orderDocument = {
@@ -85,8 +87,40 @@ export default function OrderDetailPage() {
       // 発注書PDFを生成
       const { printToPDF } = await import("@/components/OrderDocumentHTML");
       printToPDF(orderDocument);
+
+      // ステータスを処理済みに更新
+      if (order.status !== 'completed') {
+        const updateResponse = await fetch(`/api/orders/${order.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            projectName: order.customerName,
+            personInCharge: order.customerAddress,
+            contactInfo: order.contactInfo,
+            loadingDate: order.loadingDate,
+            orderDate: order.deliveryDate || order.createdAt,
+            deliveryDate: order.deliveryDate,
+            notes: order.shippingAddress,
+            status: 'completed',
+            items: order.items.map(item => ({
+              materialId: item.materialId,
+              quantity: item.quantity,
+              totalWeightKg: item.totalWeight,
+              notes: item.notes
+            }))
+          }),
+        });
+
+        if (updateResponse.ok) {
+          // 注文詳細を再読み込み
+          await fetchOrderDetail(order.id);
+        }
+      }
     } catch (error) {
       console.error('Error downloading order:', error);
+      alert('発注書の出力に失敗しました');
     }
   };
 

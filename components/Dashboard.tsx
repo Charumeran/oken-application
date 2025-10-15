@@ -1,12 +1,65 @@
 "use client";
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Clock, BarChart3, CheckCircle, AlertCircle } from 'lucide-react';
+import { format } from 'date-fns';
+
+interface Stats {
+  thisMonthOrders: number;
+  completedOrders: number;
+  pendingOrders: number;
+}
 
 export default function Dashboard() {
   const router = useRouter();
+  const [stats, setStats] = useState<Stats>({
+    thisMonthOrders: 0,
+    completedOrders: 0,
+    pendingOrders: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/orders');
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+      const data = await response.json();
+      const orders = data.orders;
+
+      // 今月の発注書数
+      const now = new Date();
+      const currentMonth = format(now, 'yyyy-MM');
+      const thisMonthOrders = orders.filter((order: { createdAt: string }) => {
+        const orderMonth = format(new Date(order.createdAt), 'yyyy-MM');
+        return orderMonth === currentMonth;
+      }).length;
+
+      // 処理済み
+      const completedOrders = orders.filter((order: { status: string }) => order.status === 'completed').length;
+
+      // 処理中
+      const pendingOrders = orders.filter((order: { status: string }) => order.status === 'pending').length;
+
+      setStats({
+        thisMonthOrders,
+        completedOrders,
+        pendingOrders
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const navigateToOrderForm = () => {
     router.push('/material-order');
@@ -112,29 +165,35 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-50 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                  <BarChart3 className="h-6 w-6 text-blue-600" />
-                </div>
-                <div className="text-2xl font-semibold text-gray-900 mb-1">0</div>
-                <div className="text-sm text-gray-600">今月の発注書</div>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
               </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-50 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+            ) : (
+              <div className="grid grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-blue-50 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                    <BarChart3 className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div className="text-2xl font-semibold text-gray-900 mb-1">{stats.thisMonthOrders}</div>
+                  <div className="text-sm text-gray-600">今月の発注書</div>
                 </div>
-                <div className="text-2xl font-semibold text-gray-900 mb-1">0</div>
-                <div className="text-sm text-gray-600">処理済み</div>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-orange-50 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                  <AlertCircle className="h-6 w-6 text-orange-600" />
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-green-50 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                    <CheckCircle className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div className="text-2xl font-semibold text-gray-900 mb-1">{stats.completedOrders}</div>
+                  <div className="text-sm text-gray-600">処理済み</div>
                 </div>
-                <div className="text-2xl font-semibold text-gray-900 mb-1">0</div>
-                <div className="text-sm text-gray-600">処理中</div>
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-orange-50 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                    <AlertCircle className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div className="text-2xl font-semibold text-gray-900 mb-1">{stats.pendingOrders}</div>
+                  <div className="text-sm text-gray-600">処理中</div>
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

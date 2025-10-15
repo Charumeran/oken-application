@@ -39,16 +39,18 @@ export async function GET(
       loadingDate: order.loadingDate,
       deliveryDate: order.deliveryDate || order.orderDate,
       shippingAddress: order.notes || '',
-      totalWeight: order.orderDetails.reduce((sum, detail) => 
+      totalWeight: order.orderDetails.reduce((sum, detail) =>
         sum + (detail.totalWeightKg || (detail.quantity * detail.material.weightKg)), 0
       ),
       status: order.status,
       createdAt: order.createdAt,
       items: order.orderDetails.map((detail) => ({
+        materialId: detail.materialId,
         productName: detail.material.name,
         quantity: detail.quantity,
         weightPerUnit: detail.material.weightKg,
-        totalWeight: detail.totalWeightKg || (detail.quantity * detail.material.weightKg)
+        totalWeight: detail.totalWeightKg || (detail.quantity * detail.material.weightKg),
+        notes: detail.notes
       }))
     };
 
