@@ -28,11 +28,12 @@ type Material = {
 
 interface AddMaterialFormProps {
   categoryId: string;
+  orderId?: string | null;
   onSuccess: (material: Material) => void;
   onCancel: () => void;
 }
 
-export default function AddMaterialForm({ categoryId, onSuccess, onCancel }: AddMaterialFormProps) {
+export default function AddMaterialForm({ categoryId, orderId, onSuccess, onCancel }: AddMaterialFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const {
@@ -62,6 +63,8 @@ export default function AddMaterialForm({ categoryId, onSuccess, onCancel }: Add
         body: JSON.stringify({
           ...data,
           categoryId,
+          isTemporary: !!orderId,
+          createdForOrderId: orderId || null,
         }),
       });
 

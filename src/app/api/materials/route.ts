@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const orderId = searchParams.get('orderId');
+
+    // 通常の材料を取得
     const materials = await prisma.material.findMany({
       where: {
-        isActive: true
+        isActive: true,
+        isTemporary: false
       },
       include: {
         category: true
@@ -21,7 +26,34 @@ export async function GET() {
         }
       ]
     });
-    
+
+    // orderIdが指定されている場合は、その発注用の一時材料も取得
+    if (orderId) {
+      const temporaryMaterials = await prisma.material.findMany({
+        where: {
+          isActive: true,
+          isTemporary: true,
+          createdForOrderId: orderId
+        },
+        include: {
+          category: true
+        },
+        orderBy: [
+          {
+            category: {
+              displayOrder: 'asc'
+            }
+          },
+          {
+            materialCode: 'asc'
+          }
+        ]
+      });
+
+      // 通常の材料と一時材料を結合
+      return NextResponse.json([...materials, ...temporaryMaterials]);
+    }
+
     return NextResponse.json(materials);
   } catch (error) {
     console.error('資材取得エラー:', error);
@@ -35,10 +67,10 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, categoryId, size, type, weightKg, notes } = body;
+    const { name, categoryId, size, type, weightKg, notes, isTemporary, createdForOrderId } = body;
 
     // バリデーション
-    if (!name || !categoryId || !weightKg) {
+    if (!name || !categoryId || weightKg === null || weightKg === undefined) {
       return NextResponse.json(
         { error: '必須項目が不足しています' },
         { status: 400 }
@@ -118,7 +150,9 @@ export async function POST(request: NextRequest) {
         type: type || '標準',
         weightKg: parseFloat(weightKg),
         notes: notes || null,
-        isActive: true
+        isActive: true,
+        isTemporary: isTemporary || false,
+        createdForOrderId: createdForOrderId || null
       },
       include: {
         category: true

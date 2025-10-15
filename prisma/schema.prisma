@@ -34,41 +34,46 @@ model Category {
 }
 
 model Material {
-  id           String        @id @default(uuid())
-  materialCode String        @unique @map("material_code")
-  name         String
-  categoryId   String        @map("category_id")
-  size         String?
-  type         String        @default("標準")
-  weightKg     Float         @map("weight_kg")
-  isActive     Boolean       @default(true) @map("is_active")
-  notes        String?
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  category     Category      @relation(fields: [categoryId], references: [id])
-  orderDetails OrderDetail[]
+  id                String        @id @default(uuid())
+  materialCode      String        @unique @map("material_code")
+  name              String
+  categoryId        String        @map("category_id")
+  size              String?
+  type              String        @default("標準")
+  weightKg          Float         @map("weight_kg")
+  isActive          Boolean       @default(true) @map("is_active")
+  isTemporary       Boolean       @default(false) @map("is_temporary")
+  createdForOrderId String?       @map("created_for_order_id")
+  notes             String?
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  category          Category      @relation(fields: [categoryId], references: [id])
+  createdForOrder   Order?        @relation("TemporaryMaterials", fields: [createdForOrderId], references: [id])
+  orderDetails      OrderDetail[]
 
   @@index([categoryId])
   @@index([name])
+  @@index([createdForOrderId])
   @@map("materials")
 }
 
 model Order {
-  id             String        @id @default(uuid())
-  orderNumber    String        @unique @map("order_number")
-  projectName    String        @map("project_name")
-  personInCharge String?       @map("person_in_charge")
-  orderDate      DateTime      @map("order_date")
-  deliveryDate   DateTime?     @map("delivery_date")
-  status         String        @default("draft")
-  notes          String?
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-  contactInfo    String?       @map("contact_info")
-  loadingDate    DateTime?     @map("loading_date")
-  userId         String        @map("user_id")
-  orderDetails   OrderDetail[]
-  user           User          @relation(fields: [userId], references: [id])
+  id                 String        @id @default(uuid())
+  orderNumber        String        @unique @map("order_number")
+  projectName        String        @map("project_name")
+  personInCharge     String?       @map("person_in_charge")
+  orderDate          DateTime      @map("order_date")
+  deliveryDate       DateTime?     @map("delivery_date")
+  status             String        @default("draft")
+  notes              String?
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+  contactInfo        String?       @map("contact_info")
+  loadingDate        DateTime?     @map("loading_date")
+  userId             String        @map("user_id")
+  orderDetails       OrderDetail[]
+  temporaryMaterials Material[]    @relation("TemporaryMaterials")
+  user               User          @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([orderDate])

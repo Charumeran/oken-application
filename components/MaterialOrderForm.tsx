@@ -69,6 +69,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
   const [showAddMaterialForm, setShowAddMaterialForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [editData, setEditData] = useState<EditOrderData | null>(null);
+  const [draftOrderId, setDraftOrderId] = useState<string | null>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   // 編集モードの場合、最初にlocalStorageからデータを読み込む
@@ -120,31 +121,35 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // 編集モードの場合はeditData.orderId、新規の場合はdraftOrderIdを使用
+        const orderId = editMode ? editData?.orderId : draftOrderId;
+        const materialsUrl = orderId ? `/api/materials?orderId=${orderId}` : '/api/materials';
+
         const [categoriesRes, materialsRes] = await Promise.all([
           fetch('/api/categories'),
-          fetch('/api/materials')
+          fetch(materialsUrl)
         ]);
-        
+
         const categoriesData = await categoriesRes.json();
         const materialsData = await materialsRes.json();
-        
+
         setCategories(categoriesData);
         setMaterials(materialsData);
-        
+
         if (categoriesData.length > 0) {
           setSelectedCategoryId(categoriesData[0].id);
         }
 
-        
+
       } catch (error) {
         console.error('データの取得に失敗しました:', error);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchData();
-  }, [editMode, setValue]);
+  }, [editMode, editData, draftOrderId, setValue]);
 
   // 編集データと資材データが揃ったらフォームを初期化
   useEffect(() => {
@@ -222,6 +227,38 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
   
   const selectedCategory = categories.find(cat => cat.id === selectedCategoryId);
   const isOtherCategory = selectedCategory?.name === 'その他';
+
+  const handleAddMaterialClick = async () => {
+    // 新規発注で、まだ draft が作成されていない場合は draft 発注を作成
+    if (!editMode && !draftOrderId) {
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectName: 'Draft',
+            personInCharge: '',
+            orderDate: new Date().toISOString(),
+            status: 'draft',
+            items: []
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create draft order');
+        }
+
+        const data = await response.json();
+        setDraftOrderId(data.order.id);
+        console.log('Draft order created:', data.order.id);
+      } catch (error) {
+        console.error('Draft order creation failed:', error);
+        alert('下書き発注の作成に失敗しました');
+        return;
+      }
+    }
+    setShowAddMaterialForm(true);
+  };
 
   const handleAddMaterial = (newMaterial: Material) => {
     setMaterials(prev => [...prev, newMaterial]);
@@ -428,7 +465,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
             {isOtherCategory && (
               <button
                 type="button"
-                onClick={() => setShowAddMaterialForm(true)}
+                onClick={handleAddMaterialClick}
                 className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-105 flex items-center space-x-2"
               >
                 <span>材料を追加</span>
@@ -595,6 +632,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false }: Materi
       {showAddMaterialForm && (
         <AddMaterialForm
           categoryId={selectedCategoryId}
+          orderId={editMode ? editData?.orderId : draftOrderId}
           onSuccess={handleAddMaterial}
           onCancel={() => setShowAddMaterialForm(false)}
         />
