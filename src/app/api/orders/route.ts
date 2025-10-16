@@ -30,16 +30,17 @@ export async function GET() {
       customerAddress: order.personInCharge || '',
       loadingDate: order.loadingDate,
       deliveryDate: order.deliveryDate || order.orderDate,
-      totalWeight: order.orderDetails.reduce((sum, detail) => 
-        sum + (detail.totalWeightKg || (detail.quantity * detail.material.weightKg)), 0
-      ),
+      totalWeight: Math.round(order.orderDetails.reduce((sum, detail) => {
+        const itemWeight = detail.totalWeightKg || (detail.quantity * detail.material.weightKg);
+        return sum + Math.round(itemWeight * 10000) / 10000;
+      }, 0) * 10000) / 10000,
       status: order.status,
       createdAt: order.createdAt,
       items: order.orderDetails.map((detail) => ({
         productName: detail.material.name,
         quantity: detail.quantity,
         weightPerUnit: detail.material.weightKg,
-        totalWeight: detail.totalWeightKg || (detail.quantity * detail.material.weightKg)
+        totalWeight: Math.round((detail.totalWeightKg || (detail.quantity * detail.material.weightKg)) * 10000) / 10000
       }))
     }));
 

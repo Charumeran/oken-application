@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, FileText, Calendar, Package, User, Edit } from 'lucide-react';
+import { formatWeight, formatTotalWeight } from '@/lib/utils/format';
 
 interface OrderDetail {
   id: string;
@@ -297,8 +298,8 @@ export default function OrderDetailPage() {
                       <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                         <td className="px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-900 font-medium">{item.productName}</td>
                         <td className="text-right px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700">{item.quantity}</td>
-                        <td className="text-right px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700">{item.weightPerUnit.toFixed(1)}</td>
-                        <td className="text-right px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-900 font-medium">{item.totalWeight.toFixed(1)}</td>
+                        <td className="text-right px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-700">{formatWeight(item.weightPerUnit).replace('kg', '')}</td>
+                        <td className="text-right px-2 md:px-4 py-2 md:py-3 text-xs md:text-sm text-gray-900 font-medium">{formatWeight(item.totalWeight).replace('kg', '')}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -308,7 +309,7 @@ export default function OrderDetailPage() {
                         合計重量:
                       </td>
                       <td className="text-right px-2 md:px-4 py-2 md:py-3 text-sm md:text-lg font-bold text-gray-900">
-                        {order.totalWeight.toFixed(1)}kg
+                        {formatTotalWeight(order.totalWeight)}
                       </td>
                     </tr>
                   </tfoot>

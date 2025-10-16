@@ -115,13 +115,24 @@ export async function seedKusabiMaterials(prisma: PrismaClient) {
     { materialCode: 'KS-070', name: '先行手摺（次世代）　1200', size: '1200', type: '先行手摺次世代', weightKg: 6.3 },
     { materialCode: 'KS-071', name: '先行手摺（次世代）　900', size: '900', type: '先行手摺次世代', weightKg: 5.5 },
     { materialCode: 'KS-072', name: '先行手摺（次世代）　600', size: '600', type: '先行手摺次世代', weightKg: 4.8 },
+
+    // ===== 段差手摺（次世代） =====
+    { materialCode: 'KS-073', name: '段差手摺（次世代）　1200', size: '1200', type: '段差手摺次世代', weightKg: 3.3 },
+    { materialCode: 'KS-074', name: '段差手摺（次世代）　900', size: '900', type: '段差手摺次世代', weightKg: 2.5 },
     
     // ===== 梁枠 =====
-    { materialCode: 'KS-073', name: '梁枠　３スパン', size: '3スパン', type: '梁枠', weightKg: 41.4 },
-    { materialCode: 'KS-074', name: '梁枠　２スパン', size: '2スパン', type: '梁枠', weightKg: 27.8 },
+    { materialCode: 'KS-075', name: '梁枠　３スパン', size: '3スパン', type: '梁枠', weightKg: 41.4 },
+    { materialCode: 'KS-076', name: '梁枠　２スパン', size: '2スパン', type: '梁枠', weightKg: 27.8 },
+
+    // ===== 梁枠（次世代） =====
+    { materialCode: 'KS-077', name: '梁枠（次世代）　３スパン', size: '3スパン', type: '梁枠次世代', weightKg: 42.6 },
+    { materialCode: 'KS-078', name: '梁枠（次世代）　２スパン', size: '2スパン', type: '梁枠次世代', weightKg: 29.3 },
+
+    // ===== 仮置きラック =====
+    { materialCode: 'KS-079', name: '仮置きラック', size: null, type: '仮置きラック', weightKg: 4.2 },
     
     // ===== 壁あてジャッキ =====
-    { materialCode: 'KS-075', name: '壁あてジャッキ', size: null, type: '壁あてジャッキ', weightKg: 2.3 },
+    { materialCode: 'KS-080', name: '壁あてジャッキ', size: null, type: '壁あてジャッキ', weightKg: 2.3 },
   ]
 
   // データベースに投入
