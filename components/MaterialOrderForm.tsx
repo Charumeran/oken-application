@@ -10,7 +10,7 @@ import {
 } from "@/types/material-order";
 import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
 import AddMaterialForm from "./AddMaterialForm";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const orderFormSchema = z.object({
   ordererName: z.string().min(1, "注文者名を入力してください"),
@@ -264,11 +264,19 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
   // 注文ボタンまでスクロールする関数
   const scrollToSubmit = () => {
     if (submitButtonRef.current) {
-      submitButtonRef.current.scrollIntoView({ 
+      submitButtonRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center'
       });
     }
+  };
+
+  // 一番上までスクロールする関数
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   const orderItems = useMemo(() => {
@@ -617,13 +625,22 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
       </form>
       
       {/* スクロールボタン */}
-      <button
-        onClick={scrollToSubmit}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-slate-700 hover:bg-slate-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 active:scale-95 z-50 flex items-center justify-center"
-        title="注文ボタンまで移動"
-      >
-        <ChevronDown className="h-6 w-6" />
-      </button>
+      <div className="fixed bottom-6 right-6 flex flex-col space-y-3 z-50">
+        <button
+          onClick={scrollToTop}
+          className="w-14 h-14 bg-slate-700 hover:bg-slate-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 active:scale-95 flex items-center justify-center"
+          title="一番上まで移動"
+        >
+          <ChevronUp className="h-6 w-6" />
+        </button>
+        <button
+          onClick={scrollToSubmit}
+          className="w-14 h-14 bg-slate-700 hover:bg-slate-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 active:scale-95 flex items-center justify-center"
+          title="注文ボタンまで移動"
+        >
+          <ChevronDown className="h-6 w-6" />
+        </button>
+      </div>
       
       {showAddMaterialForm && (
         <AddMaterialForm
