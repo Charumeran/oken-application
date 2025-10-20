@@ -250,7 +250,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
             // 横方向は0vwから始めて、spacingVw間隔で配置
             for (let colVw = 0; colVw <= 100; colVw += spacingVw) {
               const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacingVw) % 2 === 0 ? 0 : 5);
-              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">建設テックパートナー</div>`);
+              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">株式会社　櫻建</div>`);
             }
           }
 
