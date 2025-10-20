@@ -1,7 +1,6 @@
 'use client'
 
 import { useRouter, usePathname } from 'next/navigation'
-import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { LogOut, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
