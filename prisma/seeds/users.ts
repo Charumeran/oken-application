@@ -21,8 +21,6 @@ export async function seedUsers(prisma: PrismaClient) {
         isActive: true
       }
     })
-
-    console.log(`  ✅ ${user.companyName} (${user.username}) を作成しました`)
   }
 
   console.log('✅ ユーザーデータの投入完了')
