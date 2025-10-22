@@ -7,13 +7,19 @@ export const formatWeight = (weight: number): string => {
   if (weight === 0) {
     return '0kg'
   }
-  
+
   // 浮動小数点演算の精度問題を回避してから表示
   const rounded = Math.round(weight * 10000) / 10000
-  
+
   // 科学記法を避けるため、適切な桁数で固定してから不要な0を除去
   const formatted = rounded.toFixed(4).replace(/\.?0+$/, '')
-  return formatted + 'kg'
+
+  // 桁区切りカンマを追加
+  const [integerPart, decimalPart] = formatted.split('.')
+  const formattedInteger = Number(integerPart).toLocaleString('ja-JP')
+  const result = decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger
+
+  return result + 'kg'
 }
 
 /**
@@ -24,11 +30,17 @@ export const formatWeight = (weight: number): string => {
  */
 export const formatTotalWeight = (totalWeight: number): string => {
   if (totalWeight === 0) return '0kg'
-  
+
   // 浮動小数点演算の精度問題を回避してから表示
   const rounded = Math.round(totalWeight * 10000) / 10000
   const formatted = rounded.toFixed(4).replace(/\.?0+$/, '')
-  return formatted + 'kg'
+
+  // 桁区切りカンマを追加
+  const [integerPart, decimalPart] = formatted.split('.')
+  const formattedInteger = Number(integerPart).toLocaleString('ja-JP')
+  const result = decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger
+
+  return result + 'kg'
 }
 
 /**
@@ -40,9 +52,15 @@ export const formatWeightNumber = (weight: number): string => {
   if (weight === 0) {
     return '0'
   }
-  
+
   // 浮動小数点演算の精度問題を回避してから表示
   const rounded = Math.round(weight * 10000) / 10000
   const formatted = rounded.toFixed(4).replace(/\.?0+$/, '')
-  return formatted
+
+  // 桁区切りカンマを追加
+  const [integerPart, decimalPart] = formatted.split('.')
+  const formattedInteger = Number(integerPart).toLocaleString('ja-JP')
+  const result = decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger
+
+  return result
 }
