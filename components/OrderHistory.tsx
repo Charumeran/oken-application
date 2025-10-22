@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import { formatWeight } from '@/lib/utils/format';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -441,7 +442,7 @@ export default function OrderHistory() {
                           {order.loadingDate ? format(new Date(order.loadingDate), 'yyyy年M月d日', { locale: ja }) : '-'}
                         </TableCell>
                         <TableCell className="text-right text-gray-700">
-                          {order.totalWeight.toFixed(1)}kg
+                          {formatWeight(order.totalWeight)}
                         </TableCell>
                         <TableCell>{getStatusBadge(order.status)}</TableCell>
                         <TableCell className="text-right">
