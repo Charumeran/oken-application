@@ -307,8 +307,8 @@ export const generatePDFContent = (data: OrderDocument): string => {
             <table>
               <thead>
                 <tr>
-                  <th style="text-align: left; width: 55%;">資材名</th>
-                  <th style="text-align: right; width: 10%;">数量</th>
+                  <th style="text-align: left; width: 50%;">資材名</th>
+                  <th style="text-align: right; width: 15%;">数量</th>
                   <th style="text-align: right; width: 15%;">単重</th>
                   <th style="text-align: right; width: 20%;">合計</th>
                 </tr>
@@ -317,13 +317,13 @@ export const generatePDFContent = (data: OrderDocument): string => {
                 ${columnItems.map((item, index) => {
                   // 文字数に応じてフォントサイズを調整（行の高さは固定）
                   const nameLength = item.name.length;
-                  const fontSize = nameLength > 15 ? '7px' : '8px';
+                  const fontSize = nameLength > 14 ? '7px' : '8px';
                   return `
                 <tr ${index % 2 === 1 ? 'class="row-alternate"' : ''}>
                   <td style="font-weight: bold; font-size: ${fontSize}; white-space: normal; line-height: 1.3;">${item.name}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 9px;">${item.quantity}</td>
+                  <td style="text-align: right; font-weight: bold; font-size: 8px;">${item.quantity}</td>
                   <td style="text-align: right; font-size: 8px;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 9px;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
+                  <td style="text-align: right; font-weight: bold; font-size: 8px;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
                 </tr>`;
                 }).join('')}
               </tbody>
