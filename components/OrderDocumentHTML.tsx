@@ -391,14 +391,35 @@ export const generatePDFContent = (data: OrderDocument): string => {
 };
 
 export const printToPDF = (data: OrderDocument): void => {
-  // 新しいウィンドウを開いてPDF印刷用のHTMLを表示
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) {
-    alert('ポップアップがブロックされました。ポップアップを許可してください。');
-    return;
-  }
+  // iframeを使ってポップアップブロックを回避
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.top = '0';
+  iframe.style.left = '0';
+  iframe.style.width = '100%';
+  iframe.style.height = '100%';
+  iframe.style.border = 'none';
+  iframe.style.zIndex = '9999';
+
+  document.body.appendChild(iframe);
 
   const htmlContent = generatePDFContent(data);
-  printWindow.document.write(htmlContent);
-  printWindow.document.close();
+
+  if (iframe.contentDocument) {
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(htmlContent);
+    iframe.contentDocument.close();
+
+    // 印刷ダイアログが閉じられたらiframeを削除
+    if (iframe.contentWindow) {
+      iframe.contentWindow.onafterprint = () => {
+        document.body.removeChild(iframe);
+      };
+
+      // 少し待ってから印刷ダイアログを開く（コンテンツの読み込みを待つ）
+      setTimeout(() => {
+        iframe.contentWindow?.print();
+      }, 100);
+    }
+  }
 };
