@@ -10,14 +10,6 @@ export const generatePDFContent = (data: OrderDocument): string => {
   // 1列に30個固定
   const itemsPerColumn = 30;
 
-  // A4の高さから使用可能な高さを計算
-  const a4HeightPx = 1063; // A4縦の高さ（96dpi換算）
-  const headerFooterHeight = 300; // ヘッダー・情報・合計・備考の高さ
-  const availableHeight = a4HeightPx - headerFooterHeight; // 826px
-
-  // 1列30個で固定行高を計算
-  const rowHeight = Math.floor(availableHeight / itemsPerColumn); // 826 ÷ 30 = 27px
-
   // アイテムを30個ずつ列に分割
   const columns: typeof data.items[] = [];
   for (let i = 0; i < data.items.length; i += itemsPerColumn) {
@@ -56,19 +48,21 @@ export const generatePDFContent = (data: OrderDocument): string => {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 8mm;
+            margin: 6mm;
           }
           html, body {
             height: auto !important;
             overflow: visible !important;
+            width: 100% !important;
           }
           body {
             margin: 0 !important;
-            padding: 8px !important;
+            padding: 4mm !important;
             position: relative;
+            transform-origin: top left;
           }
           .print-button {
-            display: none;
+            display: none !important;
           }
           .watermark-container {
             position: fixed !important;
@@ -79,10 +73,49 @@ export const generatePDFContent = (data: OrderDocument): string => {
             min-height: 297mm !important;
           }
           .watermark {
-            font-size: 20px !important;
+            font-size: 3.5mm !important;
           }
-          body {
-            overflow-x: visible !important;
+          .print-content {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+          }
+          .tables-container {
+            width: 100% !important;
+          }
+          table {
+            font-size: 1.8mm !important;
+          }
+          th {
+            font-size: 1.7mm !important;
+            padding: 0.8mm !important;
+          }
+          td {
+            font-size: 1.8mm !important;
+            padding: 0.8mm 0.5mm !important;
+            height: auto !important;
+            min-height: 5mm !important;
+          }
+          .title h1 {
+            font-size: 4mm !important;
+          }
+          .info-row {
+            font-size: 2.8mm !important;
+          }
+          .info-label {
+            font-size: 2.8mm !important;
+          }
+          .total-label {
+            font-size: 3mm !important;
+          }
+          .total-value {
+            font-size: 3.2mm !important;
+          }
+          .note-label {
+            font-size: 2.8mm !important;
+          }
+          .note-text {
+            font-size: 2.5mm !important;
           }
         }
         body {
@@ -133,16 +166,20 @@ export const generatePDFContent = (data: OrderDocument): string => {
           gap: 6px;
           margin-bottom: 5px;
           justify-content: space-between;
+          width: 100%;
+          overflow: hidden;
         }
         .table-column {
           flex: 1;
           min-width: 0;
+          overflow: hidden;
         }
         table {
           width: 100%;
           border-collapse: collapse;
           border: 2px solid #000;
           table-layout: fixed;
+          overflow: hidden;
         }
         th {
           border: 1px solid #000;
@@ -151,13 +188,18 @@ export const generatePDFContent = (data: OrderDocument): string => {
           color: white;
           font-weight: bold;
           font-size: 8px;
+          word-break: break-word;
+          overflow-wrap: break-word;
         }
         td {
           border: 1px solid #000;
           padding: 3px 2px;
-          height: ${rowHeight}px;
+          height: auto;
+          min-height: 20px;
           vertical-align: middle;
           line-height: 1.3;
+          word-break: break-word;
+          overflow-wrap: break-word;
         }
         .row-alternate {
           background-color: #f7fafc;
