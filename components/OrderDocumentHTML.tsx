@@ -6,7 +6,7 @@ const formatDate = (dateString: string) => {
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
 
-export const generatePDFContent = (data: OrderDocument): string => {
+export const generatePDFContent = (data: OrderDocument, options?: { hidePrintButton?: boolean }): string => {
   // 1列に30個固定
   const itemsPerColumn = 30;
 
@@ -308,7 +308,7 @@ export const generatePDFContent = (data: OrderDocument): string => {
           return watermarks.join('');
         })()}
       </div>
-      <button class="print-button" onclick="window.print()">印刷 / PDFに保存</button>
+      ${!options?.hidePrintButton ? '<button class="print-button" onclick="window.print()">印刷 / PDFに保存</button>' : ''}
 
       ${pages.map((pageColumns, pageIndex) => `
       <div class="print-content ${pageIndex < pages.length - 1 ? 'page-break' : ''}">

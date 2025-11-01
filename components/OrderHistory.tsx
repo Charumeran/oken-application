@@ -228,83 +228,9 @@ export default function OrderHistory() {
     }
   };
 
-  const handleDownload = async (orderId: string) => {
-    try {
-      // 注文詳細を取得
-      const response = await fetch(`/api/orders/${orderId}`);
-      if (response.status === 401) {
-        // セッション切れ - ログインページにリダイレクト
-        router.push('/');
-        return;
-      }
-      if (!response.ok) {
-        throw new Error('Failed to fetch order');
-      }
-      const data = await response.json();
-      const order = data.order;
-
-      // OrderDocument形式に変換
-      const orderDocument = {
-        orderDate: order.deliveryDate || order.createdAt,
-        ordererName: order.customerAddress || '担当者',
-        siteName: order.customerName,
-        contactInfo: order.contactInfo,
-        loadingDate: order.loadingDate || undefined,
-        items: order.items.map((item: { productName: string; quantity: number; weightPerUnit: number; totalWeight: number }) => ({
-          id: `${order.id}-${item.productName}`,
-          name: item.productName,
-          quantity: item.quantity,
-          weightPerUnit: item.weightPerUnit,
-          totalWeight: item.totalWeight
-        })),
-        totalWeight: order.totalWeight,
-        note: order.shippingAddress || ''
-      };
-
-      // 発注書PDFを生成
-      const { printToPDF } = await import("@/components/OrderDocumentHTML");
-      printToPDF(orderDocument);
-
-      // ステータスを処理済みに更新
-      if (order.status !== 'completed') {
-        const updateResponse = await fetch(`/api/orders/${orderId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            projectName: order.customerName,
-            personInCharge: order.customerAddress,
-            contactInfo: order.contactInfo,
-            loadingDate: order.loadingDate,
-            orderDate: order.deliveryDate || order.createdAt,
-            deliveryDate: order.deliveryDate,
-            notes: order.shippingAddress,
-            status: 'completed',
-            items: order.items.map((item: { materialId: string; quantity: number; totalWeight: number; notes: string | null }) => ({
-              materialId: item.materialId,
-              quantity: item.quantity,
-              totalWeightKg: item.totalWeight,
-              notes: item.notes
-            }))
-          }),
-        });
-
-        if (updateResponse.status === 401) {
-          // セッション切れ - ログインページにリダイレクト
-          router.push('/');
-          return;
-        }
-
-        if (updateResponse.ok) {
-          // 一覧を再読み込み
-          fetchOrders();
-        }
-      }
-    } catch (error) {
-      console.error('Error downloading order:', error);
-      alert('発注書の出力に失敗しました');
-    }
+  const handleDownload = (orderId: string) => {
+    // 印刷専用ページに遷移
+    router.push(`/orders/${orderId}/print`);
   };
 
   const getStatusBadge = (status: string) => {
