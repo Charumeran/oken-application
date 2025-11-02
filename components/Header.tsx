@@ -65,7 +65,7 @@ export default function Header() {
             className={`flex items-center ${pathname !== '/' ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
             onClick={handleLogoClick}
           >
-            <Image src="/icons/icon.jpeg" alt="建設テックパートナー" width={60} height={60} />
+            <Image src="/icons/icon.jpeg" alt="建設テックパートナー" width={40} height={40} />
             <h1 className='text-black text-2xl ml-4 font-bold'>建設テックパートナー</h1>
           </div>
           {pathname !== '/' && (
