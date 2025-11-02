@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "資材発注管理システム",
   description: "建設業向け資材発注管理アプリケーション",
+  icons: {
+    apple: '/icons/icon.jpeg',
+  },
 };
 
 export default async function RootLayout({
