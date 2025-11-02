@@ -67,8 +67,11 @@ export default function OrderPrintPage() {
         note: data.order.shippingAddress || ''
       };
 
-      // HTML生成（印刷ボタンを非表示に）
-      const content = generatePDFContent(orderDocument, { hidePrintButton: true });
+      // HTML生成（印刷ボタンを非表示に、常に印刷スタイルを適用）
+      const content = generatePDFContent(orderDocument, {
+        hidePrintButton: true,
+        applyPrintStylesAlways: true
+      });
       setHtmlContent(content);
 
       // ステータスを処理済みに更新
