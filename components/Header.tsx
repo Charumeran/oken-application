@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter, usePathname } from 'next/navigation'
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { LogOut, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -64,7 +65,8 @@ export default function Header() {
             className={`flex items-center ${pathname !== '/' ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
             onClick={handleLogoClick}
           >
-            <h1 className='text-black text-2xl font-bold'>建設テックパートナー</h1>
+            <Image src="/icons/icon.jpeg" alt="建設テックパートナー" width={60} height={60} />
+            <h1 className='text-black text-2xl ml-4 font-bold'>建設テックパートナー</h1>
           </div>
           {pathname !== '/' && (
             <div className="flex items-center gap-2 md:gap-4">
