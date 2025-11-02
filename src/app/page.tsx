@@ -45,15 +45,6 @@ export default function Home() {
     <div className="min-h-screen flex items-start justify-center bg-gradient-to-br from-slate-50 to-slate-100 pt-20">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          {/* <div className="flex justify-center mb-6">
-            <Image
-              src="/icons/icon.jpeg"
-              alt="Logo"
-              width={80}
-              height={80}
-              className="rounded-2xl shadow-lg"
-            />
-          </div> */}
           <h2 className="text-3xl font-bold text-slate-800">
             資材発注管理システム
           </h2>
