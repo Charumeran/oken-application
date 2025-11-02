@@ -6,7 +6,7 @@ const formatDate = (dateString: string) => {
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
 
-export const generatePDFContent = (data: OrderDocument, options?: { hidePrintButton?: boolean; applyPrintStylesAlways?: boolean }): string => {
+export const generatePDFContent = (data: OrderDocument, options?: { hidePrintButton?: boolean }): string => {
   // 1列に30個固定
   const itemsPerColumn = 30;
 
@@ -45,64 +45,6 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           margin: 0;
           padding: 0;
         }
-        ${options?.applyPrintStylesAlways ? `
-        /* A4サイズプレビュー用のスタイル */
-        html {
-          background: #e5e5e5;
-        }
-        body {
-          background: white;
-          max-width: 210mm;
-          margin: 20px auto;
-          padding: 4mm !important;
-          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .print-content {
-          width: 100% !important;
-          max-width: 100% !important;
-          overflow: hidden !important;
-        }
-        .tables-container {
-          width: 100% !important;
-        }
-        table {
-          font-size: 1.8mm !important;
-        }
-        th {
-          font-size: 1.7mm !important;
-          padding: 0.8mm !important;
-        }
-        td {
-          font-size: 1.8mm !important;
-          padding: 0.8mm 0.5mm !important;
-          height: auto !important;
-          min-height: 5mm !important;
-        }
-        .title h1 {
-          font-size: 4mm !important;
-        }
-        .info-row {
-          font-size: 2.8mm !important;
-        }
-        .info-label {
-          font-size: 2.8mm !important;
-        }
-        .total-label {
-          font-size: 3mm !important;
-        }
-        .total-value {
-          font-size: 3.2mm !important;
-        }
-        .note-label {
-          font-size: 2.8mm !important;
-        }
-        .note-text {
-          font-size: 2.5mm !important;
-        }
-        .watermark {
-          font-size: 3.5mm !important;
-        }
-        ` : ''}
         @media print {
           @page {
             size: A4 portrait;
@@ -115,7 +57,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           body {
             margin: 0 !important;
-            padding: 4mm !important;
+            padding: 11pt !important;
             position: relative;
             transform-origin: top left;
           }
@@ -131,7 +73,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             min-height: 297mm !important;
           }
           .watermark {
-            font-size: 3.5mm !important;
+            font-size: 10pt !important;
           }
           .print-content {
             width: 100% !important;
@@ -142,38 +84,48 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             width: 100% !important;
           }
           table {
-            font-size: 1.8mm !important;
+            font-size: 5pt !important;
+            line-height: 1.2 !important;
           }
           th {
-            font-size: 1.7mm !important;
-            padding: 0.8mm !important;
+            font-size: 5pt !important;
+            padding: 2pt !important;
+            line-height: 1.2 !important;
           }
           td {
-            font-size: 1.8mm !important;
-            padding: 0.8mm 0.5mm !important;
+            font-size: 5pt !important;
+            padding: 2pt 1.5pt !important;
             height: auto !important;
-            min-height: 5mm !important;
+            min-height: 14pt !important;
+            line-height: 1.2 !important;
           }
           .title h1 {
-            font-size: 4mm !important;
+            font-size: 11pt !important;
+            line-height: 1.2 !important;
           }
           .info-row {
-            font-size: 2.8mm !important;
+            font-size: 8pt !important;
+            line-height: 1.3 !important;
           }
           .info-label {
-            font-size: 2.8mm !important;
+            font-size: 8pt !important;
+            line-height: 1.3 !important;
           }
           .total-label {
-            font-size: 3mm !important;
+            font-size: 8.5pt !important;
+            line-height: 1.3 !important;
           }
           .total-value {
-            font-size: 3.2mm !important;
+            font-size: 9pt !important;
+            line-height: 1.3 !important;
           }
           .note-label {
-            font-size: 2.8mm !important;
+            font-size: 8pt !important;
+            line-height: 1.3 !important;
           }
           .note-text {
-            font-size: 2.5mm !important;
+            font-size: 7pt !important;
+            line-height: 1.3 !important;
           }
         }
         body {
