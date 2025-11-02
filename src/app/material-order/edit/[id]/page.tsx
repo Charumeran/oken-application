@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import MaterialOrderForm from "@/components/MaterialOrderForm";
 import { OrderDocument } from "@/types/material-order";
 import { formatWeight, formatTotalWeight } from "@/lib/utils/format";
@@ -24,6 +24,7 @@ interface EditOrderData {
 
 export default function MaterialOrderEditPage() {
   const params = useParams();
+  const router = useRouter();
   const orderId = params.id as string;
 
   const [orderData, setOrderData] = useState<OrderDocument | null>(null);
@@ -90,57 +91,6 @@ export default function MaterialOrderEditPage() {
   const handleUpdateOrder = async () => {
     if (!orderData) return;
 
-    // ポップアップブロックを回避するため、クリックイベント内で即座にウィンドウを開く
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('ポップアップがブロックされました。ポップアップを許可してから再度お試しください。');
-      return;
-    }
-
-    // ローディング画面を表示
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>発注書を更新中...</title>
-        <style>
-          body {
-            font-family: system-ui, -apple-system, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(to br, #f8fafc, #e2e8f0);
-          }
-          .loading {
-            text-align: center;
-          }
-          .spinner {
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid #475569;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-          }
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>発注書を更新中...</p>
-        </div>
-      </body>
-      </html>
-    `);
-
     setIsCreatingOrder(true);
     try {
       const requestData = {
@@ -171,27 +121,14 @@ export default function MaterialOrderEditPage() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('API Error:', errorData);
-        printWindow.close();
         throw new Error(errorData.error || '発注書の更新に失敗しました');
       }
 
       const result = await response.json();
       console.log('発注書を更新しました:', result);
 
-      // PDFをダウンロード（既に開いているウィンドウに書き込む）
-      const { generatePDFContent } = await import("@/components/OrderDocumentHTML");
-      const htmlContent = generatePDFContent(orderData);
-      printWindow.document.open();
-      printWindow.document.write(htmlContent);
-      printWindow.document.close();
-
-      setOrderCreated(true);
-      alert('発注書を更新しました！');
-
-      // 3秒後にダッシュボードに戻る
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 3000);
+      // 印刷専用ページに遷移
+      router.push(`/orders/${orderId}/print`);
     } catch (error) {
       console.error("発注書更新エラー:", error);
       alert("発注書の更新に失敗しました");
