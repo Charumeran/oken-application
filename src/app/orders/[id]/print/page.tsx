@@ -128,7 +128,7 @@ export default function OrderPrintPage() {
   };
 
   const handleBack = () => {
-    router.back();
+    router.push('/dashboard');
   };
 
   if (loading) {
