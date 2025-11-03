@@ -89,7 +89,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             line-height: 1.2 !important;
           }
           th {
-            font-size: 5pt !important;
+            font-size: 6pt !important;
             padding: 2pt !important;
             line-height: 1.2 !important;
           }
@@ -197,7 +197,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           background-color: #475569;
           color: white;
           font-weight: bold;
-          font-size: 8px;
+          font-size: 10px;
           word-break: break-word;
           overflow-wrap: break-word;
         }
