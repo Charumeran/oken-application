@@ -52,9 +52,9 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             margin: 0;
           }
           html, body {
-            height: auto !important;
-            overflow: visible !important;
             width: 100% !important;
+            height: 100svh !important;
+            overflow: visible !important;
           }
           body {
             margin: 0 !important;
@@ -66,58 +66,66 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .watermark-container {
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 90vh !important;
+            width: 100% !important;
+            height: 100svh !important;
           }
           .watermark {
-            font-size: 3.5mm !important;
+            font-size: 10pt !important;
           }
           .print-content {
+            position: relative !important;
             padding: 8mm 0;
             width: 100% !important;
             max-width: 100% !important;
             overflow: hidden !important;
-            transform: scale(0.95);
+            transform: scale(0.85);
             transform-origin: center top;
           }
           .tables-container {
             width: 100% !important;
           }
           table {
-            font-size: 1.8mm !important;
+            font-size: 5pt !important;
+            line-height: 1.2 !important;
           }
           th {
-            font-size: 1.7mm !important;
-            padding: 0.8mm !important;
+            font-size: 5pt !important;
+            padding: 2pt !important;
+            line-height: 1.2 !important;
           }
           td {
-            font-size: 1.8mm !important;
-            padding: 0.8mm 0.5mm !important;
-            height: auto !important;
-            min-height: 5mm !important;
+            font-size: 5pt !important;
+            padding: 2pt 1.5pt !important;
+            height: 17pt !important;
+            line-height: 1.2 !important;
           }
           .title h1 {
-            font-size: 4mm !important;
+            font-size: 11pt !important;
+            line-height: 1.2 !important;
           }
           .info-row {
-            font-size: 2.8mm !important;
+            font-size: 8pt !important;
+            line-height: 1.3 !important;
           }
           .info-label {
-            font-size: 2.8mm !important;
+            font-size: 8pt !important;
+            line-height: 1.3 !important;
           }
           .total-label {
-            font-size: 3mm !important;
+            font-size: 8.5pt !important;
+            line-height: 1.3 !important;
           }
           .total-value {
-            font-size: 3.2mm !important;
+            font-size: 9pt !important;
+            line-height: 1.3 !important;
           }
           .note-label {
-            font-size: 2.8mm !important;
+            font-size: 8pt !important;
+            line-height: 1.3 !important;
           }
           .note-text {
-            font-size: 2.5mm !important;
+            font-size: 7pt !important;
+            line-height: 1.3 !important;
           }
         }
         body {
@@ -197,7 +205,6 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           border: 1px solid #000;
           padding: 3px 2px;
           height: auto;
-          min-height: 20px;
           vertical-align: middle;
           line-height: 1.3;
           word-break: break-word;
@@ -278,7 +285,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         }
         .watermark {
           position: absolute;
-          font-size: 24px;
+          font-size: 18px;
           font-weight: bold;
           color: rgba(0, 0, 0, 0.12);
           white-space: nowrap;
@@ -359,15 +366,12 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
               </thead>
               <tbody>
                 ${columnItems.map((item, index) => {
-                  // 文字数に応じてフォントサイズを調整（行の高さは固定）
-                  const nameLength = item.name.length;
-                  const fontSize = nameLength > 14 ? '7px' : '8px';
                   return `
                 <tr ${index % 2 === 1 ? 'class="row-alternate"' : ''}>
-                  <td style="font-weight: bold; font-size: ${fontSize}; white-space: normal; line-height: 1.3;">${item.name}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 8px;">${item.quantity}</td>
-                  <td style="text-align: right; font-size: 8px;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 8px;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
+                  <td style="font-weight: bold; white-space: normal; line-height: 1.3;">${item.name}</td>
+                  <td style="text-align: right; font-weight: bold;">${item.quantity}</td>
+                  <td style="text-align: right;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
+                  <td style="text-align: right; font-weight: bold;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
                 </tr>`;
                 }).join('')}
               </tbody>
