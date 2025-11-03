@@ -52,7 +52,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             margin: 0;
           }
           html, body {
-            width: 100svw !important;
+            width: 100% !important;
             height: 100svh !important;
             overflow: visible !important;
           }
@@ -66,7 +66,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .watermark-container {
             position: fixed !important;
-            width: 100svw !important;
+            width: 100% !important;
             height: 100svh !important;
           }
           .watermark {
