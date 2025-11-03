@@ -68,7 +68,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            width: 200vw !important;
+            width: 100vw !important;
             height: 90vh !important;
           }
           .watermark {
@@ -90,15 +90,14 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             line-height: 1.2 !important;
           }
           th {
-            font-size: 5pt !important;
+            font-size: 7pt !important;
             padding: 2pt !important;
             line-height: 1.2 !important;
           }
           td {
-            font-size: 5pt !important;
+            font-size: 6pt !important;
             padding: 2pt 1.5pt !important;
-            height: auto !important;
-            min-height: 14pt !important;
+            height: 20pt !important;
             line-height: 1.2 !important;
           }
           .title h1 {
@@ -130,6 +129,8 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             line-height: 1.3 !important;
           }
         }
+
+        
         body {
           font-family: system-ui, -apple-system, sans-serif;
           font-size: 9px;
@@ -206,8 +207,8 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         td {
           border: 1px solid #000;
           padding: 3px 2px;
-          height: auto;
-          min-height: 20px;
+          height: 30px;
+          font-size:8px;
           vertical-align: middle;
           line-height: 1.3;
           word-break: break-word;
@@ -288,7 +289,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         }
         .watermark {
           position: absolute;
-          font-size: 24px;
+          font-size: 18px;
           font-weight: bold;
           color: rgba(0, 0, 0, 0.12);
           white-space: nowrap;
@@ -369,15 +370,12 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
               </thead>
               <tbody>
                 ${columnItems.map((item, index) => {
-                  // 文字数に応じてフォントサイズを調整（行の高さは固定）
-                  const nameLength = item.name.length;
-                  const fontSize = nameLength > 14 ? '7px' : '8px';
                   return `
                 <tr ${index % 2 === 1 ? 'class="row-alternate"' : ''}>
-                  <td style="font-weight: bold; font-size: ${fontSize}; white-space: normal; line-height: 1.3;">${item.name}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 8px;">${item.quantity}</td>
-                  <td style="text-align: right; font-size: 8px;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
-                  <td style="text-align: right; font-weight: bold; font-size: 8px;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
+                  <td style="font-weight: bold; white-space: normal; line-height: 1.3;">${item.name}</td>
+                  <td style="text-align: right; font-weight: bold;">${item.quantity}</td>
+                  <td style="text-align: right;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
+                  <td style="text-align: right; font-weight: bold;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
                 </tr>`;
                 }).join('')}
               </tbody>
