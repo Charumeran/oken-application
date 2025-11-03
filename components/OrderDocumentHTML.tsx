@@ -57,11 +57,9 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             width: 100% !important;
           }
           body {
-            margin: 10mm 5mm !important;
+            margin: 0 !important;
             padding: 0 !important;
             position: relative;
-            transform-origin: top left;
-            transform: scale(0.95);
           }
           .print-button {
             display: none !important;
@@ -71,16 +69,18 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
-            height: 100vh !important;
-            min-height: 297mm !important;
+            height: 90vh !important;
           }
           .watermark {
             font-size: 10pt !important;
           }
           .print-content {
+            padding: 8mm 0;
             width: 100% !important;
             max-width: 100% !important;
             overflow: hidden !important;
+            transform: scale(0.95);
+            transform-origin: center top;
           }
           .tables-container {
             width: 100% !important;
