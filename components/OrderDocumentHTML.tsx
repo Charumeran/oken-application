@@ -36,6 +36,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="apple-mobile-web-app-capable" content="yes">
       <title>発注書_${data.ordererName}_${new Date().toISOString().split('T')[0]}</title>
       <style>
         * {
@@ -48,7 +49,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         @media print {
           @page {
             size: A4 portrait;
-            margin: 6mm;
+            margin: 0;
           }
           html, body {
             height: auto !important;
@@ -56,10 +57,11 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             width: 100% !important;
           }
           body {
-            margin: 0 !important;
-            padding: 4mm !important;
+            margin: 10mm 5mm !important;
+            padding: 0 !important;
             position: relative;
             transform-origin: top left;
+            transform: scale(0.95);
           }
           .print-button {
             display: none !important;
