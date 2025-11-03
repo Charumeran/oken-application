@@ -66,8 +66,6 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .watermark-container {
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
             width: 100vw !important;
             height: 90vh !important;
           }
@@ -90,14 +88,14 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             line-height: 1.2 !important;
           }
           th {
-            font-size: 7pt !important;
+            font-size: 5pt !important;
             padding: 2pt !important;
             line-height: 1.2 !important;
           }
           td {
-            font-size: 6pt !important;
+            font-size: 5pt !important;
             padding: 2pt 1.5pt !important;
-            height: 20pt !important;
+            height: auto !important;
             line-height: 1.2 !important;
           }
           .title h1 {
@@ -129,8 +127,6 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             line-height: 1.3 !important;
           }
         }
-
-        
         body {
           font-family: system-ui, -apple-system, sans-serif;
           font-size: 9px;
@@ -207,8 +203,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         td {
           border: 1px solid #000;
           padding: 3px 2px;
-          height: 30px;
-          font-size:8px;
+          height: auto;
           vertical-align: middle;
           line-height: 1.3;
           word-break: break-word;
