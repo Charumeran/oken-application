@@ -304,16 +304,16 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
     <body>
       <div class="watermark-container">
         ${(() => {
-          // 透かしをvw単位で等間隔に配置（画面幅に対する絶対位置）
+          // 透かしを%単位で等間隔に配置（コンテナ幅に対する相対位置）
           const watermarks = [];
           const rows = 8; // 縦方向の繰り返し数
-          const spacingVw = 25; // 透かし間の間隔（vw単位）
+          const spacing = 25; // 透かし間の間隔（%単位）
 
           for (let row = 0; row < rows; row++) {
-            // 横方向は0vwから始めて、spacingVw間隔で配置（85まで、右端の切れを防ぐため）
-            for (let colVw = 0; colVw <= 100; colVw += spacingVw) {
-              const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacingVw) % 2 === 0 ? 0 : 5);
-              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">建設テックパートナー</div>`);
+            // 横方向は0%から始めて、spacing間隔で配置
+            for (let col = 0; col <= 100; col += spacing) {
+              const top = (row * (100 / (rows - 1))) + (Math.floor(col / spacing) % 2 === 0 ? 0 : 5);
+              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${col}%;">建設テックパートナー</div>`);
             }
           }
 
