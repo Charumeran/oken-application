@@ -60,18 +60,16 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             margin: 10mm 5mm !important;
             padding: 0 !important;
             position: relative;
-            transform-origin: top left;
-            transform: scale(0.95);
           }
           .print-button {
             display: none !important;
           }
           .watermark-container {
-            position: fixed !important;
+            position: absolute !important;
             top: 0 !important;
             left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
+            width: 100% !important;
+            height: 100% !important;
             min-height: 297mm !important;
           }
           .watermark {
@@ -81,6 +79,8 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             width: 100% !important;
             max-width: 100% !important;
             overflow: hidden !important;
+            transform: scale(0.95);
+            transform-origin: top left;
           }
           .tables-container {
             width: 100% !important;
@@ -310,7 +310,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           const spacingVw = 25; // 透かし間の間隔（vw単位）
 
           for (let row = 0; row < rows; row++) {
-            // 横方向は0vwから始めて、spacingVw間隔で配置
+            // 横方向は0vwから始めて、spacingVw間隔で配置（85まで、右端の切れを防ぐため）
             for (let colVw = 0; colVw <= 100; colVw += spacingVw) {
               const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacingVw) % 2 === 0 ? 0 : 5);
               watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">建設テックパートナー</div>`);
