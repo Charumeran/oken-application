@@ -95,7 +95,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           td {
             font-size: 5pt !important;
             padding: 2pt 1.5pt !important;
-            height: 18pt !important;
+            height: 17pt !important;
             line-height: 1.2 !important;
           }
           .title h1 {
