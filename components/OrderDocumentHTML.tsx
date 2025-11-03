@@ -66,13 +66,14 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .watermark-container {
             position: fixed !important;
-            width: 100vw !important;
-            height: 90vh !important;
+            width: 100svw !important;
+            height: 90svh !important;
           }
           .watermark {
             font-size: 10pt !important;
           }
           .print-content {
+            position: relative !important;
             padding: 8mm 0;
             width: 100% !important;
             max-width: 100% !important;
