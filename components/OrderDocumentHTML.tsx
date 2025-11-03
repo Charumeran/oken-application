@@ -52,9 +52,9 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             margin: 0;
           }
           html, body {
+            width: 100svw !important;
             height: 100svh !important;
             overflow: visible !important;
-            width: 100% !important;
           }
           body {
             margin: 0 !important;
