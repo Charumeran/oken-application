@@ -37,7 +37,7 @@ export default function MaterialOrderPage() {
         orderDate: orderData.orderDate,
         deliveryDate: null,
         status: 'completed',
-        notes: orderData.note,
+        notes: null, // orderData.note, // 備考機能を削除
         items: orderData.items.map(item => ({
           materialId: item.id,
           quantity: item.quantity,
@@ -142,12 +142,14 @@ export default function MaterialOrderPage() {
             </table>
           </div>
 
+          {/* 備考表示 - コメントアウト
           {orderData.note && (
               <div className="mt-4 md:mt-6 p-3 md:p-4 bg-slate-50 rounded-lg border border-slate-200">
                 <p className="font-semibold mb-2 text-slate-800 text-sm md:text-base">備考:</p>
                 <p className="whitespace-pre-wrap text-slate-700 text-sm md:text-base">{orderData.note}</p>
               </div>
           )}
+          */}
           </div>
         </div>
       </div>
