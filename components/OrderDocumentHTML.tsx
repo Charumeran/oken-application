@@ -37,7 +37,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
   });
 
   // 30行ごとに列分割
-  const itemsPerColumn = 28;
+  const itemsPerColumn =30;
   const columns: TableRow[][] = [];
   for (let i = 0; i < allRows.length; i += itemsPerColumn) {
     columns.push(allRows.slice(i, i + itemsPerColumn));
@@ -87,7 +87,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           body {
             margin: 0 !important;
-            padding: 0 !important;
+            padding: 0 20mm !important;
             position: relative;
           }
           .print-button {
@@ -103,18 +103,22 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .print-content {
             position: relative !important;
-            padding: 8mm 0;
+            padding: 3mm 0 !important;
             width: 100% !important;
             max-width: 100% !important;
             overflow: hidden !important;
-            transform: scale(0.75);
-            transform-origin: center top;
-            -webkit-transform: scale(0.75);
-            -webkit-transform-origin: center top;
             page-break-inside: avoid;
           }
-          .info-section {
+          .title {
             margin-bottom: 2mm !important;
+          }
+          .title h1 {
+            margin-bottom: 1mm !important;
+            padding-bottom: 1mm !important;
+          }
+          .info-section {
+            margin-bottom: 1mm !important;
+            padding: 3mm !important;
           }
           .tables-container {
             width: 100% !important;
@@ -131,7 +135,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           td {
             font-size: 7pt !important;
             padding: 0 2pt !important;
-            height: 19pt !important;
+            height: 18pt !important;
             line-height: 1.0 !important;
           }
           .title h1 {
@@ -165,6 +169,14 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           .category-header-row td {
             font-size: 9pt !important;
             padding: 0 2pt !important;
+          }
+          .total-section {
+            margin-top: 1mm !important;
+            padding: 3mm !important;
+          }
+          .note-section {
+            margin-top: 1mm !important;
+            padding: 3mm !important;
           }
         }
         body {
