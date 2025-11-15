@@ -64,7 +64,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta name="apple-mobile-web-app-capable" content="yes">
-      <title>発注書_${data.ordererName}_${new Date().toISOString().split('T')[0]}</title>
+      <title>${data.siteName || '現場名未設定'}-${data.orderDate.split('T')[0].replace(/-/g, '')}</title>
       <style>
         * {
           box-sizing: border-box;

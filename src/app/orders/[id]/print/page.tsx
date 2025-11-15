@@ -73,6 +73,9 @@ export default function OrderPrintPage() {
       const content = generatePDFContent(orderDocument, { hidePrintButton: true });
       setHtmlContent(content);
 
+      // PDF保存時のファイル名を設定
+      document.title = `${orderDocument.siteName || '現場名未設定'}-${orderDocument.orderDate.split('T')[0].replace(/-/g, '')}`;
+
       // ステータスを処理済みに更新
       if (data.order.status !== 'completed') {
         await fetch(`/api/orders/${data.order.id}`, {
