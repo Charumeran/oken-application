@@ -94,10 +94,13 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             display: none !important;
           }
           .watermark-container {
-            position: fixed !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
-            height: 100svh !important;
+            height: 100% !important;
             z-index: 9999 !important;
+            pointer-events: none !important;
           }
           .watermark {
             font-size: 10pt !important;
@@ -366,28 +369,26 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
       </style>
     </head>
     <body>
-      <div class="watermark-container">
-        ${(() => {
-          // 透かしをvw単位で等間隔に配置（画面幅に対する絶対位置）
-          const watermarks = [];
-          const rows = 8; // 縦方向の繰り返し数
-          const spacingVw = 25; // 透かし間の間隔（vw単位）
-
-          for (let row = 0; row < rows; row++) {
-            // 横方向は0vwから始めて、spacingVw間隔で配置
-            for (let colVw = 0; colVw <= 100; colVw += spacingVw) {
-              const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacingVw) % 2 === 0 ? 0 : 5);
-              watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">株式会社　櫻建</div>`);
-            }
-          }
-
-          return watermarks.join('');
-        })()}
-      </div>
       ${!options?.hidePrintButton ? '<button class="print-button" onclick="window.print()">印刷 / PDFに保存</button>' : ''}
 
       ${pages.map((pageColumns, pageIndex) => `
       <div class="print-content ${pageIndex < pages.length - 1 ? 'page-break' : ''}">
+        <div class="watermark-container">
+          ${(() => {
+            const watermarks = [];
+            const rows = 8;
+            const spacingVw = 25;
+
+            for (let row = 0; row < rows; row++) {
+              for (let colVw = 0; colVw <= 100; colVw += spacingVw) {
+                const top = (row * (100 / (rows - 1))) + (Math.floor(colVw / spacingVw) % 2 === 0 ? 0 : 5);
+                watermarks.push(`<div class="watermark" style="top: ${top}%; left: ${colVw}vw;">株式会社　櫻建</div>`);
+              }
+            }
+
+            return watermarks.join('');
+          })()}
+        </div>
         <div class="title">
           <h1>資材発注書${pages.length > 1 ? ` (${pageIndex + 1}/${pages.length})` : ''}</h1>
         </div>
