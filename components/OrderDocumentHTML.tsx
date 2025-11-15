@@ -82,6 +82,8 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             width: 100% !important;
             height: 100svh !important;
             overflow: visible !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
           body {
             margin: 0 !important;
@@ -107,6 +109,12 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             overflow: hidden !important;
             transform: scale(0.75);
             transform-origin: center top;
+            -webkit-transform: scale(0.75);
+            -webkit-transform-origin: center top;
+            page-break-inside: avoid;
+          }
+          .info-section {
+            margin-bottom: 2mm !important;
           }
           .tables-container {
             width: 100% !important;
