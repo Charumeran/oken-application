@@ -299,6 +299,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
           items.push({
             id: material.id,
             name: material.name,
+            categoryName: categories.find(c => c.id === material.categoryId)?.name || '',
             quantity: Number(quantity),
             weightPerUnit: materialWeight,
             totalWeight: totalWeight,
@@ -321,7 +322,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
     console.log('Total weight calculated:', total);
     console.log('Unit weights for precision:', unitWeights);
     return { items, totalWeight: total, unitWeights };
-  }, [selectedMaterials, materials]);
+  }, [selectedMaterials, materials, categories]);
 
   const handleQuantityChange = (materialId: string, delta: number) => {
     const currentValue = selectedMaterials[materialId] || 0;
