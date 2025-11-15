@@ -117,12 +117,12 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           th {
             font-size: 7pt !important;
-            padding: 0 1pt !important;
+            padding: 2pt !important;
             line-height: 1.2 !important;
           }
           td {
             font-size: 7pt !important;
-            padding: 0 1pt !important;
+            padding: 0 2pt !important;
             height: 19pt !important;
             line-height: 1.2 !important;
           }
