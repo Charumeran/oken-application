@@ -17,7 +17,11 @@ export async function GET(
       include: {
         orderDetails: {
           include: {
-            material: true
+            material: {
+              include: {
+                category: true
+              }
+            }
           }
         }
       }
@@ -48,6 +52,7 @@ export async function GET(
       items: order.orderDetails.map((detail) => ({
         materialId: detail.materialId,
         productName: detail.material.name,
+        categoryName: detail.material.category.name,
         quantity: detail.quantity,
         weightPerUnit: detail.material.weightKg,
         totalWeight: Math.round((detail.totalWeightKg || (detail.quantity * detail.material.weightKg)) * 10000) / 10000,
@@ -125,7 +130,11 @@ export async function PUT(
       include: {
         orderDetails: {
           include: {
-            material: true
+            material: {
+              include: {
+                category: true
+              }
+            }
           }
         }
       }

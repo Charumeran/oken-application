@@ -21,6 +21,7 @@ interface OrderDetail {
   items: Array<{
     materialId: string;
     productName: string;
+    categoryName: string;
     quantity: number;
     weightPerUnit: number;
     totalWeight: number;
@@ -59,6 +60,7 @@ export default function OrderPrintPage() {
         items: data.order.items.map((item: OrderDetail['items'][0]) => ({
           id: `${data.order.id}-${item.productName}`,
           name: item.productName,
+          categoryName: item.categoryName,
           quantity: item.quantity,
           weightPerUnit: item.weightPerUnit,
           totalWeight: item.totalWeight

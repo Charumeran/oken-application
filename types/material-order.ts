@@ -1,6 +1,7 @@
 export type MaterialOrderItem = {
   id: string;
   name: string;
+  categoryName: string;
   quantity: number;
   weightPerUnit: number;
   totalWeight: number;
