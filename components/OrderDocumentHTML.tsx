@@ -97,6 +97,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             position: fixed !important;
             width: 100% !important;
             height: 100svh !important;
+            z-index: 9999 !important;
           }
           .watermark {
             font-size: 10pt !important;
@@ -338,7 +339,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           left: 0;
           width: 100vw;
           height: 100vh;
-          z-index: -1;
+          z-index: 9999;
           pointer-events: none;
           user-select: none;
           overflow: visible;
