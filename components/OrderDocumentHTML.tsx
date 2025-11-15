@@ -464,13 +464,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         <div class="total-section">
           <span class="total-label">合計重量:</span>
           <span class="total-value">${formatTotalWeight(data.totalWeight)}</span>
-        </div>
-
-        ${/* 備考セクション - コメントアウト */ false && data.note ? `
-        <div class="note-section">
-          <div class="note-label">備考:</div>
-          <div class="note-text">${data.note}</div>
-        </div>` : ''}` : ''}
+        </div>` : ''}
       </div>`).join('')}
     </body>
     </html>
