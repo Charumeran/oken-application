@@ -87,7 +87,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           body {
             margin: 0 !important;
-            padding: 0 20mm !important;
+            padding: 0 10mm !important;
             position: relative;
           }
           .print-button {
@@ -119,10 +119,10 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .info-section {
             margin-bottom: 1mm !important;
-            padding: 3mm !important;
+            padding: 0mm !important;
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
-            gap: 0.5mm 3mm !important;
+            gap: 0.5mm 0mm !important;
           }
           .info-row-full {
             grid-column: 1 / -1 !important;
