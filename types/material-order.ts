@@ -13,7 +13,7 @@ export type OrderDocument = {
   contactInfo?: string;
   loadingDate?: string;
   orderDate: string; // ISO8601形式
-  note?: string;
+  // note?: string; // コメントアウト
   items: MaterialOrderItem[];
   totalWeight: number;
 };

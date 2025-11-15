@@ -17,7 +17,7 @@ const orderFormSchema = z.object({
   siteName: z.string().min(1, "現場名を入力してください"),
   contactInfo: z.string().optional(),
   loadingDate: z.string().optional(),
-  note: z.string().optional(),
+  // note: z.string().optional(), // コメントアウト
   materials: z.record(z.number().int().min(0)),
 });
 
@@ -29,7 +29,7 @@ interface EditOrderData {
   siteName: string;
   contactInfo: string;
   loadingDate: string;
-  note: string;
+  // note: string; // コメントアウト
   items: Array<{
     id: string;
     name: string;
@@ -94,7 +94,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
       siteName: "",
       contactInfo: "",
       loadingDate: "",
-      note: "",
+      // note: "", // コメントアウト
       materials: {},
     },
   });
@@ -165,7 +165,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
         siteName: editData.siteName || "",
         contactInfo: editData.contactInfo || "",
         loadingDate: editData.loadingDate || "",
-        note: editData.note || "",
+        // note: editData.note || "", // コメントアウト
         materials: materialQuantities,
       };
       
@@ -341,7 +341,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
       contactInfo: data.contactInfo,
       loadingDate: data.loadingDate,
       orderDate: new Date().toISOString(),
-      note: data.note,
+      // note: data.note, // コメントアウト
       items: orderItems.items,
       totalWeight: orderItems.totalWeight,
     };
@@ -427,6 +427,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
             )}
           </div>
 
+          {/* 備考入力フィールド - コメントアウト
           <div className="relative">
             <label className="block text-lg font-semibold mb-3 text-slate-700">
               備考
@@ -438,6 +439,7 @@ export default function MaterialOrderForm({ onSubmit, editMode = false, editOrde
               placeholder="特記事項があれば入力"
             />
           </div>
+          */}
         </div>
 
         <div className="mb-10 bg-white p-8 rounded-2xl shadow-xl border border-gray-200">

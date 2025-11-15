@@ -119,7 +119,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .info-section {
             margin-bottom: 1mm !important;
-            padding: 0 4pt !important;
+            padding: 2pt 4pt !important;
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
             gap: 0.5mm 0mm !important;
@@ -465,7 +465,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           <span class="total-value">${formatTotalWeight(data.totalWeight)}</span>
         </div>
 
-        ${data.note ? `
+        ${/* 備考セクション - コメントアウト */ false && data.note ? `
         <div class="note-section">
           <div class="note-label">備考:</div>
           <div class="note-text">${data.note}</div>
