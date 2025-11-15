@@ -92,9 +92,12 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             display: none !important;
           }
           .watermark-container {
-            position: fixed !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             width: 100% !important;
-            height: 100svh !important;
+            height: 100% !important;
+            z-index: 9999 !important;
           }
           .watermark {
             font-size: 10pt !important;
