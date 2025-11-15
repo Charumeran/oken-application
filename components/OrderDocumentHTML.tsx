@@ -105,7 +105,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             width: 100% !important;
             max-width: 100% !important;
             overflow: hidden !important;
-            transform: scale(0.80);
+            transform: scale(0.75);
             transform-origin: center top;
           }
           .tables-container {
