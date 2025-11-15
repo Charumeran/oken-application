@@ -154,15 +154,19 @@ export default function AddMaterialForm({ categoryId, orderId, onSuccess, onCanc
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2 text-slate-700">備考</label>
+          {/* 備考入力フィールド - コメントアウト
+          <div className="relative">
+            <label className="block text-lg font-semibold mb-3 text-slate-700">
+              備考
+            </label>
             <textarea
-              {...register("notes")}
-              className="w-full p-3 text-slate-800 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+              {...register("note")}
+              className="w-full p-4 text-lg text-slate-800 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition-all duration-200 hover:border-gray-300 placeholder:text-slate-400 resize-none"
               rows={3}
               placeholder="特記事項があれば入力"
             />
           </div>
+          */}
 
           <div className="flex space-x-3 pt-4">
             <button
