@@ -120,6 +120,12 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           .info-section {
             margin-bottom: 1mm !important;
             padding: 3mm !important;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.5mm 3mm !important;
+          }
+          .info-row-full {
+            grid-column: 1 / -1 !important;
           }
           .tables-container {
             width: 100% !important;
@@ -173,11 +179,11 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .total-section {
             margin-top: 1mm !important;
-            padding: 3mm !important;
+            padding: 2mm !important;
           }
           .note-section {
             margin-top: 1mm !important;
-            padding: 3mm !important;
+            padding: 2mm !important;
           }
         }
         body {
@@ -387,6 +393,11 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         </div>
 
         <div class="info-section">
+          ${data.siteName ? `
+          <div class="info-row info-row-full">
+            <span class="info-label">現場名:</span>
+            <span>${data.siteName}</span>
+          </div>` : ''}
           <div class="info-row">
             <span class="info-label">発注日:</span>
             <span>${formatDate(data.orderDate)}</span>
@@ -395,11 +406,6 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             <span class="info-label">注文者:</span>
             <span>${data.ordererName}</span>
           </div>
-          ${data.siteName ? `
-          <div class="info-row">
-            <span class="info-label">現場名:</span>
-            <span>${data.siteName}</span>
-          </div>` : ''}
           ${data.contactInfo ? `
           <div class="info-row">
             <span class="info-label">連絡先:</span>
