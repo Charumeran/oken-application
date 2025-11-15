@@ -7,27 +7,54 @@ const formatDate = (dateString: string) => {
 };
 
 export const generatePDFContent = (data: OrderDocument, options?: { hidePrintButton?: boolean }): string => {
-  // 1列に30個固定
-  const itemsPerColumn = 30;
+  // 行のタイプ定義
+  type TableRow = {
+    type: 'category-header';
+    categoryName: string;
+  } | {
+    type: 'item';
+    item: typeof data.items[0];
+  };
 
-  // アイテムを30個ずつ列に分割
-  const columns: typeof data.items[] = [];
-  for (let i = 0; i < data.items.length; i += itemsPerColumn) {
-    columns.push(data.items.slice(i, i + itemsPerColumn));
+  // カテゴリごとにグループ化
+  const categoryMap = new Map<string, typeof data.items>();
+  data.items.forEach(item => {
+    if (!categoryMap.has(item.categoryName)) {
+      categoryMap.set(item.categoryName, []);
+    }
+    categoryMap.get(item.categoryName)!.push(item);
+  });
+
+  // カテゴリヘッダー行と資材行を含む全行リストを作成
+  const allRows: TableRow[] = [];
+  categoryMap.forEach((items, categoryName) => {
+    // カテゴリヘッダー行を追加
+    allRows.push({ type: 'category-header', categoryName });
+    // そのカテゴリの資材行を追加
+    items.forEach(item => {
+      allRows.push({ type: 'item', item });
+    });
+  });
+
+  // 30行ごとに列分割
+  const itemsPerColumn = 30;
+  const columns: TableRow[][] = [];
+  for (let i = 0; i < allRows.length; i += itemsPerColumn) {
+    columns.push(allRows.slice(i, i + itemsPerColumn));
   }
 
   // 最小2列を保証
-  if (columns.length === 1 && data.items.length > 0) {
-    const allItems = columns[0];
-    const midPoint = Math.ceil(allItems.length / 2);
-    columns[0] = allItems.slice(0, midPoint);
-    columns.push(allItems.slice(midPoint));
+  if (columns.length === 1 && allRows.length > 0) {
+    const allRowsInColumn = columns[0];
+    const midPoint = Math.ceil(allRowsInColumn.length / 2);
+    columns[0] = allRowsInColumn.slice(0, midPoint);
+    columns.push(allRowsInColumn.slice(midPoint));
   }
 
-  // 3列ごとにページを分ける
-  const pages: typeof columns[] = [];
-  for (let i = 0; i < columns.length; i += 3) {
-    pages.push(columns.slice(i, i + 3));
+  // 2列ごとにページを分ける
+  const pages: TableRow[][][] = [];
+  for (let i = 0; i < columns.length; i += 2) {
+    pages.push(columns.slice(i, i + 2));
   }
 
   return `
@@ -85,52 +112,56 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
             width: 100% !important;
           }
           table {
-            font-size: 5pt !important;
+            font-size: 7pt !important;
             line-height: 1.2 !important;
           }
           th {
-            font-size: 6pt !important;
-            padding: 2pt !important;
+            font-size: 7pt !important;
+            padding: 0 1pt !important;
             line-height: 1.2 !important;
           }
           td {
-            font-size: 5pt !important;
-            padding: 2pt 1.5pt !important;
-            height: 17pt !important;
+            font-size: 7pt !important;
+            padding: 0 1pt !important;
+            height: 19pt !important;
             line-height: 1.2 !important;
           }
           .title h1 {
-            font-size: 11pt !important;
+            font-size: 14pt !important;
             line-height: 1.2 !important;
           }
           .info-row {
-            font-size: 8pt !important;
+            font-size: 10pt !important;
             line-height: 1.3 !important;
           }
           .info-label {
-            font-size: 8pt !important;
+            font-size: 10pt !important;
             line-height: 1.3 !important;
           }
           .total-label {
-            font-size: 8.5pt !important;
+            font-size: 11pt !important;
             line-height: 1.3 !important;
           }
           .total-value {
-            font-size: 9pt !important;
+            font-size: 12pt !important;
             line-height: 1.3 !important;
           }
           .note-label {
-            font-size: 8pt !important;
+            font-size: 10pt !important;
             line-height: 1.3 !important;
           }
           .note-text {
-            font-size: 7pt !important;
+            font-size: 9pt !important;
             line-height: 1.3 !important;
+          }
+          .category-header-row td {
+            font-size: 9pt !important;
+            padding: 0 2pt !important;
           }
         }
         body {
           font-family: system-ui, -apple-system, sans-serif;
-          font-size: 9px;
+          font-size: 12px;
           line-height: 1.2;
           color: #000;
           padding: 6px;
@@ -148,7 +179,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           margin-bottom: 4px;
         }
         .title h1 {
-          font-size: 18px;
+          font-size: 24px;
           font-weight: bold;
           margin: 0 0 3px 0;
           border-bottom: 1px solid #333;
@@ -163,13 +194,13 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         }
         .info-row {
           margin-bottom: 2px;
-          font-size: 13px;
+          font-size: 16px;
         }
         .info-label {
           font-weight: bold;
           min-width: 60px;
           display: inline-block;
-          font-size: 13px;
+          font-size: 16px;
         }
         .tables-container {
           display: flex;
@@ -193,17 +224,17 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         }
         th {
           border: 1px solid #000;
-          padding: 3px 2px;
+          padding: 0 2px;
           background-color: #475569;
           color: white;
           font-weight: bold;
-          font-size: 10px;
+          font-size: 14px;
           word-break: break-word;
           overflow-wrap: break-word;
         }
         td {
           border: 1px solid #000;
-          padding: 3px 2px;
+          padding: 0 2px;
           height: auto;
           vertical-align: middle;
           line-height: 1.3;
@@ -212,6 +243,15 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
         }
         .row-alternate {
           background-color: #f7fafc;
+        }
+        .category-header-row {
+          background-color: #cbd5e1;
+          font-weight: bold;
+          text-align: center;
+        }
+        .category-header-row td {
+          font-size: 15px;
+          padding: 0 4px;
         }
         .total-section {
           margin-top: 5px;
@@ -224,12 +264,12 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           align-items: center;
         }
         .total-label {
-          font-size: 14px;
+          font-size: 18px;
           font-weight: bold;
           color: #1a1a1a;
         }
         .total-value {
-          font-size: 15px;
+          font-size: 20px;
           font-weight: bold;
           color: #1e293b;
         }
@@ -241,13 +281,13 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           border: 2px solid #000;
         }
         .note-label {
-          font-size: 13px;
+          font-size: 16px;
           font-weight: bold;
           color: #333;
           margin-bottom: 3px;
         }
         .note-text {
-          font-size: 12px;
+          font-size: 15px;
           line-height: 1.3;
           color: #1a1a1a;
           white-space: pre-wrap;
@@ -365,14 +405,27 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
                 </tr>
               </thead>
               <tbody>
-                ${columnItems.map((item, index) => {
-                  return `
-                <tr ${index % 2 === 1 ? 'class="row-alternate"' : ''}>
-                  <td style="font-weight: bold; white-space: normal; line-height: 1.3;">${item.name}</td>
-                  <td style="text-align: right; font-weight: bold;">${item.quantity}</td>
-                  <td style="text-align: right;">${formatWeight(item.weightPerUnit).replace('kg', '')}</td>
-                  <td style="text-align: right; font-weight: bold;">${formatWeight(item.totalWeight).replace('kg', '')}</td>
+                ${columnItems.map((row, rowIndex) => {
+                  if (row.type === 'category-header') {
+                    return `
+                <tr class="category-header-row">
+                  <td colspan="4">${row.categoryName}</td>
                 </tr>`;
+                  } else {
+                    // 同一カテゴリ内でのアイテムインデックスを計算（縞模様用）
+                    let itemIndexInCategory = 0;
+                    for (let i = rowIndex - 1; i >= 0; i--) {
+                      if (columnItems[i].type === 'category-header') break;
+                      itemIndexInCategory++;
+                    }
+                    return `
+                <tr ${itemIndexInCategory % 2 === 1 ? 'class="row-alternate"' : ''}>
+                  <td style="font-weight: bold; white-space: normal; line-height: 1.3;">${row.item.name}</td>
+                  <td style="text-align: right; font-weight: bold;">${row.item.quantity}</td>
+                  <td style="text-align: right;">${formatWeight(row.item.weightPerUnit).replace('kg', '')}</td>
+                  <td style="text-align: right; font-weight: bold;">${formatWeight(row.item.totalWeight).replace('kg', '')}</td>
+                </tr>`;
+                  }
                 }).join('')}
               </tbody>
             </table>
