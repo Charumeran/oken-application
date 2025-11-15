@@ -37,7 +37,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
   });
 
   // 30行ごとに列分割
-  const itemsPerColumn = 30;
+  const itemsPerColumn = 28;
   const columns: TableRow[][] = [];
   for (let i = 0; i < allRows.length; i += itemsPerColumn) {
     columns.push(allRows.slice(i, i + itemsPerColumn));
