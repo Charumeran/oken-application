@@ -119,7 +119,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           }
           .info-section {
             margin-bottom: 1mm !important;
-            padding: 0mm !important;
+            padding: 0 4pt !important;
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
             gap: 0.5mm 0mm !important;
@@ -142,7 +142,7 @@ export const generatePDFContent = (data: OrderDocument, options?: { hidePrintBut
           td {
             font-size: 7pt !important;
             padding: 0 2pt !important;
-            height: 18pt !important;
+            height: 17pt !important;
             line-height: 1.0 !important;
           }
           .title h1 {
